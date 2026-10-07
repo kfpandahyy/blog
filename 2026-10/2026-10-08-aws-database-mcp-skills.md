@@ -1,247 +1,250 @@
-# AWS 数据库 MCP 与 Skill 全景调研
+# 云数据库 MCP 全景调研：AWS 与阿里云
 
 > 类型 · 定位 · 使用场景 · 功能点 · 实现原理
 
-AWS 在 Agent 时代的数据库工具体系是云厂商里跑得最完整的：管理面与数据面 MCP 分治，一个统一仓库下 20+ 个数据库 MCP Server，配套三层 Skill 体系（MCP 内嵌 / agent-plugins / agent-toolkit），外加 Hooks 做写操作拦截。本文按五个维度拆解。
+云厂商正在把数据库产品改造成 Agent 的原生能力。AWS 与阿里云走了两条不同的路：AWS 按引擎拆分、管理面与数据面分治；阿里云依托 DMS 统一网关一托多。本文按五个维度拆解两家布局，并给出对比与启示。
 
 ---
 
 ## 一、问题背景
 
-传统数据库开发的痛点，AWS 官方博客总结得很准：开发者在 IDE、psql/mysql 客户端、文档之间反复切换，同时要维护多套数据模型的心智（SQL 方言差异、关系型 vs NoSQL 的建模范式差异）。MCP 的价值主张：把数据库的元数据与操作能力，以标准协议注入 AI 编码助手的工作现场，让模型"看见"真实的 schema、访问模式与运行状态，而不是凭训练记忆猜。
+传统数据库开发的痛点：开发者在 IDE、数据库客户端、文档之间反复切换，同时维护多套数据模型的心智（SQL 方言差异、关系型 vs NoSQL 建模范式差异）。MCP 的价值主张是把数据库的元数据与操作能力，以标准协议注入 AI 编码助手的工作现场，让模型"看见"真实的 schema、访问模式与运行状态，而不是凭训练记忆猜。
+
+两家的共同方法论：**Skills 是大脑（决策与知识），MCP 是手（安全执行），Plugin 是打包单元（一条命令装齐一类负载所需的全部能力）**。
 
 ---
 
-## 二、整体布局：三层架构
+## 二、AWS：管理面与数据面分治
 
-AWS 的玩法不是一堆散装 MCP Server，而是一个组合体系：
+### 2.1 核心分野：两个平面，两套 Server
 
-```
-┌─────────────────────────────────────────────┐
-│  Skills（脑）                                │
-│  SKILL.md 格式的领域知识包                   │
-│  决策、路由、最佳实践、工作流                  │
-├─────────────────────────────────────────────┤
-│  MCP Servers（手）                           │
-│  管理面：实例/集群生命周期（控制面）          │
-│  数据面：查询、Schema、NL2SQL（数据面）       │
-├─────────────────────────────────────────────┤
-│  Plugins（打包单元）                         │
-│  Skill + MCP + Hooks 的组合发行              │
-│  一条命令装齐一类工作负载所需的全部能力        │
-└─────────────────────────────────────────────┘
-```
+理解 AWS 数据库 MCP 体系的第一把钥匙：**控制面操作和数据面操作被拆成不同的 Server**，独立仓库、独立权限模型。
 
-业界一个流行的概括：**Skills 是大脑，MCP 是手**。Skill 负责"这件事该怎么做"（业务逻辑、决策流程），MCP 负责"实际去执行"（带安全边界和审计）。AWS 是这套分工的典型案例。
+**管理面 MCP：RDS Management MCP Server**（`github.com/aws-rds-mcp/rds-management`，独立仓库）
 
----
+- 定位：数据库资源生命周期管理——对应 AWS 控制台 / RDS API 那层能力
+- 工具面：集群管理（CreateDBCluster / ModifyDBCluster / DeleteDBCluster / ChangeDBClusterStatus 启停重启 / FailoverDBCluster 故障转移）、快照与恢复（创建/删除/从快照恢复/PITR）、实例管理（Create/Modify/DeleteDBInstance）、参数组管理
+- 资源模板：`aws-rds://db-cluster`、`aws-rds://db-instance`，让 Agent 先"看见"资源再操作
+- 安全：`--readonly` 屏蔽一切变更；官方建议给 LLM 单独配只读 IAM 角色，与人权限分离
 
-## 三、核心分野：管理面 MCP vs 数据面 MCP
+**数据面 MCP：以 Aurora PostgreSQL 为代表**（`awslabs/mcp` 仓库下的 `postgres-mcp-server` / `mysql-mcp-server`）
 
-这是理解 AWS 数据库 MCP 体系的第一把钥匙。**控制面操作和数据面操作被拆成不同的 Server**，各自独立仓库、独立权限模型。
+- 定位：数据操作与查询——对应 psql/mysql 客户端那层能力
+- 工具面：`sql_list_tables` / `sql_get_schema`（发现）、`nl2sql`（自然语言转 SQL，LLM provider 抽象，支持 Bedrock / LiteLLM）、`sql_run_query`、`business_concepts`（业务术语映射层）、`reset_context`（schema 上下文管理）
+- 执行通道：RDS Data API（HTTP，凭据走 Secrets Manager），新版支持直连连接串，自托管 PostgreSQL 也能用
 
-### 3.1 管理面 MCP：RDS Management MCP Server
+**拆分的三个现实约束**：
 
-- **仓库**：`github.com/aws-rds-mcp/rds-management`（独立仓库，不在 awslabs/mcp 下）
-- **定位**：数据库资源生命周期管理——对应 AWS 控制台 / RDS API 的那层能力
-- **工具面**：
-  - 集群管理：CreateDBCluster / ModifyDBCluster / DeleteDBCluster / ChangeDBClusterStatus（启停重启）/ FailoverDBCluster（强制故障转移）
-  - 快照与恢复：CreateDBClusterSnapshot / DeleteDBClusterSnapshot / RestoreDBClusterFromSnapshot / RestoreDBClusterToPointInTime
-  - 实例管理：CreateDBInstance / ModifyDBInstance / DeleteDBInstance / ManageDBInstanceStatus
-  - 参数组管理：集群与实例参数组的创建、修改、重置、查询
-- **资源模板**：`aws-rds://db-cluster`、`aws-rds://db-instance`（列表 + 单实例详情），让 Agent 先"看见"资源再操作
-- **安全**：`--readonly` 启动参数屏蔽一切变更操作；官方建议给 LLM 单独配只读 IAM 角色，与人权限分离
+1. **权限模型不同**：管理操作走 IAM + RDS API，数据操作走数据库账号。合在一起意味着一个 Server 同时持有两种高价值凭据
+2. **风险等级不同**：DeleteDBInstance 是分钟级不可逆资损，DELETE FROM 有备份可救。分开后可对管理面默认只读、数据面放开写
+3. **迭代频率不同**：数据面随方言和场景快速演进，管理面跟随 RDS API 版本走
 
-典型场景：用自然语言让 Agent "把 dev 环境的 MySQL 8.0 实例从 db.r6g.large 改到 db.r6g.xlarge，然后打个快照"——整个变更链路由模型编排，人只审批。
+### 2.2 数据面 MCP 矩阵
 
-### 3.2 数据面 MCP：以 Aurora PostgreSQL 为代表
+全部在 `awslabs/mcp`，按数据模型分类：
 
-- **仓库**：`awslabs/mcp` 下的 `src/postgres-mcp-server`（MySQL 对应 `src/mysql-mcp-server`）
-- **定位**：数据操作与查询——对应 psql/mysql 客户端的那层能力
-- **工具面**：
-  - `sql_list_tables` / `sql_get_schema`：发现表与表结构
-  - `nl2sql`：自然语言转 SQL（内置方言规则 + LLM provider 抽象，支持 Amazon Bedrock 或 LiteLLM）
-  - `sql_run_query`：执行并返回结果
-  - `business_concepts` / `business_concepts_load` / `reset_context`：加载业务概念文件（自然语言术语映射），管理 schema 上下文
-- **执行通道**：RDS Data API（HTTP，凭据走 Secrets Manager，不直连数据库端口）；新版也支持直连连接串（`--connection-string`），自托管 PostgreSQL 也能用
+**关系型（5）**：Aurora PostgreSQL（NL2SQL）、Aurora MySQL（NL2SQL）、Aurora DSQL（分布式 SQL）、RDS Oracle（Secrets Manager 认证）、RDS MSSQL（Data API）
 
-典型管道：发现表 → 选 schema 进上下文 → 生成 SQL → 执行 → 解释结果。上下文管理是显式工具（`reset_context`），说明设计者清楚 schema 挤占上下文窗口的问题。
+**NoSQL（5）**：DynamoDB（设计指导与建模）、DocumentDB（MongoDB 兼容）、Neptune（图查询 openCypher/Gremlin）、Keyspaces（Cassandra 兼容）、Timestream InfluxDB（时序）
 
-### 3.3 为什么要拆
+**分析与搜索（3）**：Redshift（数仓只读查询）、S3 Tables（分析表）、OpenSearch（搜索）
 
-管理面与数据面的拆分不是技术洁癖，是三个现实约束的结果：
+**缓存（3）**：ElastiCache Valkey / Memcached、MemoryDB Valkey——偏运维诊断
 
-1. **权限模型不同**：管理操作走 IAM + RDS API（控制面凭据），数据操作走数据库账号（数据面凭据）。合在一起意味着一个 Server 要同时持有两种高价值凭据。
-2. **风险等级不同**：DeleteDBInstance 是分钟级不可逆的资损操作，DELETE FROM 是数据操作（有备份可救）。分开后可以对管理面默认只读、数据面放开写，策略粒度更细。
-3. **变更频率不同**：数据面工具随方言和场景快速演进（NL2SQL、业务概念层），管理面工具跟随 RDS API 版本走，迭代节奏完全不同。
+覆盖逻辑：不是每服务一个 MCP，而是**每个开发者会动手操作的服务一个**；建模指导类与操作类分离。
 
----
+### 2.3 三个功能范式
 
-## 四、数据面 MCP 的全景矩阵
+**执行型：Aurora MySQL/PostgreSQL——NL2SQL 管道**。发现表 → 选 schema 进上下文 → 生成 SQL → 执行 → 解释。上下文管理是显式工具（`reset_context`），说明设计者清楚 schema 挤占上下文窗口的问题。
 
-数据面 MCP 全部在 `awslabs/mcp` 仓库，按数据模型分类：
+**指导型：DynamoDB——prompt-as-tool**。2.0 把 CRUD 操作剥离给通用 AWS API MCP Server，只做设计指导：`dynamodb_data_modeling` 检索并返回建模专家 prompt；`source_db_analyzer` 从 MySQL schema + Performance Schema 提取访问模式生成 DynamoDB 设计建议。本质是**把专家知识以 prompt 形式作为工具返回**，rule-based 无需 LLM 调用。解决"关系型思维迁移 NoSQL"这个最贵的问题。
 
-**关系型（5）**
+**极简型：Aurora DSQL——三工具原则**。只有 `get_schema` / `readonly_query` / `transact`，但配套 Skill 极重（DDL 迁移、OCC 重试、多租户隔离、查询计划诊断，全部在 reference 文件按需加载）。**工具面最小化，知识面最大化**。
 
-| Server | 定位 | 执行通道 |
-|---|---|---|
-| Aurora PostgreSQL | NL2SQL + 元数据 | RDS Data API / 直连 |
-| Aurora MySQL | NL2SQL + 元数据 | RDS Data API |
-| Aurora DSQL | 分布式 SQL，三工具极简设计 | 直连 + IAM 认证 |
-| RDS Oracle | Oracle 操作 | Secrets Manager 认证 |
-| RDS MSSQL | SQL Server 操作 | RDS Data API |
-
-**NoSQL（5）**
-
-| Server | 定位 |
-|---|---|
-| DynamoDB | 设计指导与数据建模（2.0 后操作移走） |
-| DocumentDB | MongoDB 兼容文档操作 |
-| Neptune | 图查询（openCypher / Gremlin） |
-| Keyspaces | Cassandra 兼容宽列操作 |
-| Timestream for InfluxDB | 时序数据操作 |
-
-**分析与搜索（3）**
-
-| Server | 定位 |
-|---|---|
-| Redshift | 数仓元数据浏览 + 只读查询 |
-| S3 Tables | S3 上的分析表管理 |
-| OpenSearch | 搜索与分析 |
-
-**缓存与内存（3）**：ElastiCache Valkey / Memcached、MemoryDB Valkey——偏运维诊断场景（内存用量、复制状态、慢查询排查）。
-
-值得注意的是选型覆盖逻辑：AWS 数据库产品线有 15+ 引擎，数据面 MCP 不是每个服务一个，而是**每个开发者会动手操作的服务一个**，建模指导类（DynamoDB）与操作类分离。
-
----
-
-## 五、数据面 MCP 的三个功能范式
-
-从功能设计看，数据面 MCP 明显走了三条不同的路。
-
-### 5.1 执行型：Aurora MySQL/PostgreSQL——NL2SQL 管道
-
-上节已述。这是数据面 MCP 的主流派：发现元数据 → 生成 SQL → 执行 → 解释。
-
-### 5.2 指导型：DynamoDB——prompt-as-tool
-
-2.0 版是一个重要转向：把"操作"（CRUD）剥离给通用的 AWS API MCP Server，自己只做**设计指导与数据建模**。核心工具：
-
-- `dynamodb_data_modeling`：不改 LLM 上下文，检索并返回建模专家 prompt
-- `source_db_analyzer`：从 MySQL schema + Performance Schema 提取访问模式，生成 DynamoDB 设计建议
-
-这本质是**把专家知识以 prompt 形式作为工具返回**——rule-based，不需要 LLM 调用，且天然可组合（任何 LLM 都能用）。专门解决"关系型思维迁移到 NoSQL"这个最贵的问题。
-
-### 5.3 极简型：Aurora DSQL——三工具原则
-
-只有 `get_schema` / `readonly_query` / `transact`。但配套的 Skill 极重：DDL 迁移（表重建模式）、OCC 重试、多租户隔离、查询计划诊断，全部在 SKILL.md 的 reference 文件里按需加载。**工具面最小化，知识面最大化**——执行通道窄而安全，知识通过 Skill 注入。
-
----
-
-## 六、实现原理
-
-### 6.1 技术栈与分发
-
-- 统一用 Python + FastMCP 框架实现
-- 两种分发：`uvx`（`uv tool run`，零安装）和 Docker 镜像（发布到 ECR Public Gallery: `gallery.ecr.aws/awslabs-mcp/`）
-- 传输：stdio（本地默认）与 HTTP/SSE（远程）；官方明确 SSE 正在移除，转向 streamable HTTP
-
-### 6.2 安全模型（值得单独看）
-
-AWS 数据库 MCP 的安全设计是一条完整链路，且管理面与数据面各有侧重：
+### 2.4 安全模型（完整链路）
 
 **数据面**：
 
-1. **凭据不进上下文**：数据库密码存 Secrets Manager，MCP Server 通过 IAM 角色访问，LLM 永远看不到密钥
-2. **RDS Data API 作为执行通道**：HTTP 接口，不直接连数据库端口，天然适合从容器/CI 环境调用
-3. **语义级只读**：postgres-mcp-server 用 `pglast`（PostgreSQL 官方解析器 libpg_query）解析每条 SQL，只放行 SELECT 类语句形状；且能识别"伪装成 SELECT 的写操作"——`nextval()` 改序列状态、`pg_stat_reset()` 清统计、`pg_switch_wal()` 切日志，一律拒绝
-4. **最小权限角色的双保险**：`--privilege_check` 参数在连接时校验数据库角色——超级用户、`rds_superuser` 成员、BYPASSRLS 角色直接拒绝连接（`enforce` 模式）；推荐用专用只读角色连接，即使 SQL 过滤被绕过，数据库层权限仍是最后边界
-5. **写前校验**：DSQL 的 `dsql_lint` 在 DDL 执行前做静态检查
-6. **Hooks 拦截**：agent-plugins 的 `databases-on-aws` 插件注册了 schema 验证 hook——`transact` 写操作执行后，自动提示验证 schema 变更与影响行数
+1. 凭据不进上下文：密码存 Secrets Manager，LLM 永远看不到密钥
+2. RDS Data API 作为执行通道：HTTP 接口不直连数据库端口
+3. **语义级只读**：postgres-mcp-server 用 `pglast`（PostgreSQL 官方解析器）解析每条 SQL，只放行 SELECT 类语句形状；识别"伪装成 SELECT 的写操作"——`nextval()` 改序列、`pg_stat_reset()` 清统计、`pg_switch_wal()` 切日志，一律拒绝
+4. **角色权限双保险**：`--privilege_check` 连接时校验角色，超级用户 / `rds_superuser` 成员 / BYPASSRLS 角色在 enforce 模式直接拒连；推荐专用最小权限角色，即使 SQL 过滤被绕过，数据库层权限仍是最后边界
+5. 写前校验：DSQL `dsql_lint` 静态检查 DDL
+6. Hooks 拦截：agent-plugins 的 `databases-on-aws` 插件注册 schema 验证 hook，`transact` 写后自动提示验证变更与影响行数
 
-**管理面**：
+**管理面**：`--readonly` 整体屏蔽变更；高危操作在 AWS API MCP Server 层还有 denyList / elicitList 二次确认。
 
-- `--readonly` 整体屏蔽变更工具
-- 官方明确建议：给 LLM 的 IAM 角色与人的角色分开，只授所需权限（如只授 Describe*）
-- 高危操作（DeleteDBCluster 等）在 AWS API MCP Server 层还有 denyList / elicitList 二次确认
+### 2.5 Skill 体系：三种形态
 
-### 6.3 通用执行层：AWS API MCP Server 与托管版 AWS MCP Server
+1. **嵌入 MCP Server 内部**：`aurora-dsql-mcp-server/skills/`，与工具同仓发行
+2. **agent-plugins 插件化打包**：`databases-on-aws` = Skill + MCP（awsknowledge + aurora-dsql，后者默认禁用）+ Hooks，一条 `/plugin install` 装齐
+3. **agent-toolkit-for-aws 路由中枢**：`aws-database` 核心 Skill 是入口——description 写死"STOP——不要凭训练知识回答"，意图匹配到子技能注册表（15+ 引擎）→ 知识卡片（services.json 快速事实）→ `requirements.json` artifact 交接给 service skill（避免用户重复输入）→ service skill 内部再路由（Aurora PG Skill 有 20+ 子技能，按需加载 reference）
 
-- **aws-api-mcp-server**（开源）：把 AWS CLI 命令封装为 MCP 工具，支持只读模式、沙箱执行、CloudTrail 审计。DynamoDB 的表管理操作就迁到了这里。定位是"万能兜底"——具体服务的 MCP 管深度，它管广度。
-- **AWS MCP Server（托管版，2026 年 GA）**：AWS 把散装的开源 Server 整合成一个全托管端点（目前 us-east-1 / eu-central-1），能力 = 文档检索 + AWS API 调用 + 脚本执行 + 官方 Skills 四合一。安全上引入 **IAM 上下文键（context keys）区分人类与 Agent 的身份**，所有调用留 CloudTrail + CloudWatch 审计。Server 本身免费，只对创建的资源计费。对企业来说，这意味着从"自己运维一堆本地 MCP Server"切换到"接一个端点"。
+这是**渐进式披露**的完整实现：frontmatter 触发 → 路由 → 按需读 reference → 执行。Agent 上下文里始终只有当前任务需要的知识。
 
----
+### 2.6 通用执行层与托管整合
 
-## 七、Skill 体系：三种形态
-
-AWS 的 Skill 有三个存放位置，对应三种用途。
-
-### 7.1 嵌入 MCP Server 内部
-
-如 `aurora-dsql-mcp-server/skills/`，与工具同仓发行。技能直接指导如何使用本 Server 的工具。
-
-### 7.2 agent-plugins 仓库：插件化打包
-
-`awslabs/agent-plugins` 的 `databases-on-aws` 插件 = Skill（DSQL 全部最佳实践）+ MCP Server（awsknowledge 文档检索 + aurora-dsql 操作，后者默认禁用）+ Hooks。一条 `/plugin install` 装齐。
-
-### 7.3 agent-toolkit-for-aws：路由中枢
-
-最新的 `aws/agent-toolkit-for-aws` 仓库里，`aws-database` 核心 Skill 是入口：
-
-- **路由模式**：description 里写死"STOP——不要凭训练知识回答"，先把用户意图匹配到子技能注册表（15+ 引擎），再加载对应 service skill
-- **知识卡片**：services.json 提供各服务的快速事实（版本、限制、GA 状态），保证信息新鲜度
-- **artifact 交接**：选库 Skill 产出 `requirements.json`（引擎、区域、容量信号），下游 Skill（如 aurora-postgresql）读取后继续，避免用户重复输入
-- **service skill 内部再路由**：如 Aurora PG Skill 有 20+ 子技能（express 配置、ACU 容量、pgvector、升级规划），匹配后只加载对应 reference 文件
-
-这是**渐进式披露（progressive disclosure）**的完整实现：frontmatter 触发 → 路由 → 按需读 reference → 执行。Agent 上下文里始终只有当前任务需要的知识。
+- **aws-api-mcp-server**（开源）：AWS CLI 命令封装为 MCP 工具，只读模式、沙箱、CloudTrail 审计。DynamoDB 表管理操作迁到了这里
+- **AWS MCP Server（托管版，2026 GA）**：散装开源 Server 整合成单一托管端点（us-east-1 / eu-central-1），能力 = 文档检索 + API 调用 + 脚本执行 + 官方 Skills 四合一。**IAM 上下文键区分人类与 Agent 身份**，CloudTrail + CloudWatch 全审计，Server 本身免费。从"运维一堆本地 Server"切换到"接一个端点"
 
 ---
 
-## 八、使用场景
+## 三、阿里云：DMS 统一网关模式
 
-AWS 官方博客给出四个，加上生态里的两个，以及管理面 MCP 带来的新场景：
+### 3.1 布局总览
 
-1. **Schema 驱动的特性开发**：AI 助手读取实时 schema 理解表关系，生成 CRUD 代码，随 schema 演进同步更新
-2. **数据探索与业务洞察**：分钟级构建 dashboard（自动处理数据关联与可视化建议）
-3. **测试代码生成**：基于 live schema 和访问模式生成针对性测试（约束验证、DynamoDB 访问模式、缓存 TTL 场景）
-4. **监控与排障**：自然语言查询缓存内存、复制状态、慢查询——AI 摘要替代人肉解析 INFO 输出
-5. **异构迁移**：MySQL → DynamoDB 的建模转换（source_db_analyzer）
-6. **ChatBI / 数据民主化**：Redshift 只读查询 + 元数据浏览，非技术人员直接问数
-7. **自然语言运维（管理面独有）**：实例规格变更、快照管理、故障转移演练——用对话完成原本在控制台里的操作，全程 CloudTrail 留痕
+阿里云的打法与 AWS 截然不同：不按引擎拆 MCP，而是把数据管理能力收敛到 **DMS（数据管理服务）** 这个已有的企业级管控面，让 DMS MCP 一个网关托住 40+ 数据源。2026 年又推出**瑶池统一 MCP**，进一步把"建实例 + 用数据 + AI 诊断"合并进一个 Server。
 
-集成面：Amazon Q CLI / Q Developer、Cursor、VS Code、Claude Desktop、Windsurf、Kiro 等；服务端有 Bedrock AgentCore 与托管 AWS MCP Server。
+```
+        AWS                          阿里云
+数据面   每引擎一个 MCP               DMS MCP（统一网关，40+ 源）
+                                    PolarDB Supabase MCP（metadata-only）
+管理面   rds-management MCP          RDS OpenAPI MCP
+                                    瑶池 MCP（create_instance + AI 顾问）
+通用层   aws-api-mcp / 托管 GA        alibabacloud-api-mcp-server（托管，数万 OpenAPI）
+AI 顾问  Skill 体系（路由+知识库）     ask_yaochi_agent 工具 / RDS AI 助手 Skill / DAS Agent
+```
+
+### 3.2 数据面旗舰：DMS MCP Server
+
+- **仓库**：`aliyun/alibabacloud-dms-mcp-server`（2025-06 发布，"DMS 面向 AI Agent 的统一数据访问 MCP 服务"）
+- **定位**：多云通用的统一数据访问网关——不只是阿里云数据库，而是任何接进 DMS 的数据源
+- **数据源覆盖**：阿里云全系（RDS、PolarDB、PolarDB-X、ADB 系列、Lindorm、TableStore、MaxCompute、Hologres）+ 第三方（MySQL、MariaDB、PostgreSQL、Oracle、SQLServer、Redis、MongoDB、StarRocks、ClickHouse、SelectDB、DB2、OceanBase、Gauss、BigQuery），40+ 种
+- **两种模式**：多实例模式（DBA 统一管理多环境多实例）；单库模式（`CONNECTION_STRING` 锁定一个库）
+- **核心工具**：`nlsql`（内置 NL2SQL 算法：自然语言 → 匹配数据表 → 理解业务含义 → 生成并执行 SQL）、`executeScript`、`getTableDetailInfo`（schema）、`addInstance`（录入实例）；权限管控与审计日志默认随调用附带
+- **安全设计**（背靠 DMS 成熟管控面）：
+  - 账号密码安全托管（DMS 当凭证管家，AK/SK 只做认证）
+  - 内网访问，数据不出域
+  - 细粒度权限：实例 / 库 / 表 / 字段 / 行级
+  - 高危 SQL 规则引擎实时拦截（如无条件 DELETE、全表扫描）
+  - 全量 SQL 审计日志
+  - 网络层仅绑定 127.0.0.1，不接受远程连接
+- **托管形态**：DMS 控制台内可直接开通 MCP 服务（公测期免费），无需本地部署
+
+### 3.3 管理面：RDS OpenAPI MCP + 瑶池统一 MCP
+
+**RDS OpenAPI MCP Server**（`aliyun/alibabacloud-rds-openapi-mcp-server`）：
+
+- OpenAPI 工具集：实例创建、查询、变配（如 `create_db_instance` / `describe_db_instances` / `modify_db_instance_spec`），按 toolset 组织（`rds`、`rds_mssql_custom` 等），启动时可裁剪
+- SQL 工具：自动创建只读账号执行查询，完毕即删
+- 附带 **RDS AI 助手 Claude Skill**（skill/ 目录）：SQL 优化、实例运维、故障排查
+- 传输：SSE / stdio
+
+**瑶池数据库 MCP Server**（`aliyun/alibabacloud-yaochi-db-mcp-server`，2026）：
+
+- 定位一句话：**一个 MCP 统一管理阿里云全系数据库**，并内置 AI 顾问
+- 引擎：RDS MySQL、PolarDB MySQL、MongoDB、Tair（Redis），向瑶池全系扩展
+- 工具面把管理面、数据面、AI 顾问装进同一个 Server：
+  - `create_instance` / `list_instances`（管理面）
+  - `execute_instance_sql`（**临时账号模式**：自动开通公网 + 白名单 + 建库 + 执行，无需密码）、`execute_mysql` / `execute_mongo` / `execute_redis`（直连）
+  - `ask_yaochi_agent`：瑶池数据库 Agent——AI 智能顾问（知识问答、性能诊断、最佳实践），以工具形式暴露
+  - 还有 DMS 桥接：`search_database` / `execute_sql` / `register_to_dms`
+- 写操作通过环境变量显式开启：`YAOCHI_ENABLE_WRITE_SQL` / `YAOCHI_ENABLE_DDL_SQL`
+- 核心场景：AI 写完代码 → 自动建库 → 建表 → 执行 SQL 验证 → 调 Agent 做性能诊断，全程不出 IDE
+
+### 3.4 PolarDB Supabase MCP Server
+
+- **仓库**：`ApsaraDB/PolarDB-Supabase-MCP-Server`（TypeScript / pnpm）
+- 定位：为 AI 原生 IDE（Qoder 等）提供 **metadata-only** 通道——安全暴露表、列、类型、约束，**不暴露业务数据**
+- 这是"vibe coding"场景的专用设计：模型只需要 schema 来生成代码，不需要碰数据
+
+### 3.5 通用层：阿里云 OpenAPI MCP Server
+
+`aliyun/alibabacloud-api-mcp-server`：官方托管的远程 MCP，覆盖**数万个阿里云 OpenAPI**，无需本地部署。特色能力：OpenAPI 描述为 AI 调优（精简非必填参数）、Terraform as Tools（HCL 代码即工具，变量自动转参数，确定性编排）、多账号角色扮演、自定义 OAuth（最长一年免登录）、MCP Proxy 内置遥测可视化。按产品维度也提供本地 stdio 独立 Server。
+
+### 3.6 Skill 与 Agent 配套
+
+相比 AWS 的三层 Skill 体系，阿里云的 Skill 故事更薄，**Agent 以工具形式内嵌**：
+
+- RDS AI 助手 Skill（Claude Skill 形态，挂 RDS OpenAPI MCP）
+- `ask_yaochi_agent`：瑶池 Agent 直接做成 MCP 工具（知识问答 / 智能诊断 / 最佳实践，融合官方文档知识库与专家经验）
+- DAS Agent：数据库自治运维大脑（融合 10 万+ 工单与专家经验，问题发现 → 诊断 → 优化全链路自治）
+- DMS Data Copilot / Data Agent：数据管理智能助手（元数据 + 问数知识库）
+- 通义灵码 IDE 侧集成：DMS MCP + 灵码的组合是官方主推的开发提效路径
+
+### 3.7 安全模型
+
+DMS MCP 的安全栈与 AWS 思路相同但落点不同——AWS 靠协议与解析器（Data API / pglast），阿里云靠已有管控面产品（DMS）：
+
+- 凭证托管：DMS 安全托管实例账号，KMS 凭据支持
+- 网络：内网访问（数据不出域）+ 127.0.0.1 本地绑定
+- 权限：实例 / 库 / 表 / 字段 / 行级细粒度管控
+- 执行：高危 SQL 规则引擎实时识别拦截，DMS 安全托管模式内置 SQL 审核与审批流
+- 审计：全量 SQL 操作日志，合规可追溯
+- 瑶池 MCP 的写操作默认关闭，环境变量显式开启
 
 ---
 
-## 九、观察与启示
+## 四、AWS vs 阿里云：五个维度的对比
 
-站在数据库产品视角，几个值得注意的判断：
+| 维度 | AWS | 阿里云 |
+|---|---|---|
+| 架构哲学 | 每引擎窄 MCP，管理/数据分治，通用 API 兜底 | DMS 统一网关一托多，瑶池走向"一个 MCP 管全系" |
+| 数据面 | 12+ 个按引擎拆分（NL2SQL 各自为政） | DMS MCP 一个网关 40+ 源，NL2SQL 统一算法 |
+| 管理面 | 独立 rds-management 仓库，实例/集群/快照/参数组 | RDS OpenAPI MCP（toolset 裁剪）+ 瑶池 create_instance |
+| AI 知识注入 | Skill 三层体系（渐进披露、路由、artifact 交接），模型"不许凭记忆回答" | Agent 工具化（ask_yaochi_agent）、Skill 形态仅一处，依托 DAS/DMS 既有 AI 产品 |
+| 安全抓手 | Data API 通道、pglast 语义只读、privilege_check、IAM 上下文键 | DMS 管控面：行级权限、高危 SQL 规则引擎、审计、内网、127.0.0.1 |
+| 托管形态 | AWS MCP Server GA（单一端点四合一） | DMS 控制台内开通 MCP（公测免费）+ 托管 OpenAPI MCP |
+| 数据源开放性 | 只覆盖 AWS 自家引擎 | 多云通用（含 OceanBase、Gauss、BigQuery 等对手产品） |
 
-**1. 管理面与数据面分治是 Agent 时代的刚需。** 不是因为拆起来漂亮，而是权限模型、风险等级、迭代节奏三者都不同。做数据库 MCP 的产品，第一步就该想清楚这层拆分，而不是先做一个"大而全"的 Server 再事后补权限。
+**深层差异**：AWS 的优势在"每个引擎做深"——语义级只读、业务概念层、建模指导都是引擎级精细设计；阿里云的优势在"网关做宽"——DMS 十年管控面积累（权限、审计、审批）直接复用，40+ 源统一接入是 AWS 没有的能力。AWS 像"每个数据库配一个专家助手"，阿里云像"一个 DBA 总管所有库"。
 
-**2. 工具面做窄，知识面做宽。** DSQL 只有 3 个工具但 Skill 极重，DynamoDB 只做设计指导。Agent 时代的工具设计不是"暴露全部 API"，而是"暴露最小安全操作面 + 注入最大决策知识"。
+**收敛趋势**：两家都在走向同一终点——托管 MCP 端点 + AI 顾问工具化 + 人/Agent 身份分离 + 全链路审计。差异只在路径：AWS 从开源散装到托管整合，阿里云从管控面产品长出来。
 
-**3. 安全是分层工程，不是一个开关。** 凭据隔离（Secrets Manager）→ 执行通道隔离（Data API）→ 语义级只读（pglast 解析 SQL，识别伪装的写操作）→ 角色权限双保险（privilege_check）→ 写前 lint → 写后 hook → CloudTrail 审计。每一层都由不同组件承担。
+---
 
-**4. "不要凭训练知识回答"是产品决策。** aws-database Skill 强制路由到子技能，本质是把模型的"记忆"替换为"检索"——保证答案时效性与可审计。这与 Agent Harness 博客里"context engineering > prompt engineering"的判断一致。
+## 五、使用场景（合并两家）
 
-**5. 从开源散装到托管整合是确定的演进方向。** AWS 的路线：先开源一堆单点 MCP Server（2025）→ 再出通用 API Server 兜底（2025 末）→ 最后 GA 托管端点 + IAM 身份区分 + 全量审计（2026）。对数据库厂商的启示：MCP Server 的终局可能不是"用户部署我的 Server"，而是"我把能力接进一个托管层"。
+1. **Schema 驱动的特性开发**：AI 读取实时 schema 理解表关系，生成 CRUD 代码（AWS Aurora MCP / 阿里云 DMS MCP + 灵码）
+2. **数据探索与业务洞察**：分钟级 dashboard，DMS NL2SQL + 问数知识库面向非技术人员
+3. **测试代码生成**：基于 live schema 和访问模式生成针对性测试
+4. **监控与排障**：缓存内存、复制状态、慢查询自然语言查询；瑶池 Agent / DAS Agent 自动诊断
+5. **异构迁移**：MySQL → DynamoDB 建模转换（AWS）；跨源统一访问（阿里云 DMS）
+6. **ChatBI / 数据民主化**：Redshift 只读查询（AWS）；DMS Data Agent 分析报告（阿里云）
+7. **自然语言运维**：实例变配、快照、故障转移（AWS rds-management）；建实例 + 诊断一体（阿里云瑶池）
+8. **Vibe coding 配套**：AI 写代码后自动建库建表验证数据（阿里云瑶池核心场景；PolarDB Supabase MCP 供 metadata）
 
-**6. 对竞争的意味：** AWS 把 15+ 数据库引擎逐一 MCP 化，又补上管理面，是在把"数据库产品"变成"Agent 的原生能力"。数据库厂商之间的下一个竞争维度，可能是谁的元数据接口、文档体系、Skill 包、管理面 MCP 对 Agent 最友好。
+---
+
+## 六、观察与启示
+
+**1. 管理面与数据面分治是 Agent 时代的刚需。** 权限模型、风险等级、迭代节奏三者都不同。做数据库 MCP 的产品，第一步就该想清楚这层拆分。
+
+**2. 两种架构范式都有生存空间，取决于你手里有什么。** 有成熟管控面产品（DMS 模式）→ 统一网关；引擎各自为战且深度差异大（AWS 模式）→ 按引擎拆分 + 通用兜底。手里没有管控面的厂商，更可能走 AWS 路线。
+
+**3. 工具面做窄，知识面做宽。** DSQL 三工具 + 重 Skill，DynamoDB 只做设计指导，PolarDB Supabase 只给 metadata。Agent 时代的工具设计是"最小安全操作面 + 最大决策知识"。
+
+**4. 安全是分层工程。** AWS：凭据隔离 → 执行通道隔离 → 语义级只读（pglast 识别伪装的 SELECT）→ 角色权限双保险 → 写前 lint → 写后 hook → CloudTrail。阿里云：凭证托管 → 内网 + 本地绑定 → 行级权限 → 高危 SQL 规则引擎 → 审批流 → 审计。每一层由不同组件承担。
+
+**5. AI 顾问的两种交付形态。** AWS 把知识做成 Skill（可读 Markdown，渐进披露，路由）；阿里云把顾问做成工具（ask_yaochi_agent / DAS Agent）。前者轻、可组合、依赖模型能力；后者重、确定性高、自带执行闭环。两者可能 converge 到"Skill 定义流程 + 工具执行动作"。
+
+**6. "不要凭训练知识回答" vs "问数知识库"。** 两家殊途同归：模型记忆不可信，检索与受控执行才可信。
+
+**7. 对竞争的意味：** 数据库厂商的下一个竞争维度，是元数据接口、文档体系、Skill 包、管理面 MCP 对 Agent 的友好度。AWS 和阿里云已经把"数据库产品 = Agent 原生能力"当成既定战略——其他厂商跟不跟、怎么跟，是接下来一年最值得看的事。
 
 ---
 
 ## 参考资料
 
+**AWS**
+
 1. AWS Database Blog: Supercharging AWS database development with AWS MCP servers (2025-06) — https://aws.amazon.com/blogs/database/supercharging-aws-database-development-with-aws-mcp-servers/
-2. GitHub: awslabs/mcp（数据面 MCP Server 合集仓库）— https://github.com/awslabs/mcp
-3. GitHub: aws-rds-mcp/rds-management（管理面 MCP Server）— https://github.com/aws-rds-mcp/rds-management
-4. GitHub: awslabs/agent-plugins（databases-on-aws 插件）— https://github.com/awslabs/agent-plugins
-5. GitHub: aws/agent-toolkit-for-aws（aws-database 核心 Skill）— https://github.com/aws/agent-toolkit-for-aws
-6. aurora-dsql-mcp-server SKILL.md（渐进式披露结构范例）— https://github.com/awslabs/mcp/blob/main/src/aurora-dsql-mcp-server/skills/aws-dsql-skill/SKILL.md
-7. awslabs.postgres-mcp-server PyPI（pglast 语义只读与 privilege_check 设计）— https://pypi.org/project/awslabs.postgres-mcp-server/
-8. ECR Public Gallery: awslabs-mcp（容器分发）— https://gallery.ecr.aws/awslabs-mcp/awslabs/postgres-mcp-server
-9. serverworks blog: AWS MCP Server GA 移行记（托管版能力对比，2026-05）— https://blog.serverworks.co.jp/aws-mcp-server-ga-2026
-10. dev.to: Build Faster with Amazon Q Developer — MCP vs Agent Skills — https://dev.to/jackohhearts/build-faster-with-amazon-q-developer-mcp-vs-agent-skills-and-aws-cost-dashboards-1pdc
-11. Medium: Building a Complete Amazon Aurora MySQL MCP Server — https://medium.com/@michaelwpace/building-a-complete-amazon-aurora-mysql-mcp-server-a-comprehensive-guide-77f5e8eba4aa
-12. GitHub: awslabs/mcp — aws-api-mcp-server（安全策略设计）— https://github.com/awslabs/mcp/tree/main/src/aws-api-mcp-server
+2. GitHub: awslabs/mcp — https://github.com/awslabs/mcp
+3. GitHub: aws-rds-mcp/rds-management（管理面 MCP）— https://github.com/aws-rds-mcp/rds-management
+4. GitHub: awslabs/agent-plugins — https://github.com/awslabs/agent-plugins
+5. GitHub: aws/agent-toolkit-for-aws — https://github.com/aws/agent-toolkit-for-aws
+6. awslabs.postgres-mcp-server PyPI（pglast 语义只读与 privilege_check）— https://pypi.org/project/awslabs.postgres-mcp-server/
+7. serverworks blog: AWS MCP Server GA 移行记 (2026-05) — https://blog.serverworks.co.jp/aws-mcp-server-ga-2026
+8. GitHub: awslabs/mcp — aws-api-mcp-server — https://github.com/awslabs/mcp/tree/main/src/aws-api-mcp-server
+
+**阿里云**
+
+9. GitHub: aliyun/alibabacloud-dms-mcp-server（DMS 统一数据访问 MCP）— https://github.com/aliyun/alibabacloud-dms-mcp-server
+10. 阿里云文档: 使用 DMS MCP 让大模型安全访问数据库 — https://help.aliyun.com/zh/dms/use-cases/deploy-dms-mcp
+11. 阿里云开发者社区: 告别切屏｜DMS MCP + 通义灵码 30 分钟搞定电商秒杀开发 (2025-06) — https://developer.aliyun.com/article/1666619
+12. GitHub: aliyun/alibabacloud-rds-openapi-mcp-server（RDS OpenAPI MCP + RDS AI 助手 Skill）— https://github.com/aliyun/alibabacloud-rds-openapi-mcp-server
+13. GitHub: aliyun/alibabacloud-yaochi-db-mcp-server（瑶池统一 MCP）— https://github.com/aliyun/alibabacloud-yaochi-db-mcp-server
+14. GitHub: ApsaraDB/PolarDB-Supabase-MCP-Server（metadata-only）— https://github.com/ApsaraDB/PolarDB-Supabase-MCP-Server
+15. 阿里云文档: PolarDB Supabase 助力 AI 原生 IDE 完成 VibeCoding — https://help.aliyun.com/zh/polardb/polardb-for-postgresql/polardb-supabase-ai-ide-vibecoding
+16. GitHub: aliyun/alibabacloud-api-mcp-server（托管 OpenAPI MCP）— https://github.com/aliyun/alibabacloud-api-mcp-server
+17. 阿里云: 瑶池数据库 Data+AI 开放日（DAS Agent / DMS Data Copilot / DMS MCP 发布）— https://www.aliyun.com/activity/database/data4ai-openday
