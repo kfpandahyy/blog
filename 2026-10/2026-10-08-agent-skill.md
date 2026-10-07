@@ -14,7 +14,9 @@ Agent Skill 给这条路画上了句号。本文核心判断：**它赢的原因
 
 ## 一、定义与边界
 
-先贴一个真实的最小实例（结构来自 Anthropic 官方 PDF skill）：
+**一句话定义**：Agent Skill 是一种把"怎么做一件事"的流程知识打包成文件夹、让模型按需自动加载的开放格式，核心是 SKILL.md 文件。
+
+最小实例（结构来自 Anthropic 官方 PDF skill）：
 
 ```
 pdf-form-filler/
@@ -37,7 +39,7 @@ description: Fill out PDF forms. Use when the user provides
 3. Fill fields programmatically, never by hand-editing bytes.
 ```
 
-一个文件夹 + 一个 `SKILL.md`（YAML frontmatter 必填 `name` 和 `description`，Markdown 正文写流程）+ 可选附属文件。**不需要注册、没有清单文件**，放进约定目录即生效。
+一个文件夹 + 一个 `SKILL.md`（YAML frontmatter 必填 `name` 和 `description`，Markdown 正文写流程）+ 可选附属文件。**不需要注册、没有清单文件**，放进约定目录即生效——这就是上面那句话定义的全部内容。
 
 **与相邻概念的辨析**——理解 Skill 的关键：
 
