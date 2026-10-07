@@ -10,8 +10,6 @@ AI Agent 领域技术博客，按九大类组织。文章按月份归档（如 `
 
 覆盖：主流模型系列（GPT / Claude / Llama / Kimi / Hermes）、架构（MoE vs Dense）、推理模型的兴起、benchmark 怎么读（哪些有参考价值、哪些被刷烂）、能力边界（幻觉、上下文长度、指令遵循）。
 
-文章：
-- 2026-10-07 · Hermes 是什么：一个开源大模型系列的简史
 
 ## 2. Agent 工程（Harness 与运行时）
 
@@ -19,8 +17,6 @@ AI Agent 领域技术博客，按九大类组织。文章按月份归档（如 `
 
 覆盖：Agent loop（ReAct 模式、reason-act-observe）、工具调用与 MCP 协议、记忆系统（短期/长期）、规划与子 agent、自我验证与反馈循环、薄厚 harness 之争、线束债（harness debt）。
 
-文章：
-- 2026-10-07 · Agent Harness 是什么：给大模型装上"身体"的那层软件
 
 ## 3. 框架与工具协议
 
