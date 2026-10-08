@@ -250,25 +250,25 @@ Schema 约束数据结构（有哪些表哪些列），本体定义语义含义�
 
 ### 一手（论文 / 标准 / 官方文档 / 仓库）
 
-1. T. Gruber, *A Translation Approach to Portable Ontology Specifications*, Knowledge Acquisition 5(2), 1993 — https://doi.org/10.1006/knac.1993.1009
-2. W3C 规范：RDF 1.1 Concepts — https://www.w3.org/TR/rdf11-concepts/ ；OWL 2 — https://www.w3.org/TR/owl2-overview/ ；SHACL — https://www.w3.org/TR/shacl/ ；SPARQL 1.1 — https://www.w3.org/TR/sparql11-overview/
+1. [T. Gruber, *A Translation Approach to Portable Ontology Specifications*, Knowledge Acquisition 5(2), 1993](https://doi.org/10.1006/knac.1993.1009)
+2. W3C 规范：[RDF 1.1 Concepts](https://www.w3.org/TR/rdf11-concepts/)、[OWL 2](https://www.w3.org/TR/owl2-overview/)、[SHACL](https://www.w3.org/TR/shacl/)、[SPARQL 1.1](https://www.w3.org/TR/sparql11-overview/)
 3. ISO/IEC 39075:2024（GQL 标准，2024-04 发布；Neo4j × AWS 联合推动，ISO 页面有反爬，搜标准号即达）
-4. Microsoft GraphRAG — arXiv:2404.16130，https://arxiv.org/abs/2404.16130 ；仓库 — https://github.com/microsoft/graphrag
-5. LightRAG（HKUDS）— arXiv:2410.05779（EMNLP 2025），https://arxiv.org/abs/2410.05779 ；GitHub — https://github.com/HKUDS/LightRAG
-6. HippoRAG（OSU）— arXiv:2405.14831，https://arxiv.org/abs/2405.14831 ；GitHub — https://github.com/OSU-NLP-Group/HippoRAG
-7. KAG / OpenSPG（蚂蚁）— arXiv:2409.13731，https://arxiv.org/abs/2409.13731 ；GitHub — https://github.com/OpenSPG/KAG
-8. Graphiti（Zep）— arXiv:2501.13956，https://arxiv.org/abs/2501.13956 ；GitHub — https://github.com/getzep/graphiti
-9. Mem0g（Mem0）— arXiv:2504.19413，https://arxiv.org/abs/2504.19413
-10. Palantir Foundry Ontology 文档 — https://www.palantir.com/docs/foundry/ontology/overview/ ；AIP 文档 — https://www.palantir.com/docs/aip/
-11. Neo4j 官方博客：Taxonomy vs. Ontology vs. Knowledge Graph（2026-09）— https://neo4j.com/blog/knowledge-graph/taxonomy-vs-ontology/
-12. 行业本体：FIBO — https://spec.edmcouncil.org/fibo/ ；SNOMED CT — https://www.snomed.org/ ；HL7 FHIR — https://hl7.org/fhir/ ；Schema.org — https://schema.org
+4. [Microsoft GraphRAG（arXiv:2404.16130）](https://arxiv.org/abs/2404.16130)；[仓库](https://github.com/microsoft/graphrag)
+5. [LightRAG（HKUDS，arXiv:2410.05779，EMNLP 2025）](https://arxiv.org/abs/2410.05779)；[GitHub](https://github.com/HKUDS/LightRAG)
+6. [HippoRAG（OSU，arXiv:2405.14831）](https://arxiv.org/abs/2405.14831)；[GitHub](https://github.com/OSU-NLP-Group/HippoRAG)
+7. [KAG / OpenSPG（蚂蚁，arXiv:2409.13731）](https://arxiv.org/abs/2409.13731)；[GitHub](https://github.com/OpenSPG/KAG)
+8. [Graphiti（Zep，arXiv:2501.13956）](https://arxiv.org/abs/2501.13956)；[GitHub](https://github.com/getzep/graphiti)
+9. [Mem0g（Mem0，arXiv:2504.19413）](https://arxiv.org/abs/2504.19413)
+10. Palantir 官方文档：[Foundry Ontology](https://www.palantir.com/docs/foundry/ontology/overview/)、[AIP](https://www.palantir.com/docs/aip/)
+11. [Neo4j 官方博客：Taxonomy vs. Ontology vs. Knowledge Graph（2026-09）](https://neo4j.com/blog/knowledge-graph/taxonomy-vs-ontology/)
+12. 行业本体：[FIBO](https://spec.edmcouncil.org/fibo/)、[SNOMED CT](https://www.snomed.org/)、[HL7 FHIR](https://hl7.org/fhir/)、[Schema.org](https://schema.org)
 
 ### 二手（评测 / 分析 / 路线图）
 
-13. Han et al., *RAG vs. GraphRAG 系统性评测* — arXiv:2502.11371，https://arxiv.org/abs/2502.11371 （GraphRAG 简单查询反输：NQ -13.4%、时敏查询 -16.6%）
-14. *When to use Graphs in RAG*（GraphRAG-Bench，ICLR 2026）— arXiv:2506.05690，https://arxiv.org/abs/2506.05690 （多跳 +4.5% 但延迟 2.3×）
-15. *Use Graph When It Needs: Efficiently and Adaptively Integrating RAG with Graphs* — arXiv:2602.03578，https://arxiv.org/abs/2602.03578
-16. Zhou et al., *In-depth Analysis of Graph-based RAG in a Unified Representation*（VLDB 2026, vol.18）— https://www.vldb.org/pvldb/vol18/p5623-zhou.pdf
-17. The Data Praxis: *The Knowledge Graph Tooling Landscape*（2026-06，生产级七层栈）— https://www.datapraxis.org/post/knowledge-graph-architecture-2026
-18. CopilotKit: *The Five Graphs Every AI Agent Needs*（2026-09，context graph 概念）— https://www.copilotkit.ai/blog/five-graphs-every-ai-agent-needs
-19. *Unifying Large Language Models and Knowledge Graphs: A Roadmap*（LLM×KG 路线图）— arXiv:2306.08302，https://arxiv.org/abs/2306.08302
+13. [Han et al., *RAG vs. GraphRAG 系统性评测*（arXiv:2502.11371）](https://arxiv.org/abs/2502.11371)——GraphRAG 简单查询反输：NQ -13.4%、时敏查询 -16.6%
+14. [*When to use Graphs in RAG*（GraphRAG-Bench，ICLR 2026，arXiv:2506.05690）](https://arxiv.org/abs/2506.05690)——多跳 +4.5% 但延迟 2.3×
+15. [*Use Graph When It Needs: Efficiently and Adaptively Integrating RAG with Graphs*（arXiv:2602.03578）](https://arxiv.org/abs/2602.03578)
+16. [Zhou et al., *In-depth Analysis of Graph-based RAG in a Unified Representation*（VLDB 2026, vol.18）](https://www.vldb.org/pvldb/vol18/p5623-zhou.pdf)
+17. [The Data Praxis: *The Knowledge Graph Tooling Landscape*（2026-06，生产级七层栈）](https://www.datapraxis.org/post/knowledge-graph-architecture-2026)
+18. [CopilotKit: *The Five Graphs Every AI Agent Needs*（2026-09，context graph 概念）](https://www.copilotkit.ai/blog/five-graphs-every-ai-agent-needs)
+19. [*Unifying Large Language Models and Knowledge Graphs: A Roadmap*（arXiv:2306.08302）](https://arxiv.org/abs/2306.08302)

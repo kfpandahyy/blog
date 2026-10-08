@@ -237,18 +237,18 @@ if 拿不准 → 中间派，只把"出错代价最高的环节"显式化。
 
 ### 一手（官方博客 / 定义来源）
 
-1. Wikipedia: Agent harness — https://en.wikipedia.org/wiki/Agent_harness
-2. Anthropic: Building Effective Agents（2024-12）— https://www.anthropic.com/engineering/building-effective-agents
-3. Anthropic: Effective harnesses for long-running agents — https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
-4. LangChain: Your harness, your memory（2026-04）— https://www.langchain.com/blog/your-harness-your-memory
-5. Mitchell Hashimoto: Harness engineering（2026-02）— https://mitchellh.com/writing/my-ai-adoption-journey
+1. [Wikipedia: Agent harness](https://en.wikipedia.org/wiki/Agent_harness)
+2. [Anthropic: Building Effective Agents（2024-12）](https://www.anthropic.com/engineering/building-effective-agents)
+3. [Anthropic: Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
+4. [LangChain: Your harness, your memory（2026-04）](https://www.langchain.com/blog/your-harness-your-memory)
+5. [Mitchell Hashimoto: Harness engineering（2026-02）](https://mitchellh.com/writing/my-ai-adoption-journey)
 
 ### 二手（综述 / 解读 / 安全研究）
 
-6. Databricks: What is an AI Agent Harness? — https://www.databricks.com/blog/ai-harness
-7. Firecrawl: What Is an Agent Harness? — https://www.firecrawl.dev/blog/what-is-an-agent-harness
-8. Adversa: What is an agent harness?（含 30+ 漏洞扫描）— https://adversa.ai/blog/what-is-an-agent-harness/
-9. Gentic News: The Great Agent Harness Debate — https://gentic.news/article/agent-harness-debate-anthropic-vs
-10. AI Heroes: Harness Debt — https://www.ai-heroes.co/en-us/blog/ai-agent-harness-debt-2026
-11. DataNorth: Harness Engineering — The Complete Guide — https://datanorth.ai/blog/harness-engineering-the-complete-guide-to-ai-agent-scaffolding
-12. Vector Culture: A Brief History of Agents — https://vectorculture.substack.com/p/a-brief-history-of-agents
+6. [Databricks: What is an AI Agent Harness?](https://www.databricks.com/blog/ai-harness)
+7. [Firecrawl: What Is an Agent Harness?](https://www.firecrawl.dev/blog/what-is-an-agent-harness)
+8. [Adversa: What is an agent harness?（含 30+ 漏洞扫描）](https://adversa.ai/blog/what-is-an-agent-harness/)
+9. [Gentic News: The Great Agent Harness Debate](https://gentic.news/article/agent-harness-debate-anthropic-vs)
+10. [AI Heroes: Harness Debt](https://www.ai-heroes.co/en-us/blog/ai-agent-harness-debt-2026)
+11. [DataNorth: Harness Engineering — The Complete Guide](https://datanorth.ai/blog/harness-engineering-the-complete-guide-to-ai-agent-scaffolding)
+12. [Vector Culture: A Brief History of Agents](https://vectorculture.substack.com/p/a-brief-history-of-agents)

@@ -259,17 +259,17 @@ EOF
 
 ### 一手（官方文档 / 仓库）
 
-1. Anthropic Engineering: Equipping agents for the real world with Agent Skills（2025-10-16）— https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
-2. Agent Skills 开放标准与规范 — https://agentskills.io ；GitHub — https://github.com/agentskills/agentskills
-3. Anthropic 官方 Skills 仓库 — https://github.com/anthropics/skills
+1. [Anthropic Engineering: Equipping agents for the real world with Agent Skills（2025-10-16）](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
+2. [Agent Skills 开放标准与规范](https://agentskills.io)；[GitHub](https://github.com/agentskills/agentskills)
+3. [Anthropic 官方 Skills 仓库](https://github.com/anthropics/skills)
 
 ### 二手（解读 / 媒体 / 社区）
 
-4. VentureBeat: How Anthropic's 'Skills' make Claude faster, cheaper, and more consistent（2025-12-22）— https://venturebeat.com/ai/how-anthropics-skills-make-claude-faster-cheaper-and-more-consistent-for
-5. AIToolsReview: Claude Skills Explained（2026-09-09，含 40+ 采纳清单）— https://aitoolsreview.co.uk/insights/claude-skills-explained
-6. 7minAI: How to Write a Claude Skill（2026-07-27，三层加载实测与个人/项目目录）— https://7minai.com/how-to-write-claude-skills/
-7. MindStudio: Claude Agent Skills（2026-09-14，时间线与首发细节）— https://www.mindstudio.ai/blog/claude-agent-skills-anthropic-engineers
-8. ishchuk.eu: Why Installing Third-Party AI Agent Skills Is Riskier Than You Think（2026-07-21，供应链安全研究转述）— https://ishchuk.eu/blog/why-installing-third-party-ai-agent-skills-is-riskier-than-you-think-in-2026
-9. amdatalakehouse: Open Standards for Agentic Harnesses（2026-08-31，MCP/Skill 基金会进程）— https://amdatalakehouse.substack.com/p/open-standards-for-agentic-harnesses
-10. Bosio Digital: The File Is the Easy Part（2026-09-28，规范字段与写作指引）— https://bosio.digital/articles/agent-skills
-11. Articsledge: What Is Skill Engineering?（2026-07-29）— https://www.articsledge.com/post/skill-engineering
+4. [VentureBeat: How Anthropic's 'Skills' make Claude faster, cheaper, and more consistent（2025-12-22）](https://venturebeat.com/ai/how-anthropics-skills-make-claude-faster-cheaper-and-more-consistent-for)
+5. [AIToolsReview: Claude Skills Explained（2026-09-09，含 40+ 采纳清单）](https://aitoolsreview.co.uk/insights/claude-skills-explained)
+6. [7minAI: How to Write a Claude Skill（2026-07-27，三层加载实测与个人/项目目录）](https://7minai.com/how-to-write-claude-skills/)
+7. [MindStudio: Claude Agent Skills（2026-09-14，时间线与首发细节）](https://www.mindstudio.ai/blog/claude-agent-skills-anthropic-engineers)
+8. [ishchuk.eu: Why Installing Third-Party AI Agent Skills Is Riskier Than You Think（2026-07-21，供应链安全研究转述）](https://ishchuk.eu/blog/why-installing-third-party-ai-agent-skills-is-riskier-than-you-think-in-2026)
+9. [amdatalakehouse: Open Standards for Agentic Harnesses（2026-08-31，MCP/Skill 基金会进程）](https://amdatalakehouse.substack.com/p/open-standards-for-agentic-harnesses)
+10. [Bosio Digital: The File Is the Easy Part（2026-09-28，规范字段与写作指引）](https://bosio.digital/articles/agent-skills)
+11. [Articsledge: What Is Skill Engineering?（2026-07-29）](https://www.articsledge.com/post/skill-engineering)

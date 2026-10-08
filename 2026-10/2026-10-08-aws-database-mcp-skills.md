@@ -204,14 +204,14 @@ AWS 的客户一直在问同一个问题：怎么把现有数据库系统接进 
 
 ### 一手（官方）
 
-1. AWS Database Blog: Supercharging AWS database development with AWS MCP servers（2025-06）— https://aws.amazon.com/blogs/database/supercharging-aws-database-development-with-aws-mcp-servers/
-2. GitHub: awslabs/mcp — https://github.com/awslabs/mcp
-3. GitHub: aws-rds-mcp/rds-management（管理面 MCP）— https://github.com/aws-rds-mcp/rds-management
-4. GitHub: awslabs/agent-plugins — https://github.com/awslabs/agent-plugins
-5. GitHub: aws/agent-toolkit-for-aws — https://github.com/aws/agent-toolkit-for-aws
-6. awslabs.postgres-mcp-server PyPI（pglast 语义只读、privilege_check）— https://pypi.org/project/awslabs.postgres-mcp-server/
-7. GitHub: aws-api-mcp-server — https://github.com/awslabs/mcp/tree/main/src/aws-api-mcp-server
+1. [AWS Database Blog: Supercharging AWS database development with AWS MCP servers（2025-06）](https://aws.amazon.com/blogs/database/supercharging-aws-database-development-with-aws-mcp-servers/)
+2. [GitHub: awslabs/mcp](https://github.com/awslabs/mcp)
+3. [GitHub: aws-rds-mcp/rds-management（管理面 MCP）](https://github.com/aws-rds-mcp/rds-management)
+4. [GitHub: awslabs/agent-plugins](https://github.com/awslabs/agent-plugins)
+5. [GitHub: aws/agent-toolkit-for-aws](https://github.com/aws/agent-toolkit-for-aws)
+6. [awslabs.postgres-mcp-server PyPI（pglast 语义只读、privilege_check）](https://pypi.org/project/awslabs.postgres-mcp-server/)
+7. [GitHub: aws-api-mcp-server](https://github.com/awslabs/mcp/tree/main/src/aws-api-mcp-server)
 
 ### 二手（第三方实测）
 
-8. serverworks blog: AWS MCP Server GA 移行记（2026-05）— https://blog.serverworks.co.jp/aws-mcp-server-ga-2026
+8. [serverworks blog: AWS MCP Server GA 移行记（2026-05）](https://blog.serverworks.co.jp/aws-mcp-server-ga-2026)

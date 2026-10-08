@@ -247,16 +247,16 @@ ollama run nous-hermes2-pro  # 或从 HuggingFace 下载 GGUF
 
 ### 一手（技术报告 / 模型卡 / 仓库）
 
-1. Hermes 3 Technical Report — arXiv:2408.11857，https://arxiv.org/abs/2408.11857
-2. Hermes 4 Technical Report — arXiv:2508.18255，https://arxiv.org/abs/2508.18255
-3. NousResearch/Hermes-2-Pro-Mistral-7B 模型卡 — https://huggingface.co/NousResearch/Hermes-2-Pro-Mistral-7B
-4. Hermes Function-Calling 仓库 — https://github.com/NousResearch/Hermes-Function-Calling
-5. hermes-function-calling-v1 数据集 — https://huggingface.co/datasets/NousResearch/hermes-function-calling-v1
+1. [Hermes 3 Technical Report（arXiv:2408.11857）](https://arxiv.org/abs/2408.11857)
+2. [Hermes 4 Technical Report（arXiv:2508.18255）](https://arxiv.org/abs/2508.18255)
+3. [NousResearch/Hermes-2-Pro-Mistral-7B 模型卡](https://huggingface.co/NousResearch/Hermes-2-Pro-Mistral-7B)
+4. [Hermes Function-Calling 仓库](https://github.com/NousResearch/Hermes-Function-Calling)
+5. [hermes-function-calling-v1 数据集](https://huggingface.co/datasets/NousResearch/hermes-function-calling-v1)
 
 ### 二手（解读 / 媒体 / 综述）
 
-6. Vector Culture: A Brief History of Agents — https://vectorculture.substack.com/p/a-brief-history-of-agents
-7. 新智元：10 人明星团队炼出首个微调 Llama 3.1 405B — https://m.thepaper.cn/newsDetail_forward_28422428
-8. AI2 Tülu 3 后训练论文（含与 Hermes 3 405B 对比）— arXiv:2411.15124，https://arxiv.org/abs/2411.15124
-9. SiliconANGLE：Paradigm 领投 Nous Research 5000 万美元（2025-04-25）— https://siliconangle.com/2025/04/25/nous-research-raises-50m-decentralized-ai-training-led-paradigm/
-10. Hermes Agent 深度研究报告（中文）— https://www.zhangfeibiao.com/archives/Hermes-Agent
+6. [Vector Culture: A Brief History of Agents](https://vectorculture.substack.com/p/a-brief-history-of-agents)
+7. [新智元：10 人明星团队炼出首个微调 Llama 3.1 405B](https://m.thepaper.cn/newsDetail_forward_28422428)
+8. [AI2 Tülu 3 后训练论文（含与 Hermes 3 405B 对比，arXiv:2411.15124）](https://arxiv.org/abs/2411.15124)
+9. [SiliconANGLE：Paradigm 领投 Nous Research 5000 万美元（2025-04-25）](https://siliconangle.com/2025/04/25/nous-research-raises-50m-decentralized-ai-training-led-paradigm/)
+10. [Hermes Agent 深度研究报告（中文）](https://www.zhangfeibiao.com/archives/Hermes-Agent)
