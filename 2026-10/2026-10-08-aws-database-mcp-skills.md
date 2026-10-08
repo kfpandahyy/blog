@@ -181,7 +181,67 @@ AWS 的客户一直在问同一个问题：怎么把现有数据库系统接进 
 
 ---
 
-## 附录：数据面 Server 全清单（截至 2026-10）
+## 附录
+
+### 附录 A：各 Server 功能点清单（工具级）
+
+**A.1 postgres-mcp-server / mysql-mcp-server（数据面主力）**
+
+- 发现：`sql_list_tables`、`sql_get_schema`
+- 生成：`nl2sql`（自然语言转 SQL，LLM provider 抽象，支持 Bedrock / LiteLLM）
+- 执行：`sql_run_query`
+- 业务层：`business_concepts`（业务术语 → 物理 schema 映射）
+- 上下文：`reset_context`（schema 上下文重置，防挤占窗口）
+- 安全件（随 Server 配置，非工具）：`pglast` 语义级只读解析（拒 `nextval()` / `pg_stat_reset()` / `pg_switch_wal()` 等伪装写操作）；`--privilege_check` 连接时角色校验（超级用户 / rds_superuser / BYPASSRLS 在 enforce 模式拒连）
+
+**A.2 Aurora DSQL MCP（极简范式）**
+
+- 工具仅三个：`get_schema`、`readonly_query`、`transact`
+- 写前静态检查：`dsql_lint`（DDL）
+- 配套 Skill（reference 按需加载）：DDL 迁移、OCC 乐观并发重试、多租户隔离、查询计划诊断
+
+**A.3 DynamoDB MCP（指导范式，prompt-as-tool）**
+
+- `dynamodb_data_modeling`：检索并返回建模专家 prompt（rule-based，零 LLM 调用）
+- `source_db_analyzer`：MySQL schema + Performance Schema → 访问模式提取 → DynamoDB 设计建议
+- 说明：2.0 起表管理类 CRUD 剥离至 aws-api-mcp-server
+
+**A.4 其余数据面 Server**
+
+| Server | 功能点 |
+|---|---|
+| RDS Oracle | 存量企业库接入，Secrets Manager 认证 |
+| RDS MSSQL | 微软生态接入，Data API 通道 |
+| DocumentDB | 文档模型操作 |
+| Neptune | openCypher / Gremlin 图查询 |
+| Keyspaces | Cassandra 宽列操作 |
+| Timestream InfluxDB | InfluxDB 协议时序操作 |
+| Redshift | 只读数仓查询 |
+| S3 Tables | 湖仓分析表 |
+| OpenSearch | 检索语义 |
+| ElastiCache / MemoryDB | 缓存运维诊断（内存、复制状态） |
+
+**A.5 RDS Management MCP（管理面，独立仓库）**
+
+- 集群：`CreateDBCluster`、`ModifyDBCluster`、`DeleteDBCluster`、`ChangeDBClusterStatus`（启停重启）、`FailoverDBCluster`（故障转移）
+- 快照与恢复：创建、删除、从快照恢复、PITR
+- 实例管理、参数组管理
+- 资源模板：`aws-rds://db-cluster`、`aws-rds://db-instance`（先看见资源再操作）
+- 安全件：`--readonly` 全局只读开关（默认值）
+
+**A.6 aws-api-mcp-server（通用执行层）**
+
+- AWS CLI 命令 → MCP 工具封装（兜底专用 Server 未覆盖的操作）
+- 只读模式、沙箱执行、CloudTrail 审计
+- `denyList` / `elicitList` 高危操作二次确认
+
+**A.7 打包托管层**
+
+- agent-plugins `databases-on-aws`：`/plugin install` 一条命令装齐 Skill + MCP + Hooks
+- agent-toolkit-for-aws `aws-database` Skill：description 写死"STOP——不要凭训练知识回答"；15+ 引擎子技能注册表意图匹配；`services.json` 知识卡片；`requirements.json` artifact 交接；Aurora PG Skill 内 20+ 子技能按需加载
+- AWS MCP Server 托管端点（2026 GA，免费）：文档检索 + API 调用 + 脚本执行 + 官方 Skills 四合一；IAM 上下文键区分人类与 Agent 身份；CloudTrail + CloudWatch 全审计；区域仅 us-east-1 / eu-central-1
+
+### 附录 B：数据面 Server 速查表（截至 2026-10）
 
 | 类别 | Server | 核心能力 |
 |---|---|---|
