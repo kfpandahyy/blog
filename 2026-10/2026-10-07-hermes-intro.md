@@ -257,6 +257,6 @@ ollama run nous-hermes2-pro  # 或从 HuggingFace 下载 GGUF
 
 6. Vector Culture: A Brief History of Agents — https://vectorculture.substack.com/p/a-brief-history-of-agents
 7. 新智元：10 人明星团队炼出首个微调 Llama 3.1 405B — https://m.thepaper.cn/newsDetail_forward_28422428
-8. AI2 Tülu 3 后训练论文（含与 Hermes 3 405B 对比）— arXiv:2411.15124
-9. SiliconANGLE：Paradigm 领投 Nous Research 5000 万美元 — https://www.siliconangle.com/2025/02/05/paradigm-leads-50m-round-decentralized-ai-project-nous-research/
+8. AI2 Tülu 3 后训练论文（含与 Hermes 3 405B 对比）— arXiv:2411.15124，https://arxiv.org/abs/2411.15124
+9. SiliconANGLE：Paradigm 领投 Nous Research 5000 万美元（2025-04-25）— https://siliconangle.com/2025/04/25/nous-research-raises-50m-decentralized-ai-training-led-paradigm/
 10. Hermes Agent 深度研究报告（中文）— https://www.zhangfeibiao.com/archives/Hermes-Agent

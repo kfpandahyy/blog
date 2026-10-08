@@ -241,7 +241,7 @@ if 拿不准 → 中间派，只把"出错代价最高的环节"显式化。
 2. Anthropic: Building Effective Agents（2024-12）— https://www.anthropic.com/engineering/building-effective-agents
 3. Anthropic: Effective harnesses for long-running agents — https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
 4. LangChain: Your harness, your memory（2026-04）— https://www.langchain.com/blog/your-harness-your-memory
-5. Mitchell Hashimoto: Harness engineering（2026-02）— https://mitchellh.com/writing
+5. Mitchell Hashimoto: Harness engineering（2026-02）— https://mitchellh.com/writing/my-ai-adoption-journey
 
 ### 二手（综述 / 解读 / 安全研究）
 
