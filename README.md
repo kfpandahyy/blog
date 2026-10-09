@@ -25,7 +25,7 @@ AI Agent 领域技术博客，按九大类组织。文章按月份归档（如 `
 | 1 模型与基座 | [Hermes 是什么：一个开源大模型系列的简史](./2026-10/2026-10-07-hermes-intro.md) | 2026-10-07 |
 | 2 Agent 工程 | [Agent Harness 是什么：给大模型装上"身体"的那层软件](./2026-10/2026-10-07-agent-harness.md)<br>[Agent Loop 调研：一段 while 循环里的全部工程学](./2026-10/2026-10-08-agent-loop.md) | 2026-10-07 / 2026-10-08 |
 | 3 框架与工具协议 | [Agent Skill 调研：给大模型装"程序性知识"的开放格式](./2026-10/2026-10-08-agent-skill.md)<br>[OpenClaw 调研：从一小时原型到基金会，多渠道 Agent 网关成了自托管基础设施](./2026-10/2026-10-08-openclaw.md)<br>[Hermes Agent 调研：会自己写技能的 agent，"越用越聪明"是不是噱头](./2026-10/2026-10-08-hermes-agent.md) | 2026-10-08 |
-| 4 上下文与记忆工程 | [本体与知识图谱调研：RAG 答不了"谁依赖谁"，答它靠图](./2026-10/2026-10-08-ontology-knowledge-graph.md)<br>[DBAIOps 论文精读：知识图谱能力如何被量化评测（VLDB 2026）](./2026-10/2026-10-09-dbaiops-paper.md)<br>[DBAIOps 代码仓考古：cfe9d30，论文背后的 7.6 万行工程底座](./2026-10/2026-10-09-dbaiops-repo.md)<br>[LLM Wiki：Karpathy 的"知识编译器"范式](./2026-10/2026-10-09-llm-wiki.md) | 2026-10-08 |
+| 4 上下文与记忆工程 | [本体与知识图谱调研：RAG 答不了"谁依赖谁"，答它靠图](./2026-10/2026-10-08-ontology-knowledge-graph.md)<br>[DBAIOps 论文精读：知识图谱能力如何被量化评测（VLDB 2026）](./2026-10/2026-10-09-dbaiops-paper.md)<br>[DBAIOps 代码仓考古：cfe9d30，论文背后的 7.6 万行工程底座](./2026-10/2026-10-09-dbaiops-repo.md)<br>[LLM Wiki：Karpathy 的"知识编译器"范式](./2026-10/2026-10-09-llm-wiki.md)<br>[WeKnora：RAG、Agent、Wiki 三模式一库的企业级知识平台](./2026-10/2026-10-09-weknora.md) | 2026-10-08 |
 | 9 业界情况调研 | [AWS 数据库 MCP 全景调研](./2026-10/2026-10-08-aws-database-mcp-skills.md) | 2026-10-08 |
 
 ---
