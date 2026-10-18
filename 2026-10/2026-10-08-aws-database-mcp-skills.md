@@ -119,7 +119,7 @@ AWS 的客户一直在问同一个问题：怎么把现有数据库系统接进 
   1. **嵌入 MCP Server 内部**：`aurora-dsql-mcp-server/skills/`，与工具同仓发行；
   2. **agent-plugins 插件化**：`databases-on-aws` = Skill + MCP + Hooks，一条 `/plugin install` 装齐；
   3. **agent-toolkit-for-aws 路由中枢**：`aws-database` Skill 是入口——description 写死"STOP——不要凭训练知识回答"，意图匹配到 15+ 引擎的子技能注册表 → 知识卡片（services.json 快速事实）→ `requirements.json` artifact 交接给 service skill（避免用户重复输入）→ Aurora PG Skill 内部还有 20+ 子技能按需加载。
-- **解剖**：路由 Skill 是渐进式披露的工程化样板——Agent 上下文里始终只有当前任务需要的知识。这也是本博客《Agent Skill 调研》里"描述即路由"原则的生产级实现。
+- **解剖**：路由 Skill 是渐进式披露的工程化样板——Agent 上下文里始终只有当前任务需要的知识。这也是 Skill 设计里"描述即路由"原则的生产级实现。
 - **安全模型**：托管版 **AWS MCP Server（2026 GA）**——单一端点（us-east-1 / eu-central-1），能力 = 文档检索 + API 调用 + 脚本执行 + 官方 Skills 四合一；**IAM 上下文键区分人类与 Agent 身份**，CloudTrail + CloudWatch 全审计，Server 本身免费。
 - **成熟度**：2026 年 GA 是标志性节点——从"运维一堆本地 Server"切换到"接一个端点"。
 

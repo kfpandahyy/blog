@@ -160,7 +160,7 @@ Skill 按存放位置分三级，统一按"是什么 / 何时用 / 示例 / 注�
 
 **分发渠道**：skills.sh（`npx skills add <owner/repo>` 一键装）、Anthropic 官方 skills 仓库（PDF/DOCX/XLSX/PPTX 参考实现）、发布伙伴目录（Canva、Stripe、Notion、Zapier）、GuildSkills（16 万+）。
 
-**本土关联**：Kimi K3 默认可读 SKILL.md；OpenClaw 完整实现 Skill 体系（本文写作流程本身由 Skill 驱动）；AWS agent-toolkit-for-aws 用 Skill 做数据库意图路由（见本博客《云数据库 MCP 全景调研》）。
+**本土关联**：Kimi K3 默认可读 SKILL.md；OpenClaw 完整实现 Skill 体系（本文写作流程本身由 Skill 驱动）；AWS agent-toolkit-for-aws 用 Skill 做数据库意图路由。
 
 ---
 
@@ -177,7 +177,7 @@ Skill 按存放位置分三级，统一按"是什么 / 何时用 / 示例 / 注�
 
 两者互补：MCP 给模型手，Skill 给模型流程。严肃 Agent 部署两个都用。
 
-**决策建议**：如果你的问题是"模型够不到我的系统"→ 先 MCP；如果是"模型够得到但总是做错"→ 上 Skill；两者都痛 → MCP 打底、Skill 编排，这也是 AWS、阿里云的共同终局（见本博客云厂调研篇）。
+**决策建议**：如果你的问题是"模型够不到我的系统"→ 先 MCP；如果是"模型够得到但总是做错"→ 上 Skill；两者都痛 → MCP 打底、Skill 编排——这也是 AWS、阿里云目前的共同终局。
 
 ### 自建 vs 采用第三方
 

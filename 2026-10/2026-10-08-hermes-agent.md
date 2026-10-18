@@ -5,7 +5,7 @@
 
 ---
 
-先澄清一个混淆：本文的 Hermes Agent 不是本博客《Hermes 是什么》里那个 Hermes 模型系列。两者同出 Nous Research——前者是模型基座，后者是跑在任何模型上的 agent 框架，共享品牌而已。调研中见到的"Hermes 跑 Hermes"（用 Hermes 模型驱动 Hermes Agent）正是这种套娃的产物。
+先澄清一个混淆：本文的 Hermes Agent 不是 Nous Research 那个同名的 Hermes 模型系列。两者同出一家——前者是模型基座，后者是跑在任何模型上的 agent 框架，共享品牌而已。调研中见到的"Hermes 跑 Hermes"（用 Hermes 模型驱动 Hermes Agent）正是这种套娃的产物。
 
 2026 年 2 月，agent 框架已经多到让人麻木：接 LLM、挂工具、编排流程，大同小异。Hermes Agent 的出场姿势不一样，README 就一句话："the only agent with a built-in learning loop"——唯一内置学习闭环的 agent。它声称自己会在干完活后复盘、把经验写成 Skill、越用越强。这个 claim 大到像噱头。本文的路线：先拆这个闭环到底由哪些机制组成（创建、改进、记忆、检索），再看它用什么约束防止闭环失控（GEPA 离线进化 + 人类 PR 闸门），最后与 OpenClaw 正面交锋给出选型判断。
 
@@ -62,7 +62,7 @@
 
 ### 4.1 运行时闭环（agent 活着的时候）
 
-- **触发**：复杂任务完成后（约 5 个以上工具调用）、发现非平凡工作流时、用户纠正或错误恢复后——agent 自动从轨迹中提取模式，创建可复用 Skill（agentskills.io 开放格式，与本博客《Agent Skill 调研》所述格式兼容，可被任何遵循该标准的宿主读取）。
+- **触发**：复杂任务完成后（约 5 个以上工具调用）、发现非平凡工作流时、用户纠正或错误恢复后——agent 自动从轨迹中提取模式，创建可复用 Skill（agentskills.io 开放格式，与社区通行的 Skill 标准兼容，可被任何遵循该标准的宿主读取）。
 - **改进**：Skill 在后续使用中持续被修订；`curator.py` 负责技能生命周期管理（创建、更新、退役）。
 - **持久化**：agent 被周期性"nudge"把重要知识写入记忆——不是被动等用户保存。
 - **回忆**：三层检索——SQLite + FTS5 全文本会话搜索（`hermes_state.py` SessionDB）、LLM 摘要辅助跨会话回忆、Honcho 方言式用户建模（dialectic user modeling，持续构建"你是谁"的画像）。

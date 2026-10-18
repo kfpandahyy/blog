@@ -22,7 +22,7 @@
 - **单次 LLM 调用**：一问一答，无环境交互，无自我检查。
 - **Workflow**：LLM 与工具沿**预定义代码路径**编排——prompt chaining、routing、parallelization 都是 workflow，路径由程序员写死，LLM 只在节点内决策。
 - **Agent（loop）**：LLM **动态指挥自己的执行过程与工具使用**，循环的路径由模型在运行中决定，程序只提供循环骨架与停止条件。
-- **多 agent**：多个 loop 的组合结构（orchestrator-workers / handoff），是本博客《多智能体协作》的范畴，不是本文。
+- **多 agent**：多个 loop 的组合结构（orchestrator-workers / handoff），属于多智能体编排的范畴，不是本文重点。
 
 一句话分界：**workflow 的图是代码画的，agent 的图是模型画的，loop 是图能自己长出来的那条回路。**
 
@@ -77,7 +77,7 @@
 
 ### 4.4 难点三：上下文腐化
 
-循环迭代越多，历史越长，早期信息越容易被稀释或挤出窗口——context rot。对策已成标准件： compaction 摘要（压缩旧消息腾窗口，OpenClaw 压缩前先 memory flush）、子 agent 隔离（把长支线丢给独立上下文，主循环只回收结论）、checkpoint 回滚（LangGraph 式状态快照）。**Atlan 的判断值得记住：生产失败多发生在感知与观察段（上下文工程），不在推理段**——这与本博客《上下文与记忆工程》的结论互相印证。
+循环迭代越多，历史越长，早期信息越容易被稀释或挤出窗口——context rot。对策已成标准件： compaction 摘要（压缩旧消息腾窗口，OpenClaw 压缩前先 memory flush）、子 agent 隔离（把长支线丢给独立上下文，主循环只回收结论）、checkpoint 回滚（LangGraph 式状态快照）。**Atlan 的判断值得记住：生产失败多发生在感知与观察段（上下文工程），不在推理段。**
 
 ### 4.5 难点四：成本与可观测
 
@@ -99,7 +99,7 @@
 
 - **LangGraph**：把 loop 建成显式状态图，节点是计算、边是路由（含条件边与循环回边），checkpoint 一等公民。可控性最强，图由开发者定义——严格说是"workflow 引擎支持 agent 式动态边"。
 - **OpenAI Agents SDK**：agent 作为循环实体，handoff 与 guardrail 内置，loop 对用户是隐式的——几行代码起一个会自己跑的 agent，黑盒程度也高。
-- **Claude Agent SDK / coding agent harness**（本博客《Agent Harness 调研》）：loop 与文件系统、终端、审批流深度耦合，单会话串行 + 工具白名单。
+- **Claude Agent SDK / coding agent harness**：loop 与文件系统、终端、审批流深度耦合，单会话串行 + 工具白名单。
 - **OpenClaw / Hermes Agent**（一手）：loop 之上加渠道接入、记忆文件、定时触发——loop 从"被调用的函数"变成"长驻服务"，2026 年自托管 agent 产品的共同形态。
 - **多 agent 编排**（manager / orchestrator-workers / handoff，Oracle 2026-03 梳理）：多个 loop 的拓扑组合。共识建议：单 loop 能解决的别上多 agent——每加一个 loop 就加一份复利错误与协调成本。
 

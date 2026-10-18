@@ -1,7 +1,7 @@
 # DBAIOps 代码仓考古：cfe9d30，论文背后的 7.6 万行工程底座
 
 > 仓库：github.com/OpenDataBox/DBAIOps，commit `cfe9d30`（2025-08-01，"init DBAIOps"，全仓唯一 commit）。
-> 姊妹篇：[DBAIOps 论文精读：知识图谱能力如何被量化评测](./2026-10-09-dbaiops-paper.md)。上篇读论文说了什么，这篇读代码实际给了什么。
+> 读法说明：DBAIOps 论文宣称的能力，这篇读代码验证实际给了什么。
 
 ## 一句话
 
@@ -75,7 +75,7 @@
 
 ## 四、两个被 master 分支弄丢的评测文件
 
-这个 commit 里有两个文件值得单拎出来，它们回答了上篇精读里"评测细节偏薄"的批评——细节其实开过源，只是后来丢了。
+这个 commit 里有两个文件值得单拎出来：论文正文对评测细节披露偏薄，细节其实开过源，只是后来丢了。
 
 **HEval_criteria.md**（论文引用、最终 404 的评分标准原文）：
 - 明确"语义覆盖 ground truth 根因"而非字符串匹配；
@@ -99,15 +99,14 @@
 - **采集合乎规范先行**：60 个脚本覆盖 25+ 种库，cib/metric/health 三类分离——没有这层，图谱和 LLM 都是空中楼阁。
 - **知识资产化的正确姿势**：Excel（人维护）→ 同步脚本 → 图库，带加密字段保护核心知识；新库接入=新增 Excel 行+一列标签，这个流程比"端到端 LLM 抽取"便宜一个数量级。
 - **参数模板矩阵直接可用**：按规格×形态组织 GUC 模板的设计，对任何做多实例数据库平台的人都是现成范式。
-- **评测三件套抄走**：HEval 门槛逻辑、相似度自证、考题不进题库（见上篇）。
+- **评测三件套抄走**：HEval 门槛逻辑、相似度自证、考题不进题库。
 - **红线**：别把内网 IP、密码、密钥 commit 进仓库——这个仓全犯了。
 
 ## 参考资料
 
 1. [DBAIOps 仓库（OpenDataBox），commit cfe9d30](https://github.com/OpenDataBox/DBAIOps/tree/cfe9d30f5e6c2b3a970d4c8d888b3f5a0476041f)——本文全部代码证据来源
 2. [DBAIOps 论文原文（PVLDB 19(6): 1319-1331，2026）](https://www.vldb.org/pvldb/vol19/p1319-zhou.pdf)——系统对应的学术论文
-3. [DBAIOps 论文精读（本博客，2026-10-09）](./2026-10-09-dbaiops-paper.md)——姊妹篇，评测方法详解
-4. [HEval_criteria.md（cfe9d30 版本内文件）](https://github.com/OpenDataBox/DBAIOps/blob/cfe9d30f5e6c2b3a970d4c8d888b3f5a0476041f/HEval_criteria.md)——人工评估评分标准原文；master 分支已丢失
+3. [HEval_criteria.md（cfe9d30 版本内文件）](https://github.com/OpenDataBox/DBAIOps/blob/cfe9d30f5e6c2b3a970d4c8d888b3f5a0476041f/HEval_criteria.md)——人工评估评分标准原文；master 分支已丢失
 5. [LLM_output_similarity.md（cfe9d30 版本内文件）](https://github.com/OpenDataBox/DBAIOps/blob/cfe9d30f5e6c2b3a970d4c8d888b3f5a0476041f/LLM_output_similarity.md)——LLM 输出相似度自证数据
 6. [Appendix_Diagnosis_Report.pdf（cfe9d30 版本内文件）](https://github.com/OpenDataBox/DBAIOps/blob/cfe9d30f5e6c2b3a970d4c8d888b3f5a0476041f/Appendix_Diagnosis_Report.pdf)——6 页诊断报告 case study（投稿版占位抬头）
 7. [佰晟智算完成千万元级天使轮融资（36氪，2025-12-10）](https://m.36kr.com/p/3589507644047625)——团队与"20 万条结构化运维知识"口径（融资稿，未经审计）

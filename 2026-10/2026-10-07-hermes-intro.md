@@ -38,7 +38,7 @@
 
 - **不是基座模型**：底座始终是别人的（LLaMA → Mistral → Llama 3.1 → Qwen3），Hermes 的价值在微调与后训练。
 - **不是 Hermès**：和奢侈品牌同词，纯属巧合。
-- **不是 Hermes Agent**：那是 Nous 后来做的 Agent 框架（属于 harness，见本博客《Agent Harness 是什么》），模型系列是另一回事。
+- **不是 Hermes Agent**：那是 Nous 后来做的 Agent 框架（属于 agent 脚手架/harness 一类），模型系列是另一回事。
 
 **与相邻路线辨析**：
 
@@ -209,7 +209,7 @@ ollama run nous-hermes2-pro  # 或从 HuggingFace 下载 GGUF
 ## 九、失败模式与坑
 
 1. **高可控 = 高 prompt 敏感**。怎么发现：同一任务换 system prompt 措辞，输出风格剧变甚至人格漂移。怎么绕：生产环境锁死 prompt 模板；把空 prompt 行为纳入测试集。
-2. **低拒答的安全责任转移**。Hermes 只保留极少数高危类别（未成年人伤害、人口贩卖、自伤）的拒绝逻辑。怎么发现：合规审查。怎么绕：对外产品必须自行加护栏层——harness 的 guardrails（见本博客《Agent Harness 是什么》），不能指望模型自觉。
+2. **低拒答的安全责任转移**。Hermes 只保留极少数高危类别（未成年人伤害、人口贩卖、自伤）的拒绝逻辑。怎么发现：合规审查。怎么绕：对外产品必须自行加护栏层——harness 的 guardrails 层，不能指望模型自觉。
 3. **被超越快**。怎么发现：发布后数月内被 Tülu 3、DeepSeek 等在单项超越。怎么绕：把 Hermes 当方法论来源，不当长期选型。
 4. **合成数据偏置遗传**。输出过度礼貌、风格趋同。怎么绕：做后处理与风格重校准；混合真实人类数据。
 
@@ -233,7 +233,7 @@ ollama run nous-hermes2-pro  # 或从 HuggingFace 下载 GGUF
 没有。名字撞车 Hermès，中文社区的"爱马仕"外号纯属玩笑，注意拼写也不同（Hermes vs Hermès）。
 
 **Q2：Hermes Agent 和 Hermes 模型是什么关系？**
-同一个团队的两条产品线：模型是大脑，Hermes Agent 是套在模型外面的 harness（脚手架）。类比本博客《Agent Harness 是什么》里的分层即可。
+同一个团队的两条产品线：模型是大脑，Hermes Agent 是套在模型外面的 harness（脚手架）——即承载模型的执行与交互框架，与模型本身是两个层面的东西。
 
 **Q3：现在做 Agent 还用 Hermes 2 Pro 吗？**
 模型本身老了，但它的协议设计和数据集仍在被继承。学协议、借数据集，不用模型。

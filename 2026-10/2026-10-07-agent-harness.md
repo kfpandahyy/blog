@@ -38,7 +38,7 @@ while not done and steps < MAX_STEPS:        # ① 循环与停止条件
 | MCP | 是 harness 用来接工具的标准协议之一，属于 harness 的一个部件 |
 | Agent 框架（LangGraph / Claude Agent SDK） | 是建造 harness 的半成品材料，不等于 harness 本身 |
 | Agent 产品（Claude Code / Cursor） | = harness + 模型 + 产品化界面 |
-| Prompt / Skill | 装进 harness 的知识与指令资产（见本博客《Agent Skill 调研》） |
+| Prompt / Skill | 装进 harness 的知识与指令资产 |
 
 **词源**（避免和亲戚搞混）：测试领域的 test harness（测试夹具）是祖爷爷；LLM 评测圈的 lm-evaluation-harness 是父辈；agent harness 是同一家族最新的用法——每个场景都指"让被执行对象能干活、且能被观察的那套架子"。
 
@@ -93,7 +93,7 @@ while not done and steps < MAX_STEPS:        # ① 循环与停止条件
 
 ### 4.2 工具调度（Tool Dispatch）
 
-把模型的"我想调用某工具"变成真实动作，结果回填。MCP 正在成为工具接入的标准协议——注意 MCP 规范自己写明：工具"代表任意代码执行"。设计决策：**为什么工具要走标准协议而不是私有适配**——harness 的可插拔性（模型可换、工具可换）来自接口标准化，这正是 MCP 一年被 40+ 产品采纳的原因（见本博客《云数据库 MCP 全景调研》）。
+把模型的"我想调用某工具"变成真实动作，结果回填。MCP 正在成为工具接入的标准协议——注意 MCP 规范自己写明：工具"代表任意代码执行"。设计决策：**为什么工具要走标准协议而不是私有适配**——harness 的可插拔性（模型可换、工具可换）来自接口标准化，这正是 MCP 快速成为工具接入标准协议的原因。
 
 ### 4.3 上下文管理（Context Management）
 

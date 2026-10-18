@@ -24,7 +24,7 @@
 ### 2.1 基本面
 
 - 仓库 `awslabs/mcp`，2025-03-21 创建，Apache-2.0，截至 2026-10 约 9.8k stars / 1.8k forks，是 AWS Labs 增长最快的项目之一。
-- **传输：仅 stdio**。2025-05-26 起全部移除 SSE 支持，正在向 Streamable HTTP 迁移——这与 MCP 协议本身的演进节奏一致（见本博客 2026-10-18《MCP 调研》）。
+- **传输：仅 stdio**。2025-05-26 起全部移除 SSE 支持，正在向 Streamable HTTP 迁移——与 MCP 协议本身的演进节奏一致（协议 2026-07 版核心已转向无状态、每请求自携带协商信息）。
 - **技术栈**：Python + FastMCP 框架，通过 `uvx` 一键运行，例如 `uvx awslabs.mysql-mcp-server@latest`。Cursor、VS Code、Kiro、Claude Code、Windsurf 都有对应的一键安装配置。
 - **官方已发出迁移信号**：README 顶部公告称 "Agent Toolkit for AWS 已上线，是 MCP servers、plugins、skills 的继任者"——增加了 IAM 条件键（区分 agent 操作与人类操作）、CloudWatch/CloudTrail 可见性、经过准确性评估的 skills。awslabs/mcp 继续维护但新重心在 Agent Toolkit。
 
@@ -94,7 +94,7 @@ AgentCore 是 AWS 的 agent 平台（2025 re:Invent 发布，现已含 12 个模
 
 ## 五、风险与注意事项
 
-1. **MCP 通用风险在本场景放大**：工具投毒、rug pull（见本博客《MCP 调研》第六章）对数据库 server 尤其危险——一个被污染的 Redshift server 等于数据仓库凭据。pin 版本、审查 description、生产只接内部包装的 server。
+1. **MCP 通用风险在本场景放大**：协议层面的已知攻击（工具描述投毒、rug pull——恶意 server 在工具列表落地后替换实现）对数据库 server 尤其危险——一个被污染的 Redshift server 等于数据仓库凭据。pin 版本、审查 description、生产只接内部包装的 server。
 2. **开源路线的凭证断层**：stdio server 用你本机的凭证执行，公司审计视角里这些操作"不是人就是 agent"，Agent Toolkit 的 IAM 条件键正是补这个洞——过渡期建议显式配置。
 3. **写能力的默认开放问题**：多数数据面 server 未默认只读，agent 拿到 write 工具后的破坏半径取决于你的 IAM 粒度。最小权限原则：给 server 专用 IAM 角色，只授目标库必要动作。
 4. **托管路线的锁定**：Gateway 的 OpenAPI 转换是好用，但工具目录、Policy、Identity 都在 AgentCore 内沉淀，跨云迁移成本随使用深度上升。
@@ -121,4 +121,3 @@ AgentCore 是 AWS 的 agent 平台（2025 re:Invent 发布，现已含 12 个模
 - [AWS 文档：What is Amazon Bedrock AgentCore（12 个模块服务全景：Gateway/Registry/Policy/Identity/Payments 等，2026-10 抓取）](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html)
 - [AWS 文档：AgentCore Gateway（OpenAPI/Smithy/Lambda 转 MCP、双向认证、语义工具选择、目标类型，2026-10 抓取）](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html)
 - [GitHub API: awslabs/mcp 仓库元数据（9.8k stars、2025-03-21 创建、Apache-2.0，2026-10-18 查询）](https://api.github.com/repos/awslabs/mcp)
-- [本博客：《MCP 调研：一个 18 个月大的协议，为什么把有状态握手整个删掉了》（2026-10-18，协议背景与安全争议）](https://github.com/kfpandahyy/blog/blob/main/2026-10/2026-10-18-mcp.md)
