@@ -89,9 +89,39 @@
 | [`rds-management`](https://github.com/aws-rds-mcp/rds-management) | 2025-06-20 | 2025-07-29 | 控制面 CRUD | 包名 `awslabs.rds-management-mcp-server`,**未上 PyPI** |
 | [`rds-mcp`](https://github.com/aws-rds-mcp/rds-mcp) | 2025-07-14 | 2025-07-22 | awslabs/mcp 的 fork(+29/-1305),内含**合并版** `src/rds-control-plane-mcp-server` | 目标包名 `awslabs.rds-control-plane-mcp-server` |
 
-**rds-monitoring(只读监控)**:6 个工具--DescribeRDSEvents(事件)、DescribeRDSPerformanceMetrics(CloudWatch 指标)、DescribeRDSRecommendations(含 Trusted Advisor 检查)、FindSlowQueriesAndWaitEvents(Performance Insights 慢查询/等待事件)、ReadDBLogFiles(日志读取过滤分页)、CreatePerformanceReport(性能报告)。资源模板覆盖 cluster/instance 列表与详情、日志、性能报告、cloudwatch_metrics、metrics-guide。README 明确"**只读,不含任何管理/修改能力**",并给出最小 IAM 清单(rds:Describe*、pi:*、cloudwatch:GetMetricStatistics、support:DescribeTrustedAdvisorChecks)。
+**rds-monitoring（只读监控，最后活动 2025-08-06）——以代码为准的完整清单**：
 
-**rds-management(控制面 CRUD)**:22 个工具--集群 10 个(Create/Modify/Delete/ChangeDBClusterStatus 启停重启/Failover/CreateDBClusterSnapshot/DeleteDBClusterSnapshot/RestoreDBClusterFromSnapshot/RestoreDBClusterToPointInTime/DescribeDBClusters)、实例 5 个(Create/Modify/Delete/ManageDBInstanceStatus/DescribeDBInstances)、参数组 8 个(集群/实例各 4 个:Create/Modify/Reset/Describe)。资源模板:db-cluster、db-cluster/{id}、db-instance、db-instance/{id}。CLI 参数:`--readonly/--no-readonly`、`--max-items`、`--port`、`--region`、`--profile`。**从源码运行**:`uv --directory /path/to/rds-management run main.py`(可带 `--readonly`),也提供 Dockerfile。
+工具 6 个：
+
+| 工具 | 数据源 | 作用 |
+|---|---|---|
+| `DescribeRDSEvents` | RDS Events | 实例/集群事件（可用区故障、维护、参数变更等） |
+| `DescribeRDSPerformanceMetrics` | CloudWatch `get_metric_data` | 性能指标 |
+| `DescribeRDSRecommendations` | RDS Recommendations + Trusted Advisor | 优化建议 |
+| `FindSlowQueriesAndWaitEvents` | Performance Insights | 慢查询与等待事件分析 |
+| `ReadDBLogFiles` | RDS 日志 | 日志读取、过滤、分页 |
+| `CreatePerformanceReport` | PI + CloudWatch | 生成性能报告 |
+
+资源模板 9 个（对外只读接口，`aws-rds://` 协议）：`db-cluster`、`db-cluster/{cluster_id}`、`db-instance`、`db-instance/{instance_id}`、`db-instance/{dbi}/log`、`db-instance/{dbi_resource_id}/performance_report`（+ `/{report_id}` 读单份）、`{resource_type}/{resource_id}/cloudwatch_metrics`、`metrics_guide`。
+
+运行面：CLI 参数 `--port`（默认 8888）、`--max-items`、`--readonly/--no-readonly`、`--register-resources-as-tools`；默认 streamable HTTP。README 明确“**只读，不含任何管理/修改能力**”，给出最小 IAM 清单（rds:Describe*、pi:*、cloudwatch:GetMetricStatistics、support:DescribeTrustedAdvisorChecks）。两个值得抄的机制：**`--register-resources-as-tools`**——资源可整体降级注册为 tool，兼容不支持 resource 的客户端；内置 **rate_limit 装饰器**防 API 刷爆。
+
+**rds-management（控制面 CRUD，最后活动 2025-07-29）——以代码为准的完整清单**：
+
+工具 22 个（注意：README 声称实例参数组可改，代码里实例参数组**只读**）：
+
+| 域 | 工具 | 说明 |
+|---|---|---|
+| 集群（10） | `CreateDBCluster` `ModifyDBCluster` `DeleteDBCluster` `DescribeDBClusters` | CRUD + 查询 |
+| | `ChangeDBClusterStatus` `FailoverDBCluster` | 启/停/重启、故障转移 |
+| | `CreateDBClusterSnapshot` `DeleteDBClusterSnapshot` `RestoreDBClusterFromSnapshot` `RestoreDBClusterToPointInTime` | 快照与恢复（PITR 在 restore_snapshot.py 内注册） |
+| 实例（5） | `CreateDBInstance` `ModifyDBInstance` `DeleteDBInstance` `DescribeDBInstances` `ChangeDBInstanceStatus` | README 写的 ManageDBInstanceStatus 实为 ChangeDBInstanceStatus |
+| 参数组（7） | `CreateDBClusterParameterGroup` `ModifyDBClusterParameterGroup` `ResetDBClusterParameterGroup` | 写操作仅集群级 |
+| | `DescribeDBClusterParamGroups` `DescribeDBInstanceParamGroups` `DescribeDBClusterParameters` `DescribeDBInstanceParameters` | 集群/实例级均可查 |
+
+资源模板 10 个（README 只写了 4 个，代码更全）：`db-cluster`、`db-cluster/{cluster_id}`、`db-cluster/backups`、`db-cluster/{cluster_id}/backups`、`db-instance`、`db-instance/{instance_id}`、`db-instance/backups`、`db-instance/{instance_id}/backups`、`db-cluster/parameter-groups`、`db-cluster/parameter-groups/{name}/parameters`。
+
+运行面：CLI `--port`（默认 8888）、`--max-items`、`--readonly/--no-readonly`、`--region`、`--profile`；默认 streamable HTTP，提供 Dockerfile。安全三板斧用装饰器实现：`readonly_check`（只读模式拦写操作）、`require_confirmation`（高风险操作多步确认，对应 RFC #617 的确认 token 设计）、`handle_exceptions`。**从源码运行**：`uv --directory /path/to/rds-management run main.py`（可带 `--readonly`）。
 
 **rds-mcp fork 里的 rds-control-plane-mcp-server(合并版)**:工具是前两者的并集--集群/实例 CRUD + ReadDBLogFiles + CreatePerformanceReport + DescribeRDSEvents。组织 profile 页([.github](https://github.com/aws-rds-mcp/.github))已经按"RDS Control Plane MCP Server"的统一品牌来写,给出的安装示例是 docker 运行 `awslabs/rds-control-plane-mcp-server:latest`,带 `--readonly`、`--cloudwatch` 等参数,并列出安全特性:IAM 控权、只读模式、破坏性操作影响警告、创建资源自动打标签。署名与 RFC 一致(Grace Lee、Jonathan Manuel,mentor Runzhuo Li,manager Mandy Bitar)。
 
@@ -99,32 +129,32 @@
 - **未并入 awslabs/mcp**:`src/rds-control-plane-mcp-server` 在主仓 404,根 README 0 提及,server-cards.json 无条目;
 - **未发 PyPI**:`awslabs.rds-control-plane-mcp-server` / `awslabs.rds-management-mcp-server` / `awslabs.rds-monitoring-mcp-server` 均 404;DockerHub 公开镜像亦未能验证到;
 - **组织整体停更**:三个仓库最后活动停在 2025-07-22 ~ 2025-08-06;
-- 结论:它要么是在 Agent Toolkit 转型期被搁置,要么未来以 Agent Toolkit 形态重新发布。**今天是"未 GA 的团队仓库"状态**--要用只能 clone 源码跑,生产接入前 pin commit、自审代码、配最小 IAM。它的设计文档（RFC #617）和代码仍是理解“控制面 MCP 该怎么做”的最佳样本。
+- 结论:它要么是在 Agent Toolkit 转型期被搁置,要么未来以 Agent Toolkit 形态重新发布。**今天是"未 GA 的团队仓库"状态**--要用只能 clone 源码跑,生产接入前 pin commit、自审代码、配最小 IAM。它的设计文档(RFC #617)和代码仍是理解"控制面 MCP 该怎么做"的最佳样本。
 
-### 2.5 数据面解剖：postgres-mcp-server 的工具箱
+### 2.5 数据面解剖:postgres-mcp-server 的工具箱
 
-以 Aurora PostgreSQL server 为样本（`src/postgres-mcp-server`，2026-10-19 的 main），数据面 server 的工具面比想象中小——**7 个工具，两类职责**：
+以 Aurora PostgreSQL server 为样本(`src/postgres-mcp-server`,2026-10-19 的 main),数据面 server 的工具面比想象中小--**7 个工具,两类职责**:
 
 | 工具 | 作用 |
 |---|---|
-| `run_query` | 执行 SQL 返回行结果，支持参数化查询 |
-| `get_table_schema` | 取表结构：列名、数据类型、列注释 |
+| `run_query` | 执行 SQL 返回行结果,支持参数化查询 |
+| `get_table_schema` | 取表结构:列名、数据类型、列注释 |
 | `connect_to_database` | 建立连接并缓存在 server 内部 |
 | `is_database_connected` | 检查连接是否已建立 |
 | `get_database_connection_info` | 列出所有已缓存连接 |
-| `create_cluster` | 创建 Aurora PostgreSQL 集群（serverless v2 或 express 配置） |
-| `get_job_status` | 轮询后台任务状态（建集群是异步长任务） |
+| `create_cluster` | 创建 Aurora PostgreSQL 集群(serverless v2 或 express 配置) |
+| `get_job_status` | 轮询后台任务状态(建集群是异步长任务) |
 
-几个值得抄的设计：
+几个值得抄的设计:
 
-- **连接方式三选一**：`rdsapi`（RDS Data API，仅 APG）、`pgwire`（直连，APG/RPG 均可）、`pgwire_iam`（IAM 认证直连，仅 APG）。server 同时缓存多 endpoint 连接，靠 LLM 在提示里声明式切换，而不是每查一次传一串连接参数。
-- **`run_query` 的 SQL 策略护栏**：基于 pglast 解析器做白盒判定——只读模式拒绝写语句；解析失败、超大输入、多语句提交一律 fail-closed。README 自己承认 `--allow_write_query` 的只读 enforcement 是 best-effort，所以有函数级黑白名单兜底：`nextval()`/`setval()`/`pg_stat_reset*()`/`cron.schedule()` 拒绝，`currval()`/`pg_prewarm()` 放行。
-- **`create_cluster` 一条龙**：建 serverless v2 集群后自动给当前用户配 IAM 策略、建好连接缓存；express 模式强制 IAM。因为建集群耗时，实际跑后台 worker，用 `get_job_status` 轮询。这把“数据面 server”的边界扩到了控制面，是 awslabs/mcp 里少数自带建资源能力的数据库 server。
-- **直连强制 TLS**，默认 `verify-full`；另有最小权限护栏 `--privilege_check`（检测到 superuser/rds_superuser/BYPASSRLS 角色时 warn 或 enforce 拒绝）。
+- **连接方式三选一**:`rdsapi`(RDS Data API,仅 APG)、`pgwire`(直连,APG/RPG 均可)、`pgwire_iam`(IAM 认证直连,仅 APG)。server 同时缓存多 endpoint 连接,靠 LLM 在提示里声明式切换,而不是每查一次传一串连接参数。
+- **`run_query` 的 SQL 策略护栏**:基于 pglast 解析器做白盒判定--只读模式拒绝写语句;解析失败、超大输入、多语句提交一律 fail-closed。README 自己承认 `--allow_write_query` 的只读 enforcement 是 best-effort,所以有函数级黑白名单兜底:`nextval()`/`setval()`/`pg_stat_reset*()`/`cron.schedule()` 拒绝,`currval()`/`pg_prewarm()` 放行。
+- **`create_cluster` 一条龙**:建 serverless v2 集群后自动给当前用户配 IAM 策略、建好连接缓存;express 模式强制 IAM。因为建集群耗时,实际跑后台 worker,用 `get_job_status` 轮询。这把"数据面 server"的边界扩到了控制面,是 awslabs/mcp 里少数自带建资源能力的数据库 server。
+- **直连强制 TLS**,默认 `verify-full`;另有最小权限护栏 `--privilege_check`(检测到 superuser/rds_superuser/BYPASSRLS 角色时 warn 或 enforce 拒绝)。
 
-一句话：数据面靠 `run_query` + `get_table_schema` 两个工具打天下，其余五个管连接生命周期和建集群。
+一句话:数据面靠 `run_query` + `get_table_schema` 两个工具打天下,其余五个管连接生命周期和建集群。
 
-## 三、托管路线：Bedrock AgentCore 栈
+## 三、托管路线:Bedrock AgentCore 栈
 
 AgentCore 是 AWS 的 agent 平台(2025 re:Invent 发布,现已含 12 个模块服务),与"数据库 MCP"直接相关的有五个:
 
@@ -182,8 +212,8 @@ AgentCore 是 AWS 的 agent 平台(2025 re:Invent 发布,现已含 12 个模块�
 ## 参考资料
 
 - [GitHub: awslabs/mcp(开源 server 全清单、stdio 传输说明、SSE 移除公告、Agent Toolkit 继任者提示,2026-10-19 抓取)](https://github.com/awslabs/mcp)
-- [GitHub: awslabs/mcp src/postgres-mcp-server（数据面工具箱解剖：7 工具、SQL 护栏、连接三模式，2026-10-19 核对）](https://github.com/awslabs/mcp/tree/main/src/postgres-mcp-server)
-- [GitHub: awslabs/mcp src/mssql-mcp-server（认证方式以 src README 为准，2026-10-19 核对）](https://github.com/awslabs/mcp/tree/main/src/mssql-mcp-server)
+- [GitHub: awslabs/mcp src/postgres-mcp-server(数据面工具箱解剖:7 工具、SQL 护栏、连接三模式,2026-10-19 核对)](https://github.com/awslabs/mcp/tree/main/src/postgres-mcp-server)
+- [GitHub: awslabs/mcp src/mssql-mcp-server(认证方式以 src README 为准,2026-10-19 核对)](https://github.com/awslabs/mcp/tree/main/src/mssql-mcp-server)
 - [GitHub: aws-rds-mcp/rds-management(RDS 控制面 CRUD,22 工具,2026-10-19 抓取)](https://github.com/aws-rds-mcp/rds-management)
 - [GitHub: aws-rds-mcp/rds-monitoring(RDS 只读监控,6 工具,2026-10-19 抓取)](https://github.com/aws-rds-mcp/rds-monitoring)
 - [GitHub: aws-rds-mcp/rds-mcp(awslabs/mcp fork,内含合并版 rds-control-plane-mcp-server,2026-10-19 核对)](https://github.com/aws-rds-mcp/rds-mcp)
