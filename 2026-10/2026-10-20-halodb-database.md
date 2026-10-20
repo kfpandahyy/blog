@@ -1,141 +1,126 @@
-# 羲和 HaloDB 调研：给 PostgreSQL 装上 Oracle/MySQL 的"协议外壳"
+# 羲和 HaloDB 调研：功能全景、优势拆解与主打场景
 
-> 一句话结论：HaloDB（羲和数据库）是杭州易景数通基于 PostgreSQL 内核做的国产商业数据库，核心卖点是用"协议级兼容"承接 Oracle/MySQL 存量应用的信创迁移；其兼容层以开源项目 openHalo 的形式部分放出。技术路线与瀚高 IvorySQL 同类，差异在"一套内核、三种协议、按配置切换"的产品化包装。
+> 一句话结论：HaloDB 是杭州易景数通基于 PostgreSQL 内核的国产商业数据库，主打"一个内核、三种兼容模式（Oracle/MySQL/PG）"的协议级迁移替代，功能纵深集中在兼容层（语法/函数/视图/系统包/过程语言五层清单），配合 MGR 分组复制等高可用组件，主攻信创场景的存量数据库平替。同类对比中，它与瀚高 IvorySQL 路线最近，差异化在多模式合一与税务、金融的头部落地。
 
 **TL;DR**
-- HaloDB = PG 内核 + E5/MMC 多模式兼容引擎（Oracle/MySQL/PG 三种兼容模式，配置切换）+ MGR 分组复制/GDD/DLB/HDS 高可用组件，商业 license 授权（绑定硬件指纹）
-- 开源面：**openHalo**（`HaloTech-Co-Ltd/openHalo`，GPL-3.0，C 语言，415 stars，2025-03 创建，2026-07 仍活跃）——PG 直接监听 MySQL 协议（3306），`CREATE EXTENSION aux_mysql` 即启用
-- 已实现路径很清晰：PG fork → 双监听（5432 + 3306）→ MySQL 方言解析（二次解析）→ 类型/系统目录/函数映射 → `mysql_native_password` 认证
-- 关键判断：**兼容是真的，但"零修改迁移"需按场景打折**——MySQL 模式语义差异（db=schema、用户体系分离）意味着复杂应用仍要测试；性能宣称（比 Oracle 优、比 MySQL 快）目前只有官方案例，缺独立基准
-- 注意与 yahoo/HaloDB（2018 年开源的 Java 嵌入式 KV 引擎）完全是两个东西，同名而已
+- 底座 PG 深度 fork，实例级参数 `database_compat_mode` 切换 oracle/mysql/postgresql 三种模式；参数枚举里还留了 **sybase、sqlserver** 占位——路线图信号
+- 兼容层有五层实物：语法（Oracle 27+ 项、MySQL 15+ 项清单见正文）、函数、数据字典视图（10 个 Oracle 视图）、系统包（9 个 DBMS_* / UTL_* 包）、过程语言（专用扩展 `plorasql` 跑 PL/SQL）
+- 高可用组件四件套：MGR 分组复制、GDD 跨地域、DLB 负载均衡、HDS 分片，宣称 RPO=0 / RTO<30s
+- 优势是结构性的：协议级兼容（驱动零替换）、PG 生态插件红利、运维命令零学习成本；短板是分布式组件无公开细节、性能宣称缺独立基准、公司信息不透明
+- 主打场景很明确：税务/金融/政务的 Oracle 与 MySQL 存量迁移，不是互联网高并发弹性场景
 
-## 一、先分清两个 HaloDB
+## 一、产品速览
 
-这个名字有歧义，搜索时容易串：
+| 项 | 内容 |
+|---|---|
+| 出品 | 杭州易景数通科技有限公司（Halo Tech Co., Ltd.），halodbtech.com |
+| 底座 | PostgreSQL 深度 fork（Halo14，实测安装包 `psql 1.0.14.12`），官网已预告 v2.0"内生智能" |
+| 形态 | 闭源商业包（标准/企业/专业/开发版），license.lic 绑定硬件指纹（MAC/IP/CPU 序列号/主板序列号），可设有效期与最大并发数 |
+| 协议 | PG 5432/1921 + MySQL 3306 双监听，可伪装版本应答（如 `8.0.21-log`） |
+| 开源面 | openHalo（MySQL 兼容层，GPL-3.0，415 stars）+ HMT 迁移工具 |
+| 资质 | 2026-09-20 通过安全可靠测评（2026 年第 3 号公告）；工信部信创产品图谱；麒麟/统信/鲲鹏/飞腾/海光等互认证 |
+| 标杆 | 国家税务总局某核心系统：158 个复杂场景零修改通过（官方口径） |
 
-| | 羲和 HaloDB（本文） | yahoo/HaloDB |
+注意与 yahoo/HaloDB（2018 年开源的 Java 嵌入式 KV 引擎，已停更）同名异物，本文不讨论。
+
+## 二、功能全景梳理
+
+### 2.1 多模式兼容引擎（核心资产）
+
+三层机制：双监听（协议层）→ 二次解析 `standard_parserengine_auxiliary`（编译层旁路，不重写 PG 主解析器）→ 扩展加载（执行层，`create extension aux_oracle/aux_mysql cascade`）。
+
+**Oracle 模式兼容清单**（据 2024-05 社区实测文章逐条验证，部分列表）：
+
+- 语法层 27 项：连接符 `||`、带别名 UPDATE、匿名子查询、窗口函数 DISTINCT、DUAL 伪表、SYSDATE/SYSTIMESTAMP、ROWNUM、ROWID、MINUS 集合运算、DECODE（不限参数）、DBLINK、Oracle 数值格式输出、VARCHAR2/NUMBER/CLOB/BLOB 类型族、START WITH/CONNECT BY 层次查询、IN 特殊语法、Oracle 日期类型及运算、LISTAGG/WM_CONCAT、HAVING 与 GROUP BY 任意顺序、NULL 与空串等价、Oracle 序列取值语法、ORDER BY 用列别名、TABLE 函数、MERGE INTO、WITHIN GROUP、Q' 转义、NLS_DATE_FORMAT 参数、Oracle 格式 PROCEDURE/FUNCTION/PACKAGE 创建语法
+- 数据字典视图 10 个：DBA_SEGMENTS、PRODUCT_COMPONENT_VERSION、USER_CON_COLUMNS、USER_CONSTRAINTS、USER_IND_COLUMNS、USER_OBJECTS、USER_PROCEDURES、USER_SOURCE、USER_TAB_COLUMNS、USER_TABLES
+- 系统包 9 个：DBMS_ALERT、DBMS_ASSERT、DBMS_OBFUSCATION_TOOLKIT、DBMS_OUTPUT、DBMS_PIPE、DBMS_RANDOM、DBMS_UTILITY、UTL_FILE、UTL_I18N
+- 过程语言：**plorasql** 扩展（"Oracle Compatible SQL (PL/SQL) procedural language"）——这是 Oracle 迁移最关键的一层，绝大多数"PG 系兼容库"死在存储过程上，HaloDB 单独做了过程语言扩展
+- 扩展组合实测：aux_init + aux_oracle(1.8) + plorasql + plpgsql + pgcrypto
+
+**MySQL 模式兼容清单**：MySQL 协议直连（mysql CLI 即可登录）、基本数据类型、引号规则、REPLACE INTO、INSERT IGNORE、ON DUPLICATE KEY UPDATE、INSERT..VALUE、LIMIT 家族（含 UPDATE/DELETE..ORDER BY..LIMIT）、ORDER BY 指定列序、SET/ENUM 类型、用户变量。配套语义映射：MySQL 的 database = halo0root 下的 schema；`password_encryption='mysql_native_password'`；用户分两套——MySQL 用户只能走 3306 且官方建议仅用于 DML，权限仍收在 PG role 体系。
+
+**模式与路线图**：`database_compat_mode` 枚举实测含 postgresql/oracle/mysql/**sybase/sqlserver**（后两者尚未实现，见 2026-05 墨天轮体验文章），即团队规划是"一套框架吃遍主流商业库迁移"。
+
+### 2.2 性能特性（官方口径，未见独立基准）
+
+复杂 SQL 优化、过程语言（PL/SQL）执行优化、智能缓存、向量化执行，宣称综合性能比同类产品高 50%+。官网配置样例出现 `halodb.auto_index`（自动索引）、`halodb.ai_optimizer`（AI 优化器）——v2.0"内生智能"的方向，AI 与查询优化融合。
+
+### 2.3 高可用与分布式
+
+| 组件 | 官方功能 | 可得信息 |
 |---|---|---|
-| 出品 | 杭州易景数通科技 | Yahoo/Oath（Arjun Mannaly） |
-| 定位 | 国产商业关系型数据库（信创） | Java 嵌入式 KV 存储引擎 |
-| 底座 | PostgreSQL 内核 | 自研 LSM 变体（内存哈希索引 + append-only log） |
-| 协议 | PG/Oracle/MySQL 多协议 | 嵌入式库，无协议 |
-| 状态 | 商业在售，v2.0 预告中 | 2018 年开源，528 stars，2023 年后停更 |
-| 官网 | halodbtech.com / openhalo.org | github.com/yahoo/HaloDB |
+| MGR 分组复制 | 同步分组复制，异地容灾 | 实现 RPO=0 的主体；细节未公开 |
+| GDD | 跨地域分布部署 | 多机房能力，细节未公开 |
+| DLB | 负载均衡 | 连接调度 |
+| HDS | 数据分片 | 水平扩展；分片事务/一致性协议无公开资料 |
 
-下文只讨论前者。
+宣称 RPO=0、RTO<30s。注意这四件只在商业版；开源 openHalo 不含。
 
-## 二、公司与产品定位
+### 2.4 安全与运维
 
-**公司**：杭州易景数通科技有限公司（Halo Tech Co., Ltd.），国家高新技术企业、工信部信创工委会会员单位、数据库标准工作组成员单位。融资与规模信息未公开。
+安全模块提供认证/授权/用户管理；官网持续发布关键补丁公告（2023-12、2024-06、2025-04），修复项清一色是上游 PG CVE 跟随（CVE-2024-4317、CVE-2024-0985、CVE-2025-1094、CVE-2024-10976、pg_signal_backend 等）——既是 rebase 机制运转的证据，也意味着**安全水位线 = PG 社区水位线**。运维面刻意对齐 PG：pg_ctl/initdb/psql/diag 日志全套沿用，默认库 halo0root，学习成本近零。
 
-**资质（截至 2026-10-20 官网口径）**：
-- 羲和通用数据库系统软件 V1.0 于 2026-09-20 通过中国信息安全测评中心与国家保密科技测评中心的"安全可靠测评"（2026 年第 3 号公告）——这是信创采购的硬门槛
-- 入选工信部信创产品图谱；与麒麟、统信、中科方德、东方通、宝兰德、鲲鹏、飞腾、兆芯、海光等完成互认证
-- 版本体系：Halo14（1.0.14.x，2024 年安装包实测 `psql (1.0.14.12)`）为当前主售版本，官网已挂"Halo Database v2.0 即将发布"；分标准版/企业版/专业版/开发版
+### 2.5 工具链与生态
 
-**目标客户与打法**：金融、税务、政务等信创替代场景。标杆案例是**国家税务总局某核心业务系统**：宣称 158 个复杂场景全部通过、应用代码零修改、同 Intel 平台 80% 场景性能优于 Oracle、飞腾平台部分场景 2-3 倍。这是典型的"Oracle 平替"叙事，同赛道对手是达梦、人大金仓、OceanBase、TiDB、PolarDB、YashanDB 以及同样是"PG 套兼容壳"的瀚高 IvorySQL。
+- HMT：开源迁移工具（`HaloLab001/hmt-web`），自动化 schema + data 迁移
+- openHalo：MySQL 兼容层开源版，415 stars，2026-07 仍活跃，Discord 社区、北大研究生课程入驻
+- PG 插件生态：内核是 PG，PostGIS 等社区插件理论上可直接用（社区实测文章明确点出这是相对自研内核库的潜在优势）
+- 安装包自带 Oracle instantclient（`product/instantclient_12_2`），兼容层与官方客户端互验
 
-## 三、技术架构：兼容引擎怎么实现的
+## 三、优势拆解（结构性，不是宣传语）
 
-官方话术是"E5 引擎 + MMC 多模式兼容"，拆解到可验证的层面，实现路径是标准的 PG 深度 fork 四件套：
+1. **协议级兼容 vs 语法级兼容**。多数国产库的"兼容"止于 SQL 方言翻译，应用驱动、连接池、监控探针都要换。HaloDB 让 Oracle OCI/JDBC、MySQL 驱动直接连，迁移改造成本从"应用层"压到"配置层"——这是"98% 代码减少"宣称的结构性来源，可信度高于同类宣传。
+2. **一个内核三种模式，实例级切换**。同一集群可按库选择模式，迁移期新旧应用混跑、`database_compat_mode` 切回验证，回滚成本低。对比"一类负载一套专用库"的方案，运维面收敛。
+3. **PL/SQL 过程语言是深水区能力**。`plorasql` 独立扩展 + 9 个 DBMS/UTL 系统包 + 10 个数据字典视图，覆盖的是金融核心库存量过程代码——这类代码往往占迁移工作量的大头，也是"零修改"案例（税务局 158 场景）能成立的技术前提。
+4. **PG 生态红利**。深度 fork 而非自研：内核持续吸收社区特性，插件体系可扩展，DBA 人才市场现成，CVE 跟随修复。代价是每次 PG 大版本 rebase 的兼容层维护成本。
+5. **信创资质完整**。安全可靠测评（2026-09）+ 信创图谱 + 全栈互认证，政企采购的硬性门槛已清。
 
-**1. 双监听（协议适配层）**
-- 主端口走 PG 协议（默认 1921），MySQL 模式开启 `second_listener_on` + `second_port = 3306`（openHalo 里参数名是 `mysql.listener_on` / `mysql.port`）
-- MySQL 客户端可直连，且能伪装版本应答：`mysql.halo_mysql_version = '8.0.21-log'`，连 `SHOW VARIABLES` 类的兼容都做了
-- 字符序支持 `mysql.ci_collation`（大小写不敏感）
+## 四、主打场景
 
-**2. 方言解析（编译层）**
-- 参数 `database_compat_mode = 'postgresql' | 'mysql' | 'oracle'`，实例级切换三种模式
-- `standard_parserengine_auxiliary = 'on'` 即"二次解析"：PG 原生解析器走不通的方言语句，进入辅助解析引擎再翻译一次。这是兼容层的关键设计——不重写主解析器，而是挂一个旁路
-- MySQL 模式的能力清单（2024-05 社区实测）：REPLACE INTO、INSERT IGNORE、ON DUPLICATE KEY UPDATE、LIMIT 语法族、SET/ENUM 类型、用户变量等；Oracle 模式覆盖 date 类型映射（`oracle.use_datetime_as_date`）、`transform_null_equals`（`=` 判 NULL）等语义差异点
+**场景一：Oracle 存量平替（核心场景）**。税务、金融、政务核心系统。适配逻辑：PL/SQL 存量代码靠 plorasql + 系统包；应用连接靠协议兼容；跑在飞腾/鲲鹏上还有国产芯片加成（官方称飞腾平台部分场景 2-3 倍于 Oracle）。典型案例即国家税务总局。这是 HaloDB 资源的绝对重心。
 
-**3. 系统目录与对象映射（执行层）**
-- MySQL 模式下"database 即 schema"：MySQL 客户端看到的每个 db，实际是 `halo0root` 库下的一个 schema——这是 PG 内核做多协议的天然映射方案（AntDB、TBase 早期也这么干）
-- `CREATE EXTENSION aux_mysql` / `aux_oracle`（cascade）：兼容能力以扩展形式加载，插件式内核架构的官方依据
-- MySQL 用户与 Halo 用户分离：MySQL 用户只能走 3306 业务端口，且官方建议只用于 DML——权限模型仍然落在 PG 的 role 体系上
+**场景二：MySQL 上信创**。openHalo 是这条线的先锋：互联网公司 MySQL 存量在信创要求下的低成本替代，复用 MySQL 驱动与 DBA 习惯。
 
-**4. 认证兼容**
-- `set password_encryption = 'mysql_native_password'` 后可创建 MySQL 客户端可用的账号，密码存进 `pg_shadow`
+**场景三：多类型数据库整合（"全场景统一数据库"叙事）**。用一套产品承接 Oracle + MySQL + PG 多种存量，消除数据孤岛、收敛运维。这是官网定位层的表述，落地深度取决于 HDS 分片的成熟度，公开信息最少，需 POC 验证。
 
-这套打法的工程含义：**兼容性上限高**（贴着 PG 社区演进，内核本身持续吸收 PG 新特性），**代价是兼容层的长期维护成本**——PG 每次大版本升级，二次解析器和协议层都要跟一遍。官网安全公告（2024-06、2025-04 补丁，涉及 CVE-2024-4317、CVE-2024-0985、CVE-2025-1094 等）清一色是上游 PG CVE 的跟随修复，从侧面印证了"深度 fork + 跟随 rebase"的维护模式。
+**非目标场景**：互联网高并发弹性伸缩（无云服务能力证据）、极致 OLAP（无列存/向量化深度公开资料）、全球分布式（GDD 细节不明）。选型时别被"全场景"三个字带偏。
 
-## 四、高可用与分布式组件
-
-官方列的组件缩写，按 PG 生态常识对应：
-
-| 组件 | 功能（官方口径） | 性质判断 |
-|---|---|---|
-| MGR 分组复制 | 同步分组复制，异地容灾，RPO=0 | 类似 PG 同步复制组 + 集群管理（非 MySQL MGR 技术） |
-| GDD | 跨地域分布部署（Global Distributed Deployment） | 分布式/多机房能力，细节未公开 |
-| DLB | 负载均衡 | 连接调度层 |
-| HDS | 数据分片 | 水平扩展分片 |
-
-容灾指标宣称 RPO=0、RTO<30s。注意：这些组件只在商业版提供，openHalo 开源版不含；且 HDS/GDD 的架构细节（一致性协议、跨片事务）公开资料几乎没有，POC 时需要逐项验证。
-
-## 五、openHalo：开源的那一半
-
-**基本信息（截至 2026-10-20）**：`HaloTech-Co-Ltd/openHalo`，GPL-3.0，C 语言，415 stars / 49 forks，2025-03-24 创建，最近 push 2026-07-24，官方站 openhalo.org，有 Discord 社区（宣称 50+ 活跃贡献者，入驻北大研究生课程）。
-
-**它是什么**：把 HaloDB 的 MySQL 兼容层单独开源——让原生 PostgreSQL 获得 MySQL 协议与方言能力。README 原话："PostgreSQL to work with applications written for MySQL but provides much more better performance than MySQL"。
-
-**启用路径**（开源版实测流程）：
-```sql
--- postgresql.conf
-database_compat_mode = 'mysql'
-mysql.listener_on = true
-mysql.port = 3306
-
--- SQL
-CREATE EXTENSION aux_mysql CASCADE;
-SET password_encryption = 'mysql_native_password';
-CREATE USER test PASSWORD 'test';
-```
-然后 `mysql -P 3306 -h ...` 直连。
-
-**生态配套**：迁移工具 HMT（`HaloLab001/hmt-web`，schema + data 自动化迁移，开源）；法国 IMT Atlantique 学生团队做过兼容性测试与性能基准项目（fxcollot/openHaloDocumentation）。
-
-**定位**：openHalo 是 HaloDB 的技术名片和市场漏斗——GPL-3.0 对企业商用有传染性约束，真要上生产（尤其需要 Oracle 兼容、高可用组件时），唯一路径是买商业版。这是国产数据库常见的一手安排，对标瀚高的 IvorySQL 之于 HighGo DB。
-
-## 六、部署形态与 license 模型
-
-- **闭源商业包**：CentOS/RHEL 系 tarball（如 `halo_14.el7.x86_64`），目录结构 `product/{dbms, instantclient_12_2, shield}`（instantclient 目录直接带 Oracle 客户端——兼容层开发与 Oracle 官方客户端互验的痕迹；shield 疑为license/守护组件）
-- **license.lic**：绑定 MAC、IP、CPU 序列号、主板序列号的硬件指纹授权，支持设置生效/失效时间、最大并发连接数；信息不匹配数据库拒绝启动
-- 初始化、启停命令与 PG 完全一致（`pg_ctl`/`initdb`/`psql`），默认库 `halo0root`，diag 日志目录结构同 PG——运维面刻意零学习成本，这也是"迁移友好"的一部分
-- 配置参数全是 PG 风格（shared_buffers、wal_level 等），另加 `halodb.*` 前缀私有参数（官网示例出现 `halodb.auto_index`、`halodb.ai_optimizer`——AI 优化器方向，v2.0 看点）
-
-## 七、宣称 vs 可验证事实
+## 五、宣称 vs 可验证事实
 
 | 宣称 | 可验证性 | 评估 |
 |---|---|---|
-| Oracle 兼容、代码修改减少 98%+ | 仅官方案例 | 税务总局案例无法独立复核；158 个场景是什么复杂度未知。**方向可信，数字待考** |
-| 80% 场景性能优于 Oracle | 仅官方 | 需同机同数据集 POC；"优于 Oracle"在 PG 内核 OLTP 场景并不罕见，但复杂 PL/SQL 重负载是另一回事 |
-| RPO=0、RTO<30s | 仅官方 | MGR 分组复制若为同步复制实现则 RPO=0 成立，RTO 数字需故障注入实测 |
-| 比 MySQL 性能更好（openHalo） | 有第三方学生基准项目 | 复杂度有限，参考意义大于结论意义 |
-| MySQL 5.7+ 应用低修改迁移 | 社区实测文章支持 | 常用语法覆盖属实；存储过程、特殊驱动行为仍属风险区 |
+| 代码修改减少 98%+ | 仅官方案例 | 方向可信（协议级兼容的结构优势），数字待考 |
+| 80% 场景性能优于 Oracle（同 Intel 平台） | 仅官方 | 需同机 POC；复杂 PL/SQL 重负载是关键变量 |
+| RPO=0 / RTO<30s | 仅官方 | 同步复制可实现 RPO=0；RTO 需故障注入实测 |
+| MySQL 模式比 MySQL 更快（openHalo） | 有学生基准项目 | 参考意义大于结论意义 |
+| MySQL 5.7+ 低修改迁移 | 社区多篇文章实测支持 | 常用语法覆盖属实；存储过程/驱动特殊行为仍是风险区 |
 
-## 八、同类产品坐标
+## 六、同类坐标
 
-- **瀚高 IvorySQL**：同为"PG + Oracle 兼容"开源路线（Apache 2.0），与 openHalo 的"MySQL 兼容"方向互补；IvorySQL 更早（2021），社区根基更深
-- **AntDB / TBase / PG 系国产库**：多走"PG 内核 + 分布式"，兼容层不是主卖点
-- **达梦 / 金仓 / OceanBase**：自研或深度改造内核，兼容靠迁移工具链，路线不同
-- **Babelfish (AWS)**：SQL Server 兼容 on PG 的国际先例——证明"PG 套商业协议外壳"路线在工程上成立，HaloDB 是同一思路的国产化 + 多协议化版本
+| 产品 | 路线 | 与 HaloDB 的关系 |
+|---|---|---|
+| 瀚高 IvorySQL | PG + Oracle 兼容，Apache 2.0 开源（2021 起） | 最接近的同类；更早、社区更深，但只做 Oracle 单模式 |
+| 崖山 YashanDB | 自研内核 + Oracle 兼容 | 兼容层同源思路，内核路线不同 |
+| 达梦/金仓 | 自研内核 + 迁移工具链 | 非 PG 生态，兼容靠改造 |
+| OceanBase | 分布式自研 + Oracle/MySQL 双模式 | 分布式强，但架构重、非 PG 系 |
+| AWS Babelfish | PG + SQL Server 协议/方言 | 国际先例，证明该路线工程可行 |
 
-## 九、判断
+## 七、判断与建议
 
-1. **技术路线成立且工程完成度不低**。双监听 + 二次解析 + 扩展化兼容层，是可维护性较好的兼容方案；安全公告跟随上游 PG CVE 也说明 rebase 机制在运转。
-2. **价值集中在信创迁移窗口**。它的客户不是"想要更好的数据库"，而是"必须换掉 Oracle/MySQL 且不想改代码"的机构——在这个约束下，"PG 内核 + 多协议壳"比自研内核风险低得多。
-3. **风险点**：公司体量与融资信息不透明；HDS/GDD 等分布式组件无公开架构细节；v2.0 临近，版本切换期的兼容性承诺需写进合同；GPL-3.0 的 openHalo 与企业商用之间有明确的付费墙。
-4. **试用建议**：非信创场景，直接用 PG + IvorySQL/openHalo 拼更自由；信创场景，HaloDB 值得进 POC 名单，重点压测你们自己的 PL/SQL 或 MySQL 存储过程存量——那才是兼容层的真实水位线。
+1. HaloDB 的产品定义非常聚焦：**卖给"必须换掉 Oracle/MySQL 且不想改代码"的机构**，而不是"想要更好数据库"的人。这个约束下，"PG 内核 + 协议壳"比自研内核风险低，plorasql 是它区别于普通兼容库的关键资产。
+2. 风险集中在三点：公司体量与融资不透明；HDS/GDD 分布式组件零公开细节；v2.0 切换期兼容承诺需合同锁定。
+3. POC 建议按真实存量压测：导出你们自己的 PL/SQL 包和存储过程集跑一遍 plorasql，再测 MGR 故障切换 RTO——这两项过了，98% 和 30 秒才是你的数字，否则只是官网的数字。
 
 ## 参考资料
 
-- [HaloDB 官网（2026-10-20 抓取）：E5 引擎、MGR/GDD/DLB/HDS、税务总局案例、安全可靠测评公告](https://www.halodbtech.com/)
+- [HaloDB 官网（2026-10-20 抓取）：E5 引擎、MGR/GDD/DLB/HDS、税务局案例、安全可靠测评](https://www.halodbtech.com/)
 - [GitHub: HaloTech-Co-Ltd/openHalo（GPL-3.0，415 stars，2026-10-20 核对）](https://github.com/HaloTech-Co-Ltd/openHalo)
-- [openHalo 官方站与安装/兼容模式教程](https://www.openhalo.org)
-- [墨天轮：国产数据库 HaloDB 从小白到专家（安装、license、Oracle/MySQL 模式实操，2024-09）](https://www.modb.pro/db/1838235854394978304)
-- [少安事务所系列：HaloDB Oracle/MySQL 兼容模式实测（2024-05）](https://segmentfault.com/a/1190000044928987)
-- [GitHub: yahoo/HaloDB（同名异物的嵌入式 KV，2026-10-20 核对）](https://github.com/yahoo/HaloDB)
+- [ITPUB：HaloDB 的 Oracle 兼容模式（语法/视图/系统包清单实测，2024-05）](https://blog.itpub.net/70041262/viewspace-3030930/)
+- [OSCHINA：HaloDB 的 MySQL 兼容模式（协议与语法清单，2024-05）](https://my.oschina.net/mysqloffice/blog/16533603)
+- [墨天轮：从 HaloDB 体验到国产数据库兼容性（三种模式实测 + sybase/sqlserver 参数占位发现，2026-05）](https://www.modb.pro/db/1908850441186717696)
+- [墨天轮：国产数据库 HaloDB 从小白到专家（安装、license、版本实操，2024-09）](https://www.modb.pro/db/1838235854394978304)
+- [GitHub: yahoo/HaloDB（同名异物，已停更）](https://github.com/yahoo/HaloDB)
 
 ---
 
-*数据截至 2026-10-20。文中性能与兼容宣称均为官方口径，已单独标注可验证性。*
+*数据截至 2026-10-20。性能与兼容度数字除标注外均为官方口径。*
