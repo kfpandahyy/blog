@@ -7,15 +7,39 @@
 
 看懂这个 Skill 需要一个坐标：AWS 的数据库生态里有 17 个托管服务，模型问一遍"该用哪个"的正确答案随时间漂移——新服务在发（Aurora DSQL）、旧服务在弃（QLDB）、价格战在打。`aws-database` 就是 AWS 官方给出的动态答案：一个以代码形式存在的选型程序。它是理解整个 Agent Toolkit 设计哲学的最好切口：**AWS 不是在写文档教模型，而是在写程序给模型跑。**
 
-先看资产清单（2026-10-20 核实）:
+先看资产清单（2026-10-20 核实），每个文件的功能如下：
 
-| 文件 | 大小 | 职责 |
+| 文件 | 大小 | 功能 |
 |---|---|---|
-| `SKILL.md` | 7.9KB / 66 行 | 总闸 + 全局规则 + 子技能注册表 + 服务索引表 |
-| `references/select.md` | 20KB | 选型决策树（本文主角） |
-| `references/handoff.md` | 4.2KB | 选定服务后的交接协议 |
-| `references/report-issue.md` | 4KB | 纠错反馈工作流 |
-| `assets/*.md` | 17 张，1.1-3.5KB/张 | 服务知识卡（事实层） |
+| `SKILL.md` | 7.9KB / 66 行 | **总闸与索引**。frontmatter 声明触发范围（"Routes any task involving AWS databases"）；正文第一句 "STOP — Do not answer from general knowledge" 立规；全局规则四条（语言匹配、新信息必复核、事实禁止凭训练数据、查不到就说不确定）；How it works 三步动作（匹配子技能→读 references 工作流→按流程执行，且匹配对每条用户消息生效）；末尾挂 17 服务索引表，每行给出知识卡文件名 + 对应的专科 Skill 名 |
+| `references/select.md` | 20KB | **选型决策树（本文主角）**。六步程序：查模糊（不许猜，只许问一个澄清问题）→识别上下文→排除不满足能力项的服务→按三条路径路由→按六条硬约束回答→交接。内含上下文识别三表、"serverless" 双义消歧表、新应用三分支默认值、迁移 11 源引擎对照表、重构四步决策树 |
+| `references/handoff.md` | 4.2KB | **交接协议**。解决"选定服务之后的问题归谁答"：先做服务名归一化（口语指代→正式服务名）；两条加载通道——本地已装的 Skill 运行时自动激活，或未装时经 AWS MCP server 调 `aws___retrieve_skill` 按索引表权威名直取；专科缺失时降级用知识卡 + llms.txt 直接答，且禁止叙述失败过程；安装新 Skill 必须用户同意（加载不需要），任何资源变更前必须确认服务选择 |
+| `references/report-issue.md` | 4KB | **纠错反馈工作流**。用户报告推荐错/事实过期/覆盖缺失/指引不清/交接失败五类问题时触发：先分流三渠道（GitHub issue 为主、AWS Support 管私有与账户类、安全问题禁止公开）；再把抱怨结构化成测试用例 JSON（prompt/expected_service/actual_service/category/detail）；与用户确认后提交并回传链接。本质是把 eval 数据采集做成终端用户流程 |
+| `assets/*.md` | 17 张，1.1-3.5KB/张 | **服务知识卡（事实层）**。每服务一张，14 个固定字段（文档 URL、llms.txt、数据模型、查询语言、兼容性、serverless 类型、scale-to-zero、VPC 要求、多区形态、免费档、最低成本、首查耗时、关键特性、限制、适合、不适合），是事实核查的单一来源；加载纪律为按需每次 2-3 张，控制上下文成本 |
+
+17 张知识卡各自锁定的场景（按卡内 "Best for" 字段归并，2026-10-20 逐张核对）：
+
+| 知识卡 | 锁定的主场景 | 专科 Skill |
+|---|---|---|
+| `aurora-dsql` | 新事务型应用、多区 active-active 写、超出单机规模、运维负担最小化 | `aurora-dsql` |
+| `aurora-postgresql` | 需要完整 PG 特性面（pgvector/PostGIS/存储过程）、PG 迁移、Oracle/SQL Server 重构 | `amazon-aurora-postgresql` |
+| `aurora-mysql` | 存量 MySQL 负载、MySQL 技术栈团队 | `amazon-aurora-mysql` |
+| `rds-postgresql` | 成本敏感、要社区版 PG 完全可移植性 | `rds-oss` |
+| `rds-mysql` | 成本敏感 MySQL、拒绝专有层 | `rds-oss` |
+| `rds-mariadb` | MariaDB 迁移（temporal 表/Oracle mode 等 MariaDB 专属特性） | `rds-oss` |
+| `rds-oracle` | 无法立即现代化的 Oracle 平迁（lift-and-shift） | `rds-oracle` |
+| `rds-sqlserver` | SQL Server 平迁、.NET 应用、已有 T-SQL 团队与许可 | `rds-sqlserver` |
+| `rds-db2` | Db2 平迁、大型机现代化第一步、BYOL | `rds-db2` |
+| `odb-aws` | 需要 Exadata/RAC 的企业 Oracle 负载、RDS for Oracle 特性缺口成阻塞时 | —（无专科） |
+| `dynamodb` | 键值访问模式、数十万 RPS 级高吞吐、免运维服务端 | `amazon-dynamodb` |
+| `documentdb` | MongoDB 迁移、内容管理、灵活 schema | `amazon-documentdb` |
+| `keyspaces` | Cassandra 迁移、CQL 应用、写密集高吞吐、IoT 设备注册 | `amazon-keyspaces` |
+| `elasticache` | 微秒级延迟缓存与主存（含 Valkey 9.0+ 持久化）、排行榜、限流、AI agent memory、语义/提示缓存降 LLM 成本、向量相似检索 | `amazon-elasticache` |
+| `memorydb` | 唯一区分场景=跨区 active-active 写（区内强一致、跨区最终一致） | —（无专科） |
+| `neptune` | 关系遍历、欺诈检测、知识图谱、GraphRAG、agentic memory | `amazon-neptune` |
+| `timestream` | 高频 IoT 遥测、DevOps 指标、高基数时序（>1000 万序列，v3）、InfluxDB 迁移（v2） | `timestream-influxdb` |
+
+两张卡值得单独注意。`dynamodb.md`（3KB，最大）写进了 2026-08 GA 的原生向量检索 `SearchVectors` 完整边界（4096 维上限、TopK 100、18 个内联过滤器、索引定义不可变），并内置超限后的自我纠偏指令——超了不许硬答，"route back to select"改推 Aurora PG pgvector / OpenSearch Serverless / DocumentDB 向量检索。`elasticache.md`（3.5KB）把 AI 场景单列：agent memory 与工作流状态、语义/提示缓存降 LLM 成本、向量相似检索——知识卡直接承担了新场景营销。
 
 ---
 
@@ -98,13 +122,14 @@ Respond 一节是这个 Skill 性格最鲜明的部分：
 
 五类分类（错误推荐/事实过期/覆盖缺失/指引不清/交接失败），确认后路由 GitHub issue（主渠道，有模板）、AWS Support（私有/账户类）或安全披露（禁止公开）。**这本质上是把 eval 数据采集做成了终端用户工作流**——每一次用户纠错都变成一条可回归的测试用例。
 
-## 四、知识卡：单一事实源
+## 四、知识卡的机制角色：单一事实源
 
-17 张卡覆盖 17 个服务（15 个有专科 Skill 可交接，MemoryDB 与 ODB @ AWS 无专科，只能知识卡直答）。字段完全固定：Docs、Docs(llms.txt)、数据模型、查询语言、兼容性、Serverless 类型、Scale to zero、VPC 要求、多区形态、Free Tier、最低成本、首查耗时、关键特性、限制、适合、不适合。
+17 张卡的分工与亮点已在上表列出，这里只看它们在体系中的机制角色：
 
-每张卡同时是**防幻觉锚点**和**检索路由**——带 `llms.txt` URL，事实核查可以一路打到官方文档的结构化索引。卡内容明显维护得很勤：DynamoDB 卡里有 2026-08 GA 的原生向量检索 `SearchVectors` 完整边界（4096 维上限、TopK 100、18 个内联过滤器、600GB 基表、索引定义不可变），甚至内置了超限后的自我纠偏指令（"route back to select，候选 Aurora PG pgvector / OpenSearch Serverless / DocumentDB 向量检索"）。还顺带埋了个彩蛋：DynamoDB 兼容层 ExtendDB 已开源（PG 后端的本地开发/CI 适配器）。
-
-加载纪律：**按需取卡，每次只装 2-3 张正在考虑的服务**，控上下文。
+- **唯一事实入口**：价格、配额、GA 状态、免费档这类高漂移事实，训练数据不可信，知识卡是 SKILL.md 规定的唯一可信源；卡上没写的，按 llms.txt → MCP 文档工具 → AWS 官方文档的链条外查，不许猜。
+- **检索路由**：每张卡带服务的 `llms.txt` URL，模型可以把事实核查一路打到官方文档的结构化索引——知识卡同时也是活的文档入口。
+- **容量控制**：SKILL.md 规定按需取卡、每次只装正在考虑的 2-3 张。17 张全载约 30KB，全量常驻不经济也不必要。
+- **营销与工程同体**：卡内 "Best for" 直接锁场景（如 ElastiCache 卡把 AI agent memory、语义缓存降 LLM 成本列为一级场景），DynamoDB 卡还埋了个工程彩蛋——官方开源了兼容层 ExtendDB（PG 后端，本地开发与 CI 可跑 DynamoDB API）。
 
 ## 五、优势：五个结构性设计
 
