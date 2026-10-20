@@ -1,7 +1,7 @@
-# AWS 数据库 MCP 全景:开源工具箱与托管网关的两条路线
+# AWS 数据库 MCP 全景:工具、Skill 与托管网关的三层版图
 
-> **TL;DR**:AWS 的数据库 MCP 版图分两层--开源侧是 `awslabs/mcp` 仓库(9.8k stars,2025-03 创建,Apache-2.0)里 20+ 个仅支持 stdio 的本地 server,覆盖 DynamoDB、Aurora(PG/MySQL/DSQL)、Redshift、DocumentDB、Neptune、Keyspaces、Timestream、Oracle/MSSQL、Valkey/Memcached、S3 Tables 及 Glue/EMR/Athena 数据管道,分发方式是 uvx + FastMCP,认证走 RDS Data API 或直连 + Secrets Manager;**控制面(RDS 管理)另有主线:RDS 服务团队在独立组织 `aws-rds-mcp` 孵化了 rds-monitoring / rds-management / rds-control-plane 三个 MCP server(RFC #617),但截至 2026-10 尚未并入 awslabs/mcp,也未上 PyPI,只能从源码运行**;托管侧是 Bedrock AgentCore 的 Gateway(把 OpenAPI/Smithy/Lambda 转成 MCP 工具的双向认证网关)+ Registry + Policy,以及 **2026-05 已 GA** 的官方托管 AWS MCP Server(IAM context keys、零凭证暴露、CloudTrail 全审计)。选型一句话:本地开发接开源 server,RDS 控制面用 aws-rds-mcp(接受"未 GA 团队仓库"的前提),生产共享工具走 Gateway 托管,数据面操作务必开 `--readonly` 或套 Policy。
-> **数据截至 2026-10-19。** 开源侧以 `awslabs/mcp` 仓库 README 与各 server src README 为准,aws-rds-mcp 侧以组织内三个仓库与 awslabs/mcp RFC #617 为准,托管侧以 AWS 官方公告与文档为准。
+> **TL;DR**:AWS 的数据库 MCP 版图分两层--开源侧是 `awslabs/mcp` 仓库(9.8k stars,2025-03 创建,Apache-2.0)里 20+ 个仅支持 stdio 的本地 server,覆盖 DynamoDB、Aurora(PG/MySQL/DSQL)、Redshift、DocumentDB、Neptune、Keyspaces、Timestream、Oracle/MSSQL、Valkey/Memcached、S3 Tables 及 Glue/EMR/Athena 数据管道,分发方式是 uvx + FastMCP,认证走 RDS Data API 或直连 + Secrets Manager;**控制面(RDS 管理)另有主线:RDS 服务团队在独立组织 `aws-rds-mcp` 孵化了 rds-monitoring / rds-management / rds-control-plane 三个 MCP server(RFC #617),但截至 2026-10 尚未并入 awslabs/mcp,也未上 PyPI,只能从源码运行**;托管侧是 Bedrock AgentCore 的 Gateway(把 OpenAPI/Smithy/Lambda 转成 MCP 工具的双向认证网关)+ Registry + Policy,以及 **2026-05 已 GA** 的官方托管 AWS MCP Server(IAM context keys、零凭证暴露、CloudTrail 全审计)。**两个 MCP 仓库本体都不带 Skill--官方配套 Skill 住在第三个仓库 `aws/agent-toolkit-for-aws`(已 GA):一个总路由 Skill(`aws-database`,v3)+ 15 个数据库专科 Skill(rds-oss、amazon-aurora-postgresql 等),干的是'决策与护栏',MCP 干的是'执行',脑手分离、松耦合互不互链**。选型一句话:本地开发接开源 server,RDS 控制面用 aws-rds-mcp(接受"未 GA 团队仓库"的前提),生产共享工具走 Gateway 托管,数据面操作务必开 `--readonly` 或套 Policy,选型/治理能力从 Agent Toolkit 的 Skill 层拿。
+> **数据截至 2026-10-20。** 开源侧以 `awslabs/mcp` 仓库 README 与各 server src README 为准,aws-rds-mcp 侧以组织内三个仓库与 awslabs/mcp RFC #617 为准,托管侧以 AWS 官方公告与文档为准,Skill 侧以 `aws/agent-toolkit-for-aws` 仓库的 SKILL.md 原文为准(2026-10-20 逐文件核对)。
 
 ---
 
@@ -9,7 +9,9 @@
 
 但还有第三块拼图不在任何一条路线里:**RDS 服务团队自己的 GitHub 组织 `aws-rds-mcp`**--控制面 MCP(建删改实例/集群/参数组/快照 + 监控诊断)的真正主角在这里孵化,不在 awslabs/mcp 主仓。搞清楚这个组织的来龙去脉,才能解释为什么"AWS 官方数据库 MCP"看起来控制面缺位。
 
-本文的路线:先盘点开源 server 清单与架构,再专章解剖 aws-rds-mcp 组织,然后拆托管 AgentCore 栈,接着对比路线,最后给选型和动手路径。
+第四块拼图是**配套 Skill 层**:MCP server 只给模型"手"(工具),不给"脑"(决策知识与护栏)--后者由 `aws/agent-toolkit-for-aws` 仓库的 SKILL.md 体系提供,与 MCP 仓库松耦合、互不互链,但语义上严丝合缝(2.6 专章)。
+
+本文的路线:先盘点开源 server 清单与架构,再专章解剖 aws-rds-mcp 组织,然后拆 Skill 层与托管 AgentCore 栈,接着对比路线,最后给选型和动手路径。
 
 一句话心智模型:**开源路线是"把数据库的钥匙交给本机的 agent",托管路线是"把数据库放在 agent 够得着但有门卫的柜台后面",而 aws-rds-mcp 是"RDS 团队自己打造的仪表盘,还没搬进 4S 店"。**
 
@@ -28,7 +30,7 @@
 - 仓库 `awslabs/mcp`,2025-03-21 创建,Apache-2.0,截至 2026-10-19 约 9.8k stars / 1.8k forks,最近 push 2026-10-16,仍在活跃维护。
 - **传输:仅 stdio**。2025-05-26 起全部移除 SSE 支持,正在向 Streamable HTTP 迁移--与 MCP 协议本身的演进节奏一致(协议 2026-07 版核心已转向无状态、每请求自携带协商信息)。
 - **技术栈**:Python + FastMCP 框架,通过 `uvx` 一键运行,例如 `uvx awslabs.mysql-mcp-server@latest`。Cursor、VS Code、Kiro、Claude Code、Windsurf、Amazon Q CLI 都有对应的一键安装配置;也支持 Docker 运行。
-- **官方已发出迁移信号**:README 顶部公告称 "Agent Toolkit for AWS 已上线,是 MCP servers、plugins、skills 的继任者"(2026-05 发布)--增加了 IAM 条件键(区分 agent 操作与人类操作)、CloudWatch/CloudTrail 可见性、经过准确性评估的 skills。awslabs/mcp 继续维护但新重心在 Agent Toolkit。
+- **官方已发出迁移信号**:README 顶部公告称 "Agent Toolkit for AWS 已上线,是 MCP servers、plugins、skills 的继任者"(2026-05 发布)--增加了 IAM 条件键(区分 agent 操作与人类操作)、CloudWatch/CloudTrail 可见性、经过准确性评估的 skills。awslabs/mcp 继续维护但新重心在 Agent Toolkit。**这个"skills"不是形容词,是一个独立的资产层--见 2.6 专章**。
 - 仓库还在持续长出新 server(Amazon Translate、AppSync、Network、SAP 管理、SageMaker Spark 排障/升级等),数据库主清单以 README "SQL & NoSQL Databases" 一节为准。
 
 ### 2.2 数据库 server 清单(按"管理服务/数据服务"重排)
@@ -89,39 +91,39 @@
 | [`rds-management`](https://github.com/aws-rds-mcp/rds-management) | 2025-06-20 | 2025-07-29 | 控制面 CRUD | 包名 `awslabs.rds-management-mcp-server`,**未上 PyPI** |
 | [`rds-mcp`](https://github.com/aws-rds-mcp/rds-mcp) | 2025-07-14 | 2025-07-22 | awslabs/mcp 的 fork(+29/-1305),内含**合并版** `src/rds-control-plane-mcp-server` | 目标包名 `awslabs.rds-control-plane-mcp-server` |
 
-**rds-monitoring（只读监控，最后活动 2025-08-06）——以代码为准的完整清单**：
+**rds-monitoring(只读监控,最后活动 2025-08-06)--以代码为准的完整清单**:
 
-工具 6 个：
+工具 6 个:
 
 | 工具 | 数据源 | 作用 |
 |---|---|---|
-| `DescribeRDSEvents` | RDS Events | 实例/集群事件（可用区故障、维护、参数变更等） |
+| `DescribeRDSEvents` | RDS Events | 实例/集群事件(可用区故障、维护、参数变更等) |
 | `DescribeRDSPerformanceMetrics` | CloudWatch `get_metric_data` | 性能指标 |
 | `DescribeRDSRecommendations` | RDS Recommendations + Trusted Advisor | 优化建议 |
 | `FindSlowQueriesAndWaitEvents` | Performance Insights | 慢查询与等待事件分析 |
 | `ReadDBLogFiles` | RDS 日志 | 日志读取、过滤、分页 |
 | `CreatePerformanceReport` | PI + CloudWatch | 生成性能报告 |
 
-资源模板 9 个（对外只读接口，`aws-rds://` 协议）：`db-cluster`、`db-cluster/{cluster_id}`、`db-instance`、`db-instance/{instance_id}`、`db-instance/{dbi}/log`、`db-instance/{dbi_resource_id}/performance_report`（+ `/{report_id}` 读单份）、`{resource_type}/{resource_id}/cloudwatch_metrics`、`metrics_guide`。
+资源模板 9 个(对外只读接口,`aws-rds://` 协议):`db-cluster`、`db-cluster/{cluster_id}`、`db-instance`、`db-instance/{instance_id}`、`db-instance/{dbi}/log`、`db-instance/{dbi_resource_id}/performance_report`(+ `/{report_id}` 读单份)、`{resource_type}/{resource_id}/cloudwatch_metrics`、`metrics_guide`。
 
-运行面：CLI 参数 `--port`（默认 8888）、`--max-items`、`--readonly/--no-readonly`、`--register-resources-as-tools`；默认 streamable HTTP。README 明确“**只读，不含任何管理/修改能力**”，给出最小 IAM 清单（rds:Describe*、pi:*、cloudwatch:GetMetricStatistics、support:DescribeTrustedAdvisorChecks）。两个值得抄的机制：**`--register-resources-as-tools`**——资源可整体降级注册为 tool，兼容不支持 resource 的客户端；内置 **rate_limit 装饰器**防 API 刷爆。
+运行面:CLI 参数 `--port`(默认 8888)、`--max-items`、`--readonly/--no-readonly`、`--register-resources-as-tools`;默认 streamable HTTP。README 明确"**只读,不含任何管理/修改能力**",给出最小 IAM 清单(rds:Describe*、pi:*、cloudwatch:GetMetricStatistics、support:DescribeTrustedAdvisorChecks)。两个值得抄的机制:**`--register-resources-as-tools`**--资源可整体降级注册为 tool,兼容不支持 resource 的客户端;内置 **rate_limit 装饰器**防 API 刷爆。
 
-**rds-management（控制面 CRUD，最后活动 2025-07-29）——以代码为准的完整清单**：
+**rds-management(控制面 CRUD,最后活动 2025-07-29)--以代码为准的完整清单**:
 
-工具 22 个（注意：README 声称实例参数组可改，代码里实例参数组**只读**）：
+工具 22 个(注意:README 声称实例参数组可改,代码里实例参数组**只读**):
 
 | 域 | 工具 | 说明 |
 |---|---|---|
-| 集群（10） | `CreateDBCluster` `ModifyDBCluster` `DeleteDBCluster` `DescribeDBClusters` | CRUD + 查询 |
+| 集群(10) | `CreateDBCluster` `ModifyDBCluster` `DeleteDBCluster` `DescribeDBClusters` | CRUD + 查询 |
 | | `ChangeDBClusterStatus` `FailoverDBCluster` | 启/停/重启、故障转移 |
-| | `CreateDBClusterSnapshot` `DeleteDBClusterSnapshot` `RestoreDBClusterFromSnapshot` `RestoreDBClusterToPointInTime` | 快照与恢复（PITR 在 restore_snapshot.py 内注册） |
-| 实例（5） | `CreateDBInstance` `ModifyDBInstance` `DeleteDBInstance` `DescribeDBInstances` `ChangeDBInstanceStatus` | README 写的 ManageDBInstanceStatus 实为 ChangeDBInstanceStatus |
-| 参数组（7） | `CreateDBClusterParameterGroup` `ModifyDBClusterParameterGroup` `ResetDBClusterParameterGroup` | 写操作仅集群级 |
+| | `CreateDBClusterSnapshot` `DeleteDBClusterSnapshot` `RestoreDBClusterFromSnapshot` `RestoreDBClusterToPointInTime` | 快照与恢复(PITR 在 restore_snapshot.py 内注册) |
+| 实例(5) | `CreateDBInstance` `ModifyDBInstance` `DeleteDBInstance` `DescribeDBInstances` `ChangeDBInstanceStatus` | README 写的 ManageDBInstanceStatus 实为 ChangeDBInstanceStatus |
+| 参数组(7) | `CreateDBClusterParameterGroup` `ModifyDBClusterParameterGroup` `ResetDBClusterParameterGroup` | 写操作仅集群级 |
 | | `DescribeDBClusterParamGroups` `DescribeDBInstanceParamGroups` `DescribeDBClusterParameters` `DescribeDBInstanceParameters` | 集群/实例级均可查 |
 
-资源模板 10 个（README 只写了 4 个，代码更全）：`db-cluster`、`db-cluster/{cluster_id}`、`db-cluster/backups`、`db-cluster/{cluster_id}/backups`、`db-instance`、`db-instance/{instance_id}`、`db-instance/backups`、`db-instance/{instance_id}/backups`、`db-cluster/parameter-groups`、`db-cluster/parameter-groups/{name}/parameters`。
+资源模板 10 个(README 只写了 4 个,代码更全):`db-cluster`、`db-cluster/{cluster_id}`、`db-cluster/backups`、`db-cluster/{cluster_id}/backups`、`db-instance`、`db-instance/{instance_id}`、`db-instance/backups`、`db-instance/{instance_id}/backups`、`db-cluster/parameter-groups`、`db-cluster/parameter-groups/{name}/parameters`。
 
-运行面：CLI `--port`（默认 8888）、`--max-items`、`--readonly/--no-readonly`、`--region`、`--profile`；默认 streamable HTTP，提供 Dockerfile。安全三板斧用装饰器实现：`readonly_check`（只读模式拦写操作）、`require_confirmation`（高风险操作多步确认，对应 RFC #617 的确认 token 设计）、`handle_exceptions`。**从源码运行**：`uv --directory /path/to/rds-management run main.py`（可带 `--readonly`）。
+运行面:CLI `--port`(默认 8888)、`--max-items`、`--readonly/--no-readonly`、`--region`、`--profile`;默认 streamable HTTP,提供 Dockerfile。安全三板斧用装饰器实现:`readonly_check`(只读模式拦写操作)、`require_confirmation`(高风险操作多步确认,对应 RFC #617 的确认 token 设计)、`handle_exceptions`。**从源码运行**:`uv --directory /path/to/rds-management run main.py`(可带 `--readonly`)。
 
 **rds-mcp fork 里的 rds-control-plane-mcp-server(合并版)**:工具是前两者的并集--集群/实例 CRUD + ReadDBLogFiles + CreatePerformanceReport + DescribeRDSEvents。组织 profile 页([.github](https://github.com/aws-rds-mcp/.github))已经按"RDS Control Plane MCP Server"的统一品牌来写,给出的安装示例是 docker 运行 `awslabs/rds-control-plane-mcp-server:latest`,带 `--readonly`、`--cloudwatch` 等参数,并列出安全特性:IAM 控权、只读模式、破坏性操作影响警告、创建资源自动打标签。署名与 RFC 一致(Grace Lee、Jonathan Manuel,mentor Runzhuo Li,manager Mandy Bitar)。
 
@@ -154,7 +156,60 @@
 
 一句话:数据面靠 `run_query` + `get_table_schema` 两个工具打天下,其余五个管连接生命周期和建集群。
 
-## 三、托管路线:Bedrock AgentCore 栈
+**postgres-mcp-server 的仓内配套物:Kiro Power**。仓库自带 `kiro_power/` 与 `kiro_proj_steering/` 两组文件,是 Amazon 自家 Kiro 客户端的专用配套,不是通用 Skill:`kiro_power/POWER.md`(10.8KB)声明一个名为 `amazon-aurora-postgresql` 的 Kiro Power--frontmatter 明写它把 Aurora PostgreSQL MCP server 的**数据面操作(查询/建表/schema 管理)和控制面操作(建集群)打包绑定**,并挂两份 steering 文件(`aurora-postgres-mcp`:MCP server 用法/SQL 风格指南;`aurora-postgres`:schema 设计/索引/查询优化/迁移的完整开发指南);`kiro_proj_steering/tech.md` 是项目级技术栈约定(如建集群 5-7 分钟、用 `get_job_status` 每分钟轮询、连接首选 RDS Data API)。这是"一个数据库产品 = MCP server + steering 知识 + 客户端绑定"的标准封装样本,但目前只服务 Kiro 一家。
+
+## 2.6 配套 Skill 层：Agent Toolkit for AWS（MCP 的"脑"）
+
+先回答本次调研的原始问题：**`aws-rds-mcp/rds-management` 和 `awslabs/mcp` 的 postgres-mcp-server，各自的配套 Skill 是什么、在哪**。结论分两层：
+
+1. **两个仓库本体都不带 Skill**。rds-management 全仓只有 README/CHANGELOG/tests（2026-10-20 用 GitHub API 递归列树核实），grep 无 skill 字样；postgres-mcp-server 无 SKILL.md，仓内配套物只有上节说的 Kiro 专用文件。
+2. **官方配套 Skill 住在第三个仓库**：[`aws/agent-toolkit-for-aws`](https://github.com/aws/agent-toolkit-for-aws)（README 带 GA 状态徽章），路径 `skills/`。这才是 "Agent Toolkit 是 MCP servers、plugins、skills 的继任者" 这句话里 skills 的实体。
+
+### 体系结构：一个总路由 + 15 个专科
+
+Agent Toolkit 的定位一句话："Help AI coding agents build, deploy, and manage applications on AWS"，兼容 Claude Code / Codex / Cursor / Kiro / fx 五家客户端。Skill 层分两类：
+
+- **Core skills**（随 aws-core 插件分发）——与数据库直接相关的是 `aws-database`：**总路由 Skill，当前 v3**。它的工作方式值得逐字引用："**STOP — Do not answer from general knowledge.**" 任何数据库问题先到子技能注册表做意图匹配，命中就**必须**加载对应专科 Skill 再回答；事实类问题（价格/配额/GA 状态）禁止凭训练数据作答，按优先级查 knowledge card → AWS MCP 文档工具 → 服务 `llms.txt`。它还内置反方机制：用户 pushback 匹配 `report-issue` 触发词（"that's wrong" 等）时必须改道复核，"目标是正确答案，不是与你第一次的回答保持一致"。这是把"模型幻觉治理"写成 Skill 工程规范的样本。
+- **Specialized skills**：`skills/specialized-skills/database-skills/` 下 **15 个数据库专科**，2026-10-20 核实的完整清单：
+
+| Skill | 覆盖对象 | 与本文两条 MCP 线的关系 |
+|---|---|---|
+| `rds-oss` | RDS MySQL/MariaDB/PostgreSQL | **rds-management MCP 的正配**：决策与护栏 |
+| `rds-oracle` / `rds-sqlserver` / `rds-db2` | RDS 商业引擎 | 同上，按引擎分科 |
+| `amazon-aurora-mysql` / `amazon-aurora-postgresql` | Aurora 两引擎 | **postgres-mcp-server 的正配**：管库决策 |
+| `amazon-documentdb` / `amazon-dynamodb` / `amazon-keyspaces` / `amazon-neptune` / `amazon-elasticache` | 文档/键值/宽列/图/缓存 | awslabs/mcp 各数据面 server 的决策层 |
+| `aurora-dsql` / `timestream-influxdb` | 分布式 SQL / 时序 | 同上 |
+| `creating-amazon-aurora-db-cluster-with-instances` / `exporting-rds-to-s3` | 两个场景型工作流 | 横跨 MCP 与 Skill 的任务包 |
+
+### 与 rds-management 的配套关系：脑/手分离，证据在原文里
+
+`rds-oss` 是这个体系的样板，拆开来能看到"MCP 的脑"长什么样：
+
+- **五个决策域**：实例创建、升级规划、承诺定价（RI vs DSP）、RDS Proxy 评估、蓝绿部署。开头声明 "Produces cost estimates, precheck findings, and CLI commands"，且变更类操作 "advisory only, **never executes without explicit user confirmation**"。
+- **路由表**：Decision Guide 把用户问题逐类映射到 references/ 下的工作流文件（升级走 `upgrade-workflow.md`、定价走 `commitment-pricing-workflow.md`……），README 写明"宽泛请求就把五个选项各列一行让用户选"。
+- **防混淆护栏**：RDS vs Aurora 八行对照表（LTS、Serverless、I/O-Optimized、Data API、实例 vs 集群拓扑、DSP 期限……），明令 "You MUST NOT apply Aurora concepts to RDS"，发现实例其实是 Aurora 就停手改道。
+- **生产创建的 11 条强制最佳实践**：最新稳定大版本、Multi-AZ、CMK 加密、禁公网、7 天备份保留、Performance Insights 7 天、删除保护、**禁用 admin/root/postgres 等默认主用户名**、Secrets Manager 托管密码（"Do NOT accept or use a plaintext password"）、gp3、以及**自动打标签** `created_by=rds-oss-skill` + `generation_model`——最后这条正是 RFC #617 给 rds-management 设计的能力，出现在 Skill 层。
+- **与 MCP 的关系，原文一句定音**："The AWS MCP server is recommended for executing commands **but is not required**; all operations can also be performed via the AWS CLI." Skill 自带手和脚，MCP 只是更顺的那只手。
+
+### 与 postgres-mcp-server 的配套关系：数据面查数，Skill 面管库
+
+`amazon-aurora-postgresql` Skill 采用**子技能注册表**架构（SKILL.md 里挂一张路由表，意图命中后按需 `file_read` 加载对应 `references/{id}-instructions.md`，只加载需要的上下文）：
+
+- 注册表条目（2026-10-20 核实）：`create`（建集群）、`express-create`（Express 配置快速路径）、`serverless-advisory`（ACU 容量/scale-to-zero）、`io-optimized`（存储类型评估，25% I/O 成本阈值规则）、`commitment-pricing`、`upgrade-planning`。
+- **Express-first 路由**：Aurora PG 建集群默认走 express（单 API 调用、无客户 VPC、**经 Internet Access Gateway 的 IAM-only 认证、无 master password**），只有触发客户 VPC/CMK/自定义参数组任一条件才升级全配置路径——且 "Don't present the choice to the user — decide, then state which path and why"。
+- **安全护栏分级 + 执行偏好**：变更请求先按护栏等级分类、与用户确认、打资源标签，然后 "execute (**MCP-preferred, CLI fallback**)"。
+
+组合起来的分工：**postgres-mcp-server 回答"库里的数据是什么"（run_query），amazon-aurora-postgresql Skill 回答"这个库该怎么建/改/省/升"（六张子技能路由）**；前者是数据面，后者是控制面决策。一个 Aurora PG 对象，左右手各一只。
+
+### 分发渠道与松耦合证据
+
+分发有四条路（skills/README.md 原文）：**AWS CLI**（`aws configure agent-toolkit`）；**Claude Code 官方插件市场**（`aws-core` / `aws-agents` / `aws-data-analytics` / `aws-agents-for-devsecops`，挂在 claude-plugins-official）；**本地安装**（`npx skills add aws/agent-toolkit-for-aws/skills`，各家 agent 的 skills 目录路径都列了表）；**运行时按需发现**——让 agent 通过 AWS MCP Server 搜 "Search for AWS skills related to databases"，Skill 以 MCP resource 形态被检索加载，无需本地安装。
+
+松耦合是双向核实过的：rds-management 的 README 全文不提 skill / agent-toolkit，agent-toolkit 的 README 全文不提 aws-rds-mcp。两边代码互不引用，但语义上严丝合缝——**RFC #617 的两块招牌就这样分家了：确认 token 与只读护栏留在 rds-management 的代码里（手），最佳实践默认值与自动打标签进了 agent-toolkit 的 Skill 里（脑）**。组织 2025-08 停更而 Skill 层持续迭代到 v3，佐证了判断：RDS 控制面 MCP 的遗产更可能以 Agent Toolkit 形态延续，aws-rds-mcp 仓库本身转正的概率在下降。
+
+---
+
+## 三、托管路线：Bedrock AgentCore 栈
 
 AgentCore 是 AWS 的 agent 平台(2025 re:Invent 发布,现已含 12 个模块服务),与"数据库 MCP"直接相关的有五个:
 
@@ -176,6 +231,7 @@ AgentCore 是 AWS 的 agent 平台(2025 re:Invent 发布,现已含 12 个模块�
 | 审计 | 无(本机进程) | 无(本机进程) | CloudTrail / CloudWatch 全链路 |
 | 数据面保护 | `--readonly` 开关(自律) | 默认只读 + 破坏操作确认 token(自律) | Policy 规则(他律,逐调用拦截) |
 | 覆盖面 | 20+ 数据库数据面一等公民 | 仅 RDS 控制面 + 监控诊断 | 任意 OpenAPI/Lambda 后端,数据库需自行包装 |
+| 配套 Skill | **无(本体不带);正配在 Agent Toolkit(GA,持续迭代)** | **同左;rds-oss 是其正配** | Registry 同时管 server 与 skill 目录;AWS MCP Server 可运行时检索 Skill |
 | 分发 | uvx / GitHub / Docker | **仅 GitHub 源码** | Registry 治理 + 语义发现 |
 | 成熟度 | 活跃维护,9.8k stars | 2025-08 停更,未 GA,未入 PyPI | AWS MCP Server 已 GA;Gateway 持续扩模块 |
 | 成本 | 免费(开源) | 免费(开源) | 按量计费 |
@@ -190,6 +246,7 @@ AgentCore 是 AWS 的 agent 平台(2025 re:Invent 发布,现已含 12 个模块�
 4. **团队仓的供应链风险**:aws-rds-mcp 三个仓库未入 PyPI、无签名发布物、2025-08 起停更--引用它等于把一段未经 AWS 发行流程审视的代码接进你的凭证边界。用可以,pin commit + 代码评审 + 独立 IAM 角色,三件套缺一不可。
 5. **托管路线的锁定**:Gateway 的 OpenAPI 转换是好用,但工具目录、Policy、Identity 都在 AgentCore 内沉淀,跨云迁移成本随使用深度上升。
 6. **文档口径漂移**:awslabs/mcp 根 README 与其 src README 之间存在已知不一致(MSSQL 认证方式、OpenSearch 去向)--引用任何一条前先落到 src README 核对;本文已按 src README 修正。
+7. **Skill 层的信任边界**:Skill 本质是注入到模型上下文里的指令集,`description` 字段是模型的触发依据,也是新的投毒攻击面--从第三方渠道安装 Skill 与安装 MCP server 同等对待(pin 版本、审 frontmatter);另外 Skill 声称"超越训练数据",但知识卡本身有版本(v3),过期 Skill 给出过时限额/价格的概率不低,生产使用前核对 knowledge card 日期。
 
 ## 六、动手路径
 
@@ -197,7 +254,8 @@ AgentCore 是 AWS 的 agent 平台(2025 re:Invent 发布,现已含 12 个模块�
 2. **RDS 控制面体验**:clone `aws-rds-mcp/rds-management`,`uv --directory rds-management run main.py --readonly` 接进 MCP 客户端,让 agent 列一次集群/实例、读一份慢查询报告;想试合并版就 clone `aws-rds-mcp/rds-mcp` 跑 `src/rds-control-plane-mcp-server`。生产前置条件:pin commit、自审、专用 IAM 角色。
 3. **团队共享**:把内部数据库维护团队的 Python 脚本用 FastMCP 包成只读 server 提交内审,或用 Gateway 把现有 OpenAPI 服务转 MCP--后者不用写 MCP 代码。控制面场景优先评估 AWS API MCP Server(广覆盖、elicitation 确认)与 rds-control-plane(专科、token 确认)哪个更适配你的客户端。
 4. **生产化**:server 进 AgentCore Registry 走审批流;Gateway 前挂 Policy(先全只读试运行);Identity 接 IdP;观测接 CloudWatch。写能力单独审批、单独角色、单独 Policy。
-5. **迁移观察项**:盯 Agent Toolkit for AWS 的功能矩阵(aws-rds-mcp 的能力可能以它的形态重新出现)与 awslabs/mcp 的归档计划,新投入以 Agent Toolkit 为准。
+5. **迁移观察项**:盯 Agent Toolkit for AWS 的功能矩阵(aws-rds-mcp 的能力正以其 Skill 形态重现,rds-oss 的自动打标签即 RFC #617 遗产)与 awslabs/mcp 的归档计划,新投入以 Agent Toolkit 为准。
+6. **体验配套 Skill**(十分钟):任选一路--Claude Code 里 `/plugin install aws-core@claude-plugins-official`,或 `npx skills add aws/agent-toolkit-for-aws/skills`,或配好 AWS MCP Server 后直接问 "Search for AWS skills related to databases"。然后问一句"我该用 RDS PostgreSQL 还是 Aurora"--看 `aws-database` 路由到哪个专科、`rds-oss` 的防混淆表怎么工作。再进一步:让 agent 走一遍 rds-oss 的升级规划工作流,观察它是否遵守"advisory only, never executes without explicit user confirmation"。
 
 ## 附录
 
@@ -222,3 +280,8 @@ AgentCore 是 AWS 的 agent 平台(2025 re:Invent 发布,现已含 12 个模块�
 - [AWS 文档:What is Amazon Bedrock AgentCore(12 个模块服务全景:Gateway/Registry/Policy/Identity/Payments 等,2026-10 抓取)](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html)
 - [AWS 文档:AgentCore Gateway(OpenAPI/Smithy/Lambda 转 MCP、双向认证、语义工具选择、目标类型,2026-10 抓取)](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html)
 - [GitHub API: awslabs/mcp 仓库元数据(9.8k stars、2025-03-21 创建、Apache-2.0、最近 push 2026-10-16,2026-10-19 查询)](https://api.github.com/repos/awslabs/mcp)
+- [GitHub: aws/agent-toolkit-for-aws(Skill 层主体仓库,GA;skills/README.md 列出四种分发渠道,2026-10-20 抓取)](https://github.com/aws/agent-toolkit-for-aws)
+- [GitHub: agent-toolkit-for-aws skills/core-skills/aws-database(总路由 Skill v3:"STOP — do not answer from general knowledge"、子技能注册表、防幻觉规范,2026-10-20 抓取)](https://github.com/aws/agent-toolkit-for-aws/tree/main/skills/core-skills/aws-database)
+- [GitHub: agent-toolkit-for-aws skills/specialized-skills/database-skills/rds-oss(rds-management 正配:五决策域、11 条生产创建强制项、RDS vs Aurora 防混淆表,2026-10-20 抓取)](https://github.com/aws/agent-toolkit-for-aws/tree/main/skills/specialized-skills/database-skills/rds-oss)
+- [GitHub: agent-toolkit-for-aws skills/specialized-skills/database-skills/amazon-aurora-postgresql(postgres-mcp-server 正配:子技能注册表、express-first 路由、MCP-preferred 执行,2026-10-20 抓取)](https://github.com/aws/agent-toolkit-for-aws/tree/main/skills/specialized-skills/database-skills/amazon-aurora-postgresql)
+- [GitHub: awslabs/mcp src/postgres-mcp-server/kiro_power/POWER.md(仓内 Kiro Power 配套:把数据面/控制面 MCP 操作与 steering 指南打包绑定,2026-10-20 抓取)](https://github.com/awslabs/mcp/tree/main/src/postgres-mcp-server/kiro_power)
