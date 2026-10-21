@@ -1,0 +1,11 @@
+theme: minima
+title: panda's blog
+description: 技术调研 · 行业观察 · 产品拆解
+url: https://kfpandahyy.github.io
+baseurl: /blog
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
