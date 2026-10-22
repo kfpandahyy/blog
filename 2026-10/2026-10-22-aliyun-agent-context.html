@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Context 调研：阿里云把 Agent 的记忆做成了数据库生意</title>
+<style>
+  :root {
+    --ink: #1f2329;
+    --sub: #5a6068;
+    --line: #e3e6eb;
+    --accent: #0b5cad;
+    --bg: #ffffff;
+    --soft: #f6f8fa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--soft);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.75;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 48px 24px 96px; }
+  article {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 48px 56px;
+  }
+  h1 {
+    font-size: 1.8em;
+    line-height: 1.35;
+    margin: 0 0 12px;
+    letter-spacing: 0.01em;
+  }
+  h2 {
+    font-size: 1.25em;
+    margin: 48px 0 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  h3 { font-size: 1.05em; margin: 28px 0 10px; }
+  p { margin: 12px 0; }
+  ul, ol { padding-left: 1.4em; margin: 10px 0; }
+  li { margin: 6px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-size: 0.94em;
+  }
+  th, td {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--soft); font-weight: 600; }
+  code {
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.9em;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+  pre {
+    background: #0d1117;
+    color: #e6edf3;
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-size: 0.86em;
+    line-height: 1.6;
+  }
+  pre code { background: none; border: none; color: inherit; padding: 0; }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 18px;
+    border-left: 3px solid var(--accent);
+    background: var(--soft);
+    color: var(--sub);
+  }
+  .meta {
+    color: var(--sub);
+    font-size: 0.9em;
+    margin-bottom: 28px;
+  }
+  .tldr {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--soft);
+    padding: 18px 22px;
+    margin: 24px 0 8px;
+  }
+  .tldr strong { display: block; margin-bottom: 6px; }
+  .tag {
+    display: inline-block;
+    font-size: 0.78em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 0 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .warn {
+    border: 1px solid #f0c36d;
+    background: #fffaf0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    font-size: 0.95em;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .foot {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--sub);
+    font-size: 0.85em;
+  }
+  @media (max-width: 640px) {
+    article { padding: 28px 20px; }
+    .wrap { padding: 24px 12px 64px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<article>
+
+<h1>Agent Context 调研：阿里云把 Agent 的记忆做成了数据库生意<span class="tag">业界调研</span></h1>
+
+<p class="meta">数据截至 2026-10-22 · 信息源：2026 云栖大会公开发布资料、阿里云官方文档与产品页、厂商通稿</p>
+
+<div class="tldr">
+  <strong>TL;DR</strong>
+  <p>1. Agent Context 是阿里云数据库在 2026-09-22 云栖大会发布的上下文与记忆底座，产品实体是 RDS ContextDB，2026-08-26 已商业化。一句话定位：面向 Agent 的企业级上下文数据库，把"记忆 + 知识 + 治理"做成云服务。</p>
+  <p>2. 最值得注意的判断：阿里云认为上下文正在从"会话临时数据"变成"企业新型数据资产"，因此用做数据库的方式做记忆——结构化存储、生命周期管理、权限隔离、审计，一样不少。</p>
+  <p>3. 选型建议：多 Agent 团队、要求企业级权限与治理、已上阿里云，选它合理；纯静态文档问答或要求数据可自由导出的场景，先观望。</p>
+</div>
+
+<h2>一、背景：数据库厂商为什么盯上 Agent 的记忆</h2>
+
+<p>2026-09-22，云栖大会技术主论坛，阿里云数据库产品事业部负责人杨辛军宣布推出 Agent Context 与 ApsaraLakebase 两款新品，主题是"智能体时代的数据底座升级"。会上给了一组数字：过去 1 年阿里云 RDS PostgreSQL 新增实例数环比增长超 400%，其中约 80% 新增实例由 Agent 创建，输入输出流量约 50% 由 Agent 驱动（数据截至 2026-09，厂商口径）。</p>
+
+<p>这组数字是整场发布的逻辑起点：<strong>如果 Agent 正在成为数据库的主要用户，那么"上下文"就不再是应用层的一段临时对话，而是需要统一建设和治理的数据资产。</strong>顺着这个判断，阿里云 CTO 李飞飞在同一场合提出了 Context Engine 战略——围绕"存储—计算处理—上下文工程"，把企业全域数据转化为 Agent 的实时上下文。Agent Context 就是这条链路上"记忆与知识"那一环。</p>
+
+<p>位置关系要先说清楚，否则容易买错：</p>
+
+<table>
+  <tr><th>名称</th><th>归属</th><th>状态（截至 2026-10）</th><th>一句话定位</th></tr>
+  <tr><td><strong>Agent Context</strong></td><td>阿里云数据库（RDS）</td><td>2026-09-22 发布，产品已商业化</td><td>面向企业级 Agent 的上下文与记忆底座，产品实体为 RDS ContextDB</td></tr>
+  <tr><td>RDS ContextDB</td><td>阿里云数据库</td><td>2026-08-26 商业化</td><td>Agent Context 的落地产品：工作空间 + API Key + 记忆/知识库/治理</td></tr>
+  <tr><td>Context0</td><td>PolarDB for XScale</td><td>公测</td><td>上下文全生命周期服务，兼容 Mem0 API，偏开发者预设场景</td></tr>
+  <tr><td>Enterprise Context</td><td>千问办公（应用侧）</td><td>2026-09 发布</td><td>面向办公场景的"企业上下文"数据管理产品</td></tr>
+</table>
+
+<p>本文拆解的是前两个——发布名 Agent Context，产品名 RDS ContextDB，两者是同一事物的品牌层与实体层。</p>
+
+<h2>二、产品解剖：功能落到实物</h2>
+
+<h3>2.1 资源模型与工作空间</h3>
+
+<p>控制台创建 <strong>Workspace（工作空间）</strong>，作为上下文、记忆与知识库的逻辑集合；Workspace 下创建 <strong>Member（成员）</strong> 并生成 <strong>API Key</strong> 作为客户端身份凭证。Key 只在创建时展示一次。权限按 "Workspace - Group - Member" 三层组织，成员间记忆互相隔离，同一成员下不同 API Key 不隔离。这套模型直接继承 RDS 的企业级权限隔离能力。</p>
+
+<h3>2.2 记忆层：事实 - 实体 - 记忆规则</h3>
+
+<p>记忆是 ContextDB 的核心资产，采用三层结构化存储：</p>
+
+<ul>
+  <li><strong>事实（Fact）</strong>：从上下文中拆解出的原子化陈述（自洽短句），向量化后作为主要检索对象，召回时在这一层做语义命中。</li>
+  <li><strong>实体（Entity Card）</strong>：高频出现的人、组织、项目、工具沉淀为常驻画像，带属性、别名、重要性评分，并绑定后续写入的结论条目。实体之间构建<strong>关系图谱</strong>，支持可视化与复杂关系推理。</li>
+  <li><strong>记忆规则</strong>：按业务需要自定义不同成员的记忆偏好。</li>
+</ul>
+
+<p>配套机制：</p>
+
+<ul>
+  <li><strong>遗忘管理</strong>：开启自动遗忘后，按自定义遗忘条件与召回情况清理不活跃记忆，重要内容受保护。这是多数记忆类产品的盲区——只进不出，噪声迟早淹没信号。</li>
+  <li><strong>"夜间服务"演进</strong>：上下文以图谱形式结构化存储、实时增量更新，系统在闲时完成演进，消解冗余与冲突。</li>
+  <li><strong>多轮检索</strong>：对"上一次沟通的方案进展如何"这类指代性问题，先定位"上一次的方案"具体所指，再检索进展，而不是一次 TopK 就结束。</li>
+</ul>
+
+<h3>2.3 记忆晋升：经验如何变成组织知识</h3>
+
+<p>这是产品里最有辨识度的一环。Agent 使用过程中沉淀的零散记忆，可通过一组协作 Agent 角色（资料检索、事实校验、文档写作、质量审核、风险标记）自动整理为知识文档；支持用模板预设章节结构与撰写指引；产出进入<strong>审批流</strong>，人可编辑、处理系统标记的疑点（事实冲突、证据不足），通过后进入指定知识库。</p>
+
+<p>关键设计判断：<strong>晋升产物默认不过滤直接入库，而是强制经过人工审批。</strong>这把"AI 生成知识"的最大风险点（幻觉进知识库，越滚越脏）用流程挡住了。</p>
+
+<h3>2.4 知识层：准入、评审与演进</h3>
+
+<ul>
+  <li><strong>多源接入</strong>：控制台、CLI、在 Agent 内用自然语言上传文档；同步工具支持把钉钉、飞书文档直接同步进知识库。文本、图片、音频、视频多模态可入库。</li>
+  <li><strong>知识评审</strong>：从逻辑度、噪音度、自矛盾度等维度自动评分，达到阈值直接入库，低于阈值重写或拒绝。</li>
+  <li><strong>知识演进</strong>：校验新文档与已有知识的冲突，持续处理图谱内部的矛盾与冗余。</li>
+</ul>
+
+<p>治理面提供用量统计与<strong>审计日志</strong>，30 天内知识库、记忆库的读写次数与存储用量可视化。</p>
+
+<h3>2.5 接入方式：一条命令对齐 Coding Agent</h3>
+
+<p>官方主打 "Skill + CLI" 分钟级接入，以 Qoder 为例：</p>
+
+<pre><code>curl -fsSL 'https://context-database-client.oss-cn-hangzhou.aliyuncs.com/install.sh' | bash -s -- --agent qoder --api-key &lt;api-key&gt;</code></pre>
+
+<p>官方声明一键支持的平台：Qoder、QoderWork、Claude Code、Codex、OpenClaw、OpenCode、Hermes、千问办公；其他平台可走 API 或 MCP 自行配置。</p>
+
+<h3>2.6 定价</h3>
+
+<p>按量付费，双轨计费：<strong>存储空间按量</strong>（GB 月）+ <strong>Credits</strong> 抵扣大模型与计算资源消耗。2026-09-20 至 11-30 有新客活动：35 元存储代金券（约抵 20 GB 一个月）与 799 Credits 包，各限领一次，30 天有效。</p>
+
+<h2>三、宣称指标与可验证事实，分开摆</h2>
+
+<div class="warn">
+<strong>注意</strong>：以下指标来自云栖大会发布通稿，属厂商宣称口径，截至 2026-10-22 未见独立第三方复测，引用时请保留这个前提。
+</div>
+
+<ul>
+  <li>Token 使用效率提升 3 倍以上；</li>
+  <li>研发协同、运维支持、技术服务、数据分析等知识密集场景，复杂知识任务准确率提升最高 50 个百分点；</li>
+  <li>单工作空间可调度上万个智能体；</li>
+  <li>客户案例：小红书以 Agent Context 支撑 DBA、开发、算法等 3000+ 员工的子 Agent 协同，同一业务知识域共享同一套 Context，业务规则一次更新、全域生效。</li>
+</ul>
+
+<p>可独立验证的事实：产品已商业化并有公开控制台、文档、定价页；接入脚本与 API 形态公开；支持平台清单公开；上下文服务 Context0 存在独立的公开文档并兼容 Mem0 API。这些是快照里站得住的部分。</p>
+
+<h2>四、典型场景与非目标场景</h2>
+
+<h3>4.1 目标场景</h3>
+
+<ul>
+  <li><strong>长周期工程的知识沉淀</strong>：需求决策、模块约定散落在对话和 Code Review 里，通过记忆晋升生成结构化文档供团队复用。</li>
+  <li><strong>Coding Agent 对接企业业务知识库</strong>：内部 API 文档、领域模型入知识库，Agent 写代码时自动检索业务上下文。</li>
+  <li><strong>知识密集型运维与技术支持</strong>：历史工单、聊天截图（多模态识别）沉淀为知识，新工单检索相似案例辅助定位。</li>
+  <li><strong>多 Agent 接力</strong>：客服初排、诊断接手不再重复盘问，上下文随 user_id 或工作空间流转。</li>
+</ul>
+
+<h3>4.2 非目标场景（同样重要）</h3>
+
+<ul>
+  <li><strong>纯静态文档问答、不需要记忆抽取</strong>：一次入索引、随用随查的简单 RAG，用 Context0 的 <code>rag-only</code> 预设或普通向量检索更便宜。</li>
+  <li><strong>要求数据自由导出、跨云迁移</strong>：当前记忆与知识库均暂不支持导出，存在平台锁定，这是产品文档自己写明的限制。</li>
+  <li><strong>强合规离线环境</strong>：云端托管形态，审计与权限虽完整，但数据不出域的需求不匹配。</li>
+  <li><strong>个人轻量使用</strong>：按量付费 + Credits 的模型对低频个人用户偏复杂，本地记忆文件或开源方案成本更低。</li>
+</ul>
+
+<h2>五、结构性优势：拆到骨头</h2>
+
+<table>
+  <tr><th>维度</th><th>做法</th><th>深层原因</th></tr>
+  <tr><td>把记忆当数据资产</td><td>图谱化存储、实体画像、增量更新、闲时演进、审计</td><td>数据库厂商的基因：只进不出的记忆系统三个月后必然脏，他们按数据生命周期来治理</td></tr>
+  <tr><td>AI 生成知识的风险控制</td><td>记忆晋升强制人工审批 + 疑点列表 + 知识评审评分</td><td>把"幻觉入库"挡在流程外，知识库的可信度是复用的前提</td></tr>
+  <tr><td>遗忘机制</td><td>自动遗忘 + 重要内容保护</td><td>多数竞品只做写入与召回，不做减法；噪声控制是长期记忆的隐形门槛</td></tr>
+  <tr><td>接入成本</td><td>一条 curl 命令对齐 8 家主流 Coding Agent</td><td>抓住 Coding Agent 这一最高频入口，把"接入"从工程问题变成运维问题</td></tr>
+  <tr><td>企业级底座</td><td>Workspace-Group-Member 三层权限、成员隔离、用量审计</td><td>直接复用 RDS 的企业级能力，绕开创业公司最难补的合规课</td></tr>
+</table>
+
+<h2>六、风险与未决问题</h2>
+
+<ol>
+  <li><strong>数据不可导出</strong>：记忆与知识库均暂不支持导出。上下文资产恰恰是黏性最强的资产，锁定风险高于一般 SaaS。</li>
+  <li><strong>性能指标无第三方验证</strong>："准确率提升 50 个百分点""Token 效率提升 3 倍"目前只有厂商口径，缺少公开 benchmark 与对照条件说明。</li>
+  <li><strong>命名拥挤</strong>：Agent Context、ContextDB、Context0、Enterprise Context 同属一个大会叙事，客户第一次接触极易混淆产品边界与计费主体。</li>
+  <li><strong>演进质量依赖"夜间服务"</strong>：冲突消解、冗余处理的具体策略未公开，长期演进是否引入事实漂移，需要实测观察。</li>
+  <li><strong>Credits 计价透明度</strong>：大模型与计算消耗打包进 Credits，复杂任务下的成本曲线需要按真实用量核算，新客券掩盖了 steady-state 成本。</li>
+</ol>
+
+<h2>七、观察与启示</h2>
+
+<p><strong>1. 收敛信号：上下文管理正在"数据库化"。</strong>2025 年业界还在讨论"给 Agent 挂向量库"，2026 年头部云厂已经把上下文当作需要 schema、生命周期、权限与审计的数据资产来经营。向量检索只是其中一个子系统。</p>
+
+<p><strong>2. 分歧本质：记忆产品拼的不是召回，是治理。</strong>写入、召回、图谱、多轮检索各家都在做；拉开差距的是遗忘、评审、晋升审批这些"不性感"的环节。这和一个规律一致：知识系统的寿命由清洗能力决定，不由检索精度决定。</p>
+
+<p><strong>3. 给读者的启示。</strong>如果你在企业内负责 Agent 落地：把"上下文归谁管、怎么更新、错了谁负责"先答清楚，再选工具——ContextDB 这类产品的价值恰恰是把这三个问题产品化。如果你是产品从业者：注意"一条命令接入主流 Agent"这个打法，入口之争先于功能之争。如果你是采购方：把"数据导出"写进评估清单，并实测一次记忆晋升的审批流，那是这个产品最真实的成色。</p>
+
+<div class="foot">
+<p>说明：本文信息基于 2026-10-22 之前公开资料整理；厂商宣称指标以官方发布口径为准，未获独立验证。产品能力与定价可能变化，以阿里云官方文档为准。</p>
+</div>
+
+</article>
+</div>
+</body>
+</html>
