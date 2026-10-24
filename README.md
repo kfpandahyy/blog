@@ -22,41 +22,53 @@ AI Agent 领域技术博客，按九大类组织。文章按月份归档（如 `
 
 ## 总览
 
-按月归档，最新在前；条目末尾括号内为分类编号，对应上表。
+按分类组织，编号见上表；类内最新在前。
 
-### 2026-10
+### 1 模型与基座
 
-1. [《CPU、GPU、TPU、NPU：四类处理器的架构、定位与选型》](./2026-10/2026-10-23-cpu-gpu-tpu-npu.md)（9）
-2. [《Agent Context 调研：阿里云把 Agent 的记忆做成了数据库生意》](./2026-10/2026-10-22-aliyun-agent-context.html)（9）
-3. [《火山引擎 Data 与 AI 产品体系调研：四层架构、五线模型与一条数据产品线》](./2026-10/2026-10-21-volcengine-data-ai.md)（9）
-4. [《Seedance 调研：字节视频生成模型的版本版图、能力拆解与场景边界》](./2026-10/2026-10-21-seedance.md)（9）
-5. [《FDE（前线部署工程师）调研：从 Palantir 的战场起源到 AI 时代的战略岗位》](./2026-10/2026-10-21-fde.md)（9）
-6. [《扣子（Coze）调研：字节 Agent 平台的版本演进、生态版图与锁定风险》](./2026-10/2026-10-21-coze.md)（9）
-7. [《波士顿矩阵（BCG Matrix）调研：结构、原理、场景与五十年的批评》](./2026-10/2026-10-21-bcg-matrix.md)（9）
-8. [《AWS Data 与 AI 产品体系调研：三层 Agent 栈、一分为二的 SageMaker 与一个 Iceberg 赌注》](./2026-10/2026-10-21-aws-data-ai.md)（9）
-9. [《羲和 HaloDB 调研：功能全景、优势拆解与主打场景》](./2026-10/2026-10-20-halodb-database.md)（9）
-10. [《百度秒哒深度调研：无代码应用生成平台的头号玩家，靠多智能体把"想法"变成生意》](./2026-10/2026-10-20-baidu-miaoda.md)（9）
-11. [《AWS 数据库 Skill 深度解剖：把解决方案架构师的选型决策写成代码》](./2026-10/2026-10-20-aws-database-skill.md)（9）
-12. [《阿里云 AI + Data 产品体系全景调研：从芯片到 Agent，再到"AI 原生的数据底座"》](./2026-10/2026-10-20-alibaba-cloud-ai-data-system.md)（9）
-13. [《MCP 调研：一个 18 个月大的协议，为什么把有状态握手整个删掉了》](./2026-10/2026-10-18-mcp.md)（3）
-14. [《Databricks 调研：Lakehouse 巨头正把自己重做为企业 AI Agent 的基础设施》](./2026-10/2026-10-18-databricks.md)（9）
-15. [《AWS 数据库 MCP 全景:工具、Skill 与托管网关的三层版图》](./2026-10/2026-10-18-aws-databases-mcp.md)（9）
-16. [《uv 调研：一个 Rust 二进制收编了 Python 工具链，OpenAI 随后买下了它》](./2026-10/2026-10-17-astral-uv.md)（9）
-17. [《知识蒸馏调研：让大模型把"判断力"传给小模型》](./2026-10/2026-10-14-knowledge-distillation.md)（1）
-18. [《Supabase 技术调研：Postgres 优先的 Agentic Backend 平台》](./2026-10/2026-10-13-supabase-tech-research.md)（9）
-19. [《WeKnora：腾讯把"RAG 查询、Agent 干活、Wiki 沉淀"缝进同一个知识库》](./2026-10/2026-10-09-weknora.md)（4）
-20. [《LLM Wiki：Karpathy 的"知识编译器"范式，以及它与 RAG、本体、Agent 记忆的关系》](./2026-10/2026-10-09-llm-wiki.md)（4）
-21. [《DBAIOps 代码仓考古：cfe9d30，论文背后的 7.6 万行工程底座》](./2026-10/2026-10-09-dbaiops-repo.md)（4）
-22. [《DBAIOps 精读：知识图谱能力如何被量化评测》](./2026-10/2026-10-09-dbaiops-paper.md)（4）
-23. [《瑶池数据库 Agent 调研：阿里云的"工单+大模型"路线，与 DBAIOps 的"图谱+推理"路线对位》](./2026-10/2026-10-09-apsaradb-agent.md)（9）
-24. [《OpenClaw 调研：从一小时原型到基金会，多渠道 Agent 网关成了自托管基础设施》](./2026-10/2026-10-08-openclaw.md)（3）
-25. [《本体与知识图谱调研：RAG 答不了"谁依赖谁"，答它靠图》](./2026-10/2026-10-08-ontology-knowledge-graph.md)（4）
-26. [《Hermes Agent 调研：会自己写技能的 agent，"越用越聪明"是不是噱头》](./2026-10/2026-10-08-hermes-agent.md)（3）
-27. [《AWS 数据库 MCP 全景调研》](./2026-10/2026-10-08-aws-database-mcp-skills.md)（9）
-28. [《Agent Skill 调研：给大模型装"程序性知识"的开放格式》](./2026-10/2026-10-08-agent-skill.md)（3）
-29. [《Agent Loop 调研：一段 while 循环里的全部工程学》](./2026-10/2026-10-08-agent-loop.md)（2）
-30. [《Hermes 是什么：一个开源大模型系列的简史》](./2026-10/2026-10-07-hermes-intro.md)（1）
-31. [《Agent Harness 是什么：给大模型装上"身体"的那层软件》](./2026-10/2026-10-07-agent-harness.md)（2）
+1. [《知识蒸馏调研：让大模型把"判断力"传给小模型》](./2026-10/2026-10-14-knowledge-distillation.md)
+2. [《Hermes 是什么：一个开源大模型系列的简史》](./2026-10/2026-10-07-hermes-intro.md)
+
+### 2 Agent 工程
+
+1. [《Agent Loop 调研：一段 while 循环里的全部工程学》](./2026-10/2026-10-08-agent-loop.md)
+2. [《Agent Harness 是什么：给大模型装上"身体"的那层软件》](./2026-10/2026-10-07-agent-harness.md)
+
+### 3 框架与工具协议
+
+1. [《MCP 调研：一个 18 个月大的协议，为什么把有状态握手整个删掉了》](./2026-10/2026-10-18-mcp.md)
+2. [《OpenClaw 调研：从一小时原型到基金会，多渠道 Agent 网关成了自托管基础设施》](./2026-10/2026-10-08-openclaw.md)
+3. [《Hermes Agent 调研：会自己写技能的 agent，"越用越聪明"是不是噱头》](./2026-10/2026-10-08-hermes-agent.md)
+4. [《Agent Skill 调研：给大模型装"程序性知识"的开放格式》](./2026-10/2026-10-08-agent-skill.md)
+
+### 4 上下文与记忆工程
+
+1. [《WeKnora：腾讯把"RAG 查询、Agent 干活、Wiki 沉淀"缝进同一个知识库》](./2026-10/2026-10-09-weknora.md)
+2. [《LLM Wiki：Karpathy 的"知识编译器"范式，以及它与 RAG、本体、Agent 记忆的关系》](./2026-10/2026-10-09-llm-wiki.md)
+3. [《DBAIOps 代码仓考古：cfe9d30，论文背后的 7.6 万行工程底座》](./2026-10/2026-10-09-dbaiops-repo.md)
+4. [《DBAIOps 精读：知识图谱能力如何被量化评测》](./2026-10/2026-10-09-dbaiops-paper.md)
+5. [《本体与知识图谱调研：RAG 答不了"谁依赖谁"，答它靠图》](./2026-10/2026-10-08-ontology-knowledge-graph.md)
+
+### 9 业界情况调研
+
+1. [《CPU、GPU、TPU、NPU：四类处理器的架构、定位与选型》](./2026-10/2026-10-23-cpu-gpu-tpu-npu.md)
+2. [《Agent Context 调研：阿里云把 Agent 的记忆做成了数据库生意》](./2026-10/2026-10-22-aliyun-agent-context.html)
+3. [《火山引擎 Data 与 AI 产品体系调研：四层架构、五线模型与一条数据产品线》](./2026-10/2026-10-21-volcengine-data-ai.md)
+4. [《Seedance 调研：字节视频生成模型的版本版图、能力拆解与场景边界》](./2026-10/2026-10-21-seedance.md)
+5. [《FDE（前线部署工程师）调研：从 Palantir 的战场起源到 AI 时代的战略岗位》](./2026-10/2026-10-21-fde.md)
+6. [《扣子（Coze）调研：字节 Agent 平台的版本演进、生态版图与锁定风险》](./2026-10/2026-10-21-coze.md)
+7. [《波士顿矩阵（BCG Matrix）调研：结构、原理、场景与五十年的批评》](./2026-10/2026-10-21-bcg-matrix.md)
+8. [《AWS Data 与 AI 产品体系调研：三层 Agent 栈、一分为二的 SageMaker 与一个 Iceberg 赌注》](./2026-10/2026-10-21-aws-data-ai.md)
+9. [《羲和 HaloDB 调研：功能全景、优势拆解与主打场景》](./2026-10/2026-10-20-halodb-database.md)
+10. [《百度秒哒深度调研：无代码应用生成平台的头号玩家，靠多智能体把"想法"变成生意》](./2026-10/2026-10-20-baidu-miaoda.md)
+11. [《AWS 数据库 Skill 深度解剖：把解决方案架构师的选型决策写成代码》](./2026-10/2026-10-20-aws-database-skill.md)
+12. [《阿里云 AI + Data 产品体系全景调研：从芯片到 Agent，再到"AI 原生的数据底座"》](./2026-10/2026-10-20-alibaba-cloud-ai-data-system.md)
+13. [《Databricks 调研：Lakehouse 巨头正把自己重做为企业 AI Agent 的基础设施》](./2026-10/2026-10-18-databricks.md)
+14. [《AWS 数据库 MCP 全景:工具、Skill 与托管网关的三层版图》](./2026-10/2026-10-18-aws-databases-mcp.md)
+15. [《uv 调研：一个 Rust 二进制收编了 Python 工具链，OpenAI 随后买下了它》](./2026-10/2026-10-17-astral-uv.md)
+16. [《Supabase 技术调研：Postgres 优先的 Agentic Backend 平台》](./2026-10/2026-10-13-supabase-tech-research.md)
+17. [《瑶池数据库 Agent 调研：阿里云的"工单+大模型"路线，与 DBAIOps 的"图谱+推理"路线对位》](./2026-10/2026-10-09-apsaradb-agent.md)
+18. [《AWS 数据库 MCP 全景调研》](./2026-10/2026-10-08-aws-database-mcp-skills.md)
 
 ---
 
