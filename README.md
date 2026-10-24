@@ -53,9 +53,10 @@ AI Agent 领域技术博客，按九大类组织。文章按月份归档（如 `
 
 #### 阿里云
 
-1. [《Agent Context 调研：阿里云把 Agent 的记忆做成了数据库生意》](./2026-10/2026-10-22-aliyun-agent-context.html)
-2. [《阿里云 AI + Data 产品体系全景调研：从芯片到 Agent，再到"AI 原生的数据底座"》](./2026-10/2026-10-20-alibaba-cloud-ai-data-system.md)
-3. [《瑶池数据库 Agent 调研：阿里云的"工单+大模型"路线，与 DBAIOps 的"图谱+推理"路线对位》](./2026-10/2026-10-09-apsaradb-agent.md)
+1. [《阿里云 AI + 数据全家桶：一页看懂 60+ 产品及它们的关系》](./2026-10/2026-10-24-aliyun-ai-data-product-map.md)
+2. [《Agent Context 调研：阿里云把 Agent 的记忆做成了数据库生意》](./2026-10/2026-10-22-aliyun-agent-context.html)
+3. [《阿里云 AI + Data 产品体系全景调研：从芯片到 Agent，再到"AI 原生的数据底座"》](./2026-10/2026-10-20-alibaba-cloud-ai-data-system.md)
+4. [《瑶池数据库 Agent 调研：阿里云的"工单+大模型"路线，与 DBAIOps 的"图谱+推理"路线对位》](./2026-10/2026-10-09-apsaradb-agent.md)
 
 #### AWS
 
