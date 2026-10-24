@@ -22,7 +22,7 @@ AI Agent 领域技术博客，按九大类组织。文章按月份归档（如 `
 
 ## 总览
 
-按分类组织，编号见上表；类内最新在前。
+按分类组织，编号见上表；类内最新在前。第 9 类按云厂商细分。
 
 ### 1 模型与基座
 
@@ -51,24 +51,38 @@ AI Agent 领域技术博客，按九大类组织。文章按月份归档（如 `
 
 ### 9 业界情况调研
 
+#### 阿里云
+
+1. [《Agent Context 调研：阿里云把 Agent 的记忆做成了数据库生意》](./2026-10/2026-10-22-aliyun-agent-context.html)
+2. [《阿里云 AI + Data 产品体系全景调研：从芯片到 Agent，再到"AI 原生的数据底座"》](./2026-10/2026-10-20-alibaba-cloud-ai-data-system.md)
+3. [《瑶池数据库 Agent 调研：阿里云的"工单+大模型"路线，与 DBAIOps 的"图谱+推理"路线对位》](./2026-10/2026-10-09-apsaradb-agent.md)
+
+#### AWS
+
+1. [《AWS Data 与 AI 产品体系调研：三层 Agent 栈、一分为二的 SageMaker 与一个 Iceberg 赌注》](./2026-10/2026-10-21-aws-data-ai.md)
+2. [《AWS 数据库 Skill 深度解剖：把解决方案架构师的选型决策写成代码》](./2026-10/2026-10-20-aws-database-skill.md)
+3. [《AWS 数据库 MCP 全景:工具、Skill 与托管网关的三层版图》](./2026-10/2026-10-18-aws-databases-mcp.md)
+4. [《AWS 数据库 MCP 全景调研》](./2026-10/2026-10-08-aws-database-mcp-skills.md)
+
+#### 火山引擎
+
+1. [《火山引擎 Data 与 AI 产品体系调研：四层架构、五线模型与一条数据产品线》](./2026-10/2026-10-21-volcengine-data-ai.md)
+2. [《Seedance 调研：字节视频生成模型的版本版图、能力拆解与场景边界》](./2026-10/2026-10-21-seedance.md)
+3. [《扣子（Coze）调研：字节 Agent 平台的版本演进、生态版图与锁定风险》](./2026-10/2026-10-21-coze.md)
+
+#### 百度
+
+1. [《百度秒哒深度调研：无代码应用生成平台的头号玩家，靠多智能体把"想法"变成生意》](./2026-10/2026-10-20-baidu-miaoda.md)
+
+#### 其他
+
 1. [《CPU、GPU、TPU、NPU：四类处理器的架构、定位与选型》](./2026-10/2026-10-23-cpu-gpu-tpu-npu.md)
-2. [《Agent Context 调研：阿里云把 Agent 的记忆做成了数据库生意》](./2026-10/2026-10-22-aliyun-agent-context.html)
-3. [《火山引擎 Data 与 AI 产品体系调研：四层架构、五线模型与一条数据产品线》](./2026-10/2026-10-21-volcengine-data-ai.md)
-4. [《Seedance 调研：字节视频生成模型的版本版图、能力拆解与场景边界》](./2026-10/2026-10-21-seedance.md)
-5. [《FDE（前线部署工程师）调研：从 Palantir 的战场起源到 AI 时代的战略岗位》](./2026-10/2026-10-21-fde.md)
-6. [《扣子（Coze）调研：字节 Agent 平台的版本演进、生态版图与锁定风险》](./2026-10/2026-10-21-coze.md)
-7. [《波士顿矩阵（BCG Matrix）调研：结构、原理、场景与五十年的批评》](./2026-10/2026-10-21-bcg-matrix.md)
-8. [《AWS Data 与 AI 产品体系调研：三层 Agent 栈、一分为二的 SageMaker 与一个 Iceberg 赌注》](./2026-10/2026-10-21-aws-data-ai.md)
-9. [《羲和 HaloDB 调研：功能全景、优势拆解与主打场景》](./2026-10/2026-10-20-halodb-database.md)
-10. [《百度秒哒深度调研：无代码应用生成平台的头号玩家，靠多智能体把"想法"变成生意》](./2026-10/2026-10-20-baidu-miaoda.md)
-11. [《AWS 数据库 Skill 深度解剖：把解决方案架构师的选型决策写成代码》](./2026-10/2026-10-20-aws-database-skill.md)
-12. [《阿里云 AI + Data 产品体系全景调研：从芯片到 Agent，再到"AI 原生的数据底座"》](./2026-10/2026-10-20-alibaba-cloud-ai-data-system.md)
-13. [《Databricks 调研：Lakehouse 巨头正把自己重做为企业 AI Agent 的基础设施》](./2026-10/2026-10-18-databricks.md)
-14. [《AWS 数据库 MCP 全景:工具、Skill 与托管网关的三层版图》](./2026-10/2026-10-18-aws-databases-mcp.md)
-15. [《uv 调研：一个 Rust 二进制收编了 Python 工具链，OpenAI 随后买下了它》](./2026-10/2026-10-17-astral-uv.md)
-16. [《Supabase 技术调研：Postgres 优先的 Agentic Backend 平台》](./2026-10/2026-10-13-supabase-tech-research.md)
-17. [《瑶池数据库 Agent 调研：阿里云的"工单+大模型"路线，与 DBAIOps 的"图谱+推理"路线对位》](./2026-10/2026-10-09-apsaradb-agent.md)
-18. [《AWS 数据库 MCP 全景调研》](./2026-10/2026-10-08-aws-database-mcp-skills.md)
+2. [《FDE（前线部署工程师）调研：从 Palantir 的战场起源到 AI 时代的战略岗位》](./2026-10/2026-10-21-fde.md)
+3. [《波士顿矩阵（BCG Matrix）调研：结构、原理、场景与五十年的批评》](./2026-10/2026-10-21-bcg-matrix.md)
+4. [《羲和 HaloDB 调研：功能全景、优势拆解与主打场景》](./2026-10/2026-10-20-halodb-database.md)
+5. [《Databricks 调研：Lakehouse 巨头正把自己重做为企业 AI Agent 的基础设施》](./2026-10/2026-10-18-databricks.md)
+6. [《uv 调研：一个 Rust 二进制收编了 Python 工具链，OpenAI 随后买下了它》](./2026-10/2026-10-17-astral-uv.md)
+7. [《Supabase 技术调研：Postgres 优先的 Agentic Backend 平台》](./2026-10/2026-10-13-supabase-tech-research.md)
 
 ---
 
