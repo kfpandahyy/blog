@@ -23,72 +23,97 @@ L0  芯片        真武V900/M890(AI) · 倚天(CPU) · ICN Switch · 磐脉(网
 
 ## 二、分层清单
 
+> 官网地址均于 2026-10-24 逐一验证可达；「—」表示官方无独立产品页（底座/架构类能力）。
+
 ### L0 芯片（平头哥）
 
-| 产品 | 是什么 |
-|---|---|
-| 真武 V900 | 新一代训推一体 AI 芯片，性能为 M890 三倍，2027 Q1 量产 |
-| 倚天 710 | 自研服务器 CPU |
-| ICN Switch | 自研互联芯片，千卡全带宽互联 |
-| 磐脉 / 镇岳 | 智能网卡 / SSD 存储主控 |
+| 序号 | 产品名称 | 产品介绍 | 官网地址 |
+|---|---|---|---|
+| 1 | 真武 V900 | 新一代训推一体 AI 芯片，性能为 M890 三倍，2027 Q1 量产 | [平头哥官网](https://www.t-head.cn) |
+| 2 | 倚天 710 | 自研服务器 CPU | [平头哥官网](https://www.t-head.cn) |
+| 3 | ICN Switch | 自研互联芯片，千卡全带宽互联 | [平头哥官网](https://www.t-head.cn) |
+| 4 | 磐脉 | 自研智能网卡 | [平头哥官网](https://www.t-head.cn) |
+| 5 | 镇岳 | 自研 SSD 存储主控芯片 | [平头哥官网](https://www.t-head.cn) |
 
 意义不在单品性能，而在"芯片—集群—模型"可以协同设计：Qwen3.8-Max 已演示仅凭一份总线规范自主完成芯片物理实现优化，面积减 42%。
 
 ### L1 智算基础设施
 
-| 产品 | 是什么 |
-|---|---|
-| 灵骏 | 智算集群品牌；结合 V900 超节点与新网络架构，单一集群可扩至 50 万卡（2026 云栖官方口径） |
-| 磐久超节点 | 集成 V900 + ICN Switch + 磐脉 + 镇岳的整机柜 |
-| HPN 8.0 | 数据中心网络架构 |
-| CPFS | 高性能并行文件存储（训练用），2026 云栖发布新一代 |
-| OSS | 对象存储，兼作向量数据底座（Vector Bucket） |
-| 飞天 + CIPU | 自研云操作系统 + 云基础设施处理器 |
+| 序号 | 产品名称 | 产品介绍 | 官网地址 |
+|---|---|---|---|
+| 1 | 灵骏 | 智算集群品牌；结合 V900 超节点与新网络架构，单一集群可扩至 50 万卡（2026 云栖官方口径） | [产品页](https://www.aliyun.com/product/lingjun) |
+| 2 | 磐久超节点 | 集成 V900 + ICN Switch + 磐脉 + 镇岳的整机柜 | [随灵骏售卖](https://www.aliyun.com/product/lingjun) |
+| 3 | HPN 8.0 | 数据中心网络架构 | —（网络架构，非独立售卖产品） |
+| 4 | CPFS | 高性能并行文件存储（训练用），2026 云栖发布新一代 | [产品页](https://www.aliyun.com/product/cpfs) |
+| 5 | OSS | 对象存储，兼作向量数据底座（Vector Bucket） | [产品页](https://www.aliyun.com/product/oss) |
+| 6 | 飞天 + CIPU | 自研云操作系统 + 云基础设施处理器 | —（自研底座） |
 
 ### L2 模型（Qwen / 通义家族）
 
-- **旗舰**：Qwen3-Max（万亿参数、36T tokens 预训练）、Qwen3.8-Max（已做到 33 轮零人工自迭代训练：自主搭流程、造数据、定位缺陷）；Qwen4 在训（官方口径：后续 Qwen4.5 / Qwen5 将扩展至 5-10T 参数）
-- **效率**：Qwen3-Next（80B 总参 / 3B 激活，训练成本降 90%）
-- **垂直**：Coder（与 Claude Code 系统联合训练）、VL（视觉 Agent）、Omni（全模态实时交互、MCP 编排）、Audio-3.1 家族（ASR/TTS/Realtime/LiveTranslate 同传）、Qwen-Image-3.1（图像）、Wan 万相（视频，2026-11 发新版）、通义百聆（语音开源，下载 5.6 亿+）
-- **分发**：魔搭 ModelScope，17 万+ 模型、2500 万开发者、9200+ MCP Server——Qwen 触达开发者的主渠道，衍生模型 3.4 万+
+| 序号 | 产品名称 | 产品介绍 | 官网地址 |
+|---|---|---|---|
+| 1 | Qwen3-Max | 旗舰，万亿参数、36T tokens 预训练 | [Qwen 官网](https://qwen.ai) |
+| 2 | Qwen3.8-Max | 已做到 33 轮零人工自迭代训练（自主搭流程、造数据、定位缺陷） | [Qwen 官网](https://qwen.ai) |
+| 3 | Qwen3-Next | 效率款，80B 总参 / 3B 激活，训练成本降 90% | [Qwen 官网](https://qwen.ai) |
+| 4 | Qwen3-Coder | 代码模型，与 Claude Code 系统联合训练 | [Qwen 官网](https://qwen.ai) |
+| 5 | Qwen3-VL | 视觉 Agent 模型 | [Qwen 官网](https://qwen.ai) |
+| 6 | Qwen3-Omni | 全模态实时交互、MCP 编排 | [Qwen 官网](https://qwen.ai) |
+| 7 | Qwen-Audio-3.1 | 语音家族：ASR / TTS / Realtime / LiveTranslate 同传 | [Qwen 官网](https://qwen.ai) |
+| 8 | Qwen-Image-3.1 | 图像生成 | [Qwen 官网](https://qwen.ai) |
+| 9 | Wan 万相 | 视频生成，2026-11 发下一代新版 | [万相官网](https://tongyi.aliyun.com/wanxiang) |
+| 10 | 通义百聆 | 语音开源模型，下载 5.6 亿+ | [通义官网](https://tongyi.aliyun.com) |
+| 11 | 魔搭 ModelScope | 模型社区：17 万+ 模型、2500 万开发者、9200+ MCP Server，衍生模型 3.4 万+ | [modelscope.cn](https://modelscope.cn) |
+
+Qwen4 在训（官方口径：后续 Qwen4.5 / Qwen5 将扩展至 5-10T 参数）。
 
 ### L3 平台与 Agent 运行时
 
-| 产品 | 是什么 | 给谁用 |
-|---|---|---|
-| 千问AI平台（原百炼） | 模型服务 + **Agent Studio**（开发/运行/上下文/工具/评测进化/安全六环节，7×24 托管）+ Agent API（官方计划 2026-10 发布）；客户数年增 6 倍 | 应用开发者 |
-| PAI | 机器学习平台（训练/微调/部署全流程） | 算法工程师 |
-| AgentCore | Agent 构建与治理平台（2026 云栖新品） | 企业级 Agent 生产 |
-| Agent Sandbox | Agent 隔离运行环境（2026 云栖新品） | 同上 |
-| 无影 AgentBay | 云端桌面/浏览器，Agent 的操作界面 | Agent 执行层 |
-| ADK / ADP | Agent 开发框架（代码）/ 低代码平台（20 万开发者、80 万+ Agent）；7 大企业级 Server 含支付宝 Pay Server | 两类开发者 |
+| 序号 | 产品名称 | 产品介绍 | 官网地址 |
+|---|---|---|---|
+| 1 | 千问AI平台（原百炼） | 模型服务 + Agent Studio（六环节生产级 Agent）+ Agent API（官方计划 2026-10 发布）；客户数年增 6 倍 | [产品页](https://www.aliyun.com/product/bailian) |
+| 2 | PAI | 机器学习平台（训练/微调/部署全流程） | [产品页](https://www.aliyun.com/product/bigdata/learn) |
+| 3 | AgentCore | Agent 构建与治理平台（2026 云栖新品） | [产品页](https://www.aliyun.com/product/agentcore) |
+| 4 | Agent Sandbox | Agent 隔离运行环境（2026 云栖新品） | [随 AgentCore](https://www.aliyun.com/product/agentcore) |
+| 5 | 无影 AgentBay | 云端桌面/浏览器，Agent 的操作界面 | [产品页](https://www.aliyun.com/product/ecs/wuying) |
+| 6 | ADK / ADP | Agent 开发框架（代码）/ 低代码平台（20 万开发者、80 万+ Agent）；7 大企业级 Server 含支付宝 Pay Server | [随百炼](https://www.aliyun.com/product/bailian) |
 
 ### L4 数据产品（全家桶的主体）
 
-**瑶池数据库六线**（统一品牌，统一 DAS 自治运维）：
+| 序号 | 产品名称 | 产品介绍 | 官网地址 |
+|---|---|---|---|
+| 1 | PolarDB | 云原生关系库；AI 化最激进的一支（Agentic Database、Agent Memory、LakeBase），见第五节 | [产品页](https://www.aliyun.com/product/polardb) |
+| 2 | PolarDB-X | 分布式事务库（TPC-C 双榜认证） | [产品页](https://www.aliyun.com/product/drds)（旧域名 drds） |
+| 3 | RDS | 通用托管 MySQL/PG，入门首选 | [产品页](https://www.aliyun.com/product/rds) |
+| 4 | AnalyticDB | 云数据仓库（PG 兼容），向量引擎 + NL2SQL | [产品页](https://www.aliyun.com/product/analyticdb) |
+| 5 | Lindorm | 多模融合（宽表/时序/搜索），IoT 万亿行 | [产品页](https://www.aliyun.com/product/lindorm) |
+| 6 | Tair | 内存库（Redis 兼容）；KVCache 下沉给 LLM 推理破显存墙 | [产品页](https://www.aliyun.com/product/kvstore) |
+| 7 | DAS | 跨库自治诊断调优 | [文档页](https://help.aliyun.com/zh/das/) |
+| 8 | MaxCompute | 离线数仓，双 11 峰值验证 | [产品页](https://www.aliyun.com/product/odps) |
+| 9 | Hologres | 实时数仓（PG 兼容），与 MaxCompute 湖仓双引擎 | [产品页](https://www.aliyun.com/product/hologres) |
+| 10 | DataWorks | 一站式数据开发治理（50+ 数据源、字段级血缘），2026 全面 Agent 化 | [产品页](https://www.aliyun.com/product/bigdata/ide) |
+| 11 | EMR | 开源大数据栈（Hadoop/Spark） | [产品页](https://www.aliyun.com/product/bigdata/emapreduce) |
+| 12 | Flink 实时计算 | 实时计算引擎云服务 | [产品页](https://www.aliyun.com/product/bigdata/sc) |
+| 13 | SLS | 日志服务，Agent 行为日志归宿之一 | [产品页](https://www.aliyun.com/product/sls) |
+| 14 | Quick BI | BI 报表 | [文档页](https://help.aliyun.com/zh/quickbi/) |
+| 15 | OpenSearch | 开放搜索 | [产品页](https://www.aliyun.com/product/opensearch) |
+| 16 | DataV | 数据可视化大屏 | [产品页](https://www.aliyun.com/product/bigdata/datav) |
+| 17 | DashVector | 独立向量检索服务 | [文档页](https://help.aliyun.com/zh/dashvector/) |
+| 18 | Tablestore | 表格存储，Agent 记忆/知识库场景 | [产品页](https://www.aliyun.com/product/ots) |
+| 19 | OSS Vector Bucket | 向量数据存 OSS，成本较自建开源库降 95% | [随 OSS](https://www.aliyun.com/product/oss) |
 
-| 产品 | 一句话 |
-|---|---|
-| PolarDB / PolarDB-X | 云原生关系库 / 分布式事务库（TPC-C 双榜认证）；AI 化最激进的一支，见第五节 |
-| RDS | 通用托管 MySQL/PG，入门首选 |
-| AnalyticDB | 云数据仓库（PG 兼容），向量引擎 + NL2SQL |
-| Lindorm | 多模融合（宽表/时序/搜索），IoT 万亿行 |
-| Tair | 内存库（Redis 兼容）；KVCache 下沉给 LLM 推理破显存墙 |
-| DAS | 跨库自治诊断调优 |
-
-**大数据与治理**：MaxCompute（离线数仓，双 11 峰值验证）+ Hologres（实时数仓，PG 兼容）湖仓双引擎；DataWorks（一站式开发治理，集成 50+ 数据源、字段级血缘）；周边 EMR、Flink、SLS、Quick BI、OpenSearch、DataV。
-
-**向量检索**：DashVector、OSS Vector Bucket（向量存 OSS，成本较自建开源库降 95%）、Tablestore（Agent 记忆/知识库）、AnalyticDB/Lindorm/Tair 库内向量、PolarSearch。策略明确：**不做独立向量库单品，让每个存储都长向量能力**——数据在哪，向量就在哪。代价是选型复杂度高。
+选型口碑（51CTO 2026-09 行业适配指南）：电商 PolarDB+Tair+AnalyticDB，金融 PolarDB-X，IoT Lindorm；RDS→PolarDB→PolarDB-X 平滑升级。向量检索策略：**不做独立向量库单品，让每个存储都长向量能力**（库内向量见 PolarDB/AnalyticDB/Lindorm/Tair 各行），数据在哪向量就在哪；代价是选型复杂度高。
 
 ### L5 应用与入口
 
-| 产品 | 一句话 |
-|---|---|
-| 千问 App | C 端助手 |
-| 千问办公 | 企业 Agent 平台 + **企业上下文（Enterprise Context）**：把企业数据压缩结构化、随业务更新，供数字员工实时调用；配 QwenNote 随身硬件 |
-| 钉钉 AI | 办公入口，数字员工与人类员工在 IM 协同 |
-| 夸克 | 搜索/学习入口 |
-| Qwen Intelligence | 手机/车机端侧 Agent 全栈方案（荣耀 Magic9 首发，覆盖规划/操作/创作三套模型） |
+| 序号 | 产品名称 | 产品介绍 | 官网地址 |
+|---|---|---|---|
+| 1 | 千问 App | C 端助手 | [通义千问](https://www.tongyi.com) |
+| 2 | 千问办公 | 企业 Agent 平台 + 企业上下文（Enterprise Context）；配 QwenNote 随身硬件 | [通义千问](https://www.tongyi.com)（千问系统一入口） |
+| 3 | 钉钉 AI | 办公入口，数字员工与人类员工在 IM 协同 | [钉钉官网](https://www.dingtalk.com) |
+| 4 | 夸克 | 搜索/学习入口 | [夸克官网](https://www.quark.cn) |
+| 5 | QwenNote | 随身硬件，外接千问办公干活（2026 云栖新品，暂无独立产品页） | [通义千问](https://www.tongyi.com) |
+| 6 | Qwen Intelligence | 手机/车机端侧 Agent 全栈方案（荣耀 Magic9 首发，规划/操作/创作三套模型） | [通义千问](https://www.tongyi.com) |
+
 
 ## 三、产品之间的关系（上半部分的图，落到地上）
 
