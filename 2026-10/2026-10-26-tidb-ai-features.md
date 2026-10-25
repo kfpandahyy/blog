@@ -7,6 +7,7 @@
 - AI 功能分六块：向量检索、全文/混合检索、Chat2Query（NL2SQL）、TiDB MCP Server、pytidb SDK、面向 Agent 负载的 Cloud 形态
 - 2026 年新增：TiDB Cloud Lake（6-30 公测）、PG 兼容 Starter（pgvector 兼容，年内公测）、全文检索上云扩区（5-6 月）、BYOC on AWS（10 月，TiDB X 内核）、国内平凯 DBaaS（4-8）、MCP Server 开源（4 月文档）
 - 自管理内核：2026 全年停在 v8.5 LTS 线（8.5.5→8.5.8），无 9.x，向量检索在自管理侧文档仍标"公测"
+- 平台底盘：分支（Branching，2023 年上线，至今 preview，分钟级、每组织默认 5 个）、实例秒级创建、resource group 配额隔离；per-tenant 硬隔离以上需拆实例
 - 未来主线判断：TiDB X（对象存储底座 + 存算分离）承接 AI 负载；多协议（MySQL + PG）抢生态；定位从"HTAP 数据库"改写为"Agent 记忆体与数据基础设施"
 
 ---
@@ -58,7 +59,43 @@ TiDB 的向量能力是内核级集成，不是外挂插件：
 
 ---
 
-## 二、2026 年新增清单（时间线）
+## 二、平台底盘：分支、秒级启动与多租户
+
+把数据库做成 AI 应用平台（每个 Agent、每个客户一套独立环境）需要三项底盘能力。这三块不在"AI 功能"叙事里，却是平台化落地的真实约束。
+
+### 1. 分支（Branching）
+
+- TiDB Cloud Branching 于 2023-07 随 Serverless GA 发布：copy-on-write 数据分支，从父实例在某一时间点分叉出完整数据副本
+- 建分支是**分钟级**（官方口径 "usually completes within a few minutes"），对业务无感，但不是 Neon 那种秒级/毫秒级体验
+- 截至 2026-10 仍标 **public preview**，且仅支持 TiDB Cloud Starter；Dedicated 不支持
+- 配额：每组织默认最多 5 个分支；父实例被限流或数据量超过 100 GiB 不能建分支；Agent 平台等大规模分支场景需购买 Instance Capacity Plan
+- 生态配套完整：GitHub App（提 PR 自动建分支接入 CI）、Vercel 集成（预览部署自动配分支连接串）、CLI `ticloud serverless branch`
+- **自管理内核没有原生分支**，只有 PITR 恢复到新集群、备份恢复、TiCDC 同步这类"复制式"替代——本质是恢复而非写时复制，成本和时延差一个量级
+
+### 2. 秒级启动
+
+| 形态 | 速度 | 说明 |
+|---|---|---|
+| TiDB Cloud Starter 新建实例 | 秒级 | 免费、免信用卡，官方口径 "in seconds" |
+| 分支创建 | 分钟级 | 见上，COW 无感但非秒级 |
+| TiDB X / 平凯 DBaaS | 秒级扩缩容 | 存算分离 + 缩容至零；从零冷启动的拉起时长未公开 |
+| 自管理 | 无 | `tiup playground` 仅供本地体验，生产部署按小时计 |
+
+### 3. 多租户
+
+分三层看，强弱差别很大：
+
+| 层 | 能力 | 边界 |
+|---|---|---|
+| 平台层 | Org → Project → Instance 三级模型；IAM、API Key、组织/项目/实例级角色（实例级 role 为 2026-04 新增）；每实例独立 endpoint、计算、备份 | 隔离粒度就是实例本身，强隔离需求直接拆实例，没有中间档 |
+| 实例内 | MySQL 8.0 兼容权限模型 + RBAC 角色；**Resource Control 资源管控**：resource group 绑定用户/会话，按 RU 配额 + 调度优先级限速 | 属"配额隔离"非硬隔离；没有 per-tenant 独立密钥、备份/PITR、endpoint |
+| 对比 Neon | Neon 每分支独立 compute endpoint，但无实例内租户限速 | TiDB 有实例内限速，但分支额度和成熟度（三年 preview）远不如 Neon 流畅 |
+
+**结论**：做 Agent 平台（多 Agent 沙箱、多客户托管、每 PR 一套环境）时，TiDB 给的是"实例级隔离 + 配额调速"组合。分支能力存在，但 5 个上限、分钟级创建、preview 状态撑不起"每个 Agent 一套库"的玩法。这是相对 Neon 系 serverless 数据库的明显短板，也是平台化选型时最容易被低估的分歧点。
+
+---
+
+## 三、2026 年新增清单（时间线）
 
 | 时间 | 事项 | 性质 |
 |---|---|---|
@@ -82,7 +119,7 @@ TiDB 的向量能力是内核级集成，不是外挂插件：
 
 ---
 
-## 三、未来趋势判断
+## 四、未来趋势判断
 
 以下分"事实延伸"与"推断"两档，推断处单独标注。
 
@@ -114,7 +151,7 @@ PG 兼容 Starter 公测、pgvector 兼容、PG 扩展支持——这是 2026 �
 
 ---
 
-## 四、速查：一个 AI 应用选 TiDB 的决策点
+## 五、速查：一个 AI 应用选 TiDB 的决策点
 
 | 场景 | 建议形态 | 说明 |
 |---|---|---|
