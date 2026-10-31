@@ -4,7 +4,7 @@
 
 ## 一、先把口号拆成可证伪的问题
 
-"每个 Agent 一个数据库"（One Database Per Agent）是 2025 年下半年以来数据库行业最响的口号。Supabase 收购 Turso 时把它写进了公告标题，Neon 被 Databricks 收购时用的理由是"平台上 80% 以上的库由 AI Agent 创建"，Cloudflare 在 Agents Week 上直接把库塞进每个 AI 生成的应用。
+"每个 Agent 一个数据库"（One Database Per Agent）是 2025 年下半年以来数据库行业最响的口号。Supabase 收购 Turso 时把它写进了公告标题[1]，Neon 被 Databricks 收购时用的理由是"平台上八成以上的新库由 AI Agent 创建"[4]，Cloudflare 在 Agents Week 上直接把库塞进每个 AI 生成的应用[10]。
 
 但口号在传播中把三个不同的问题压成了一句话：
 
@@ -24,11 +24,11 @@ LLM 在 API 层面是无状态的：响应完成即遗忘。Agent 要跨会话�
 
 | 事实 | 来源 | 口径 |
 |---|---|---|
-| Supabase 每月新增 400 万+ 数据库，约 70% 由 AI 工具创建；2026 年以来最大单一新增用量来源是 Claude Code | Supabase 公告 / PR Newswire（2026-10-02） | 厂商口径 |
-| Neon 被 Databricks 收购的官方理由：平台上多数新库由 AI Agent 创建 | Databricks 公告（2025-05） | 厂商口径 |
-| TiDB Cloud 自称 90% 的新建集群由 AI Agent 创建 | PingCAP 对比页（2026-03 更新） | 厂商口径 |
-| Turso 客户 CTO.new 为每个项目开一个库做多 Agent 协调层，边际库成本从每用户约 20 美元/月降到约 1 美元/月 | Turso 官方案例 | 厂商口径 |
-| Shopify 自 2014 年起按"每商店一个分片库"（pods 架构）承载数百万商家 | Shopify 工程公开资料 | 工程实践 |
+| Supabase 每月新增 400 万+ 数据库，约 70% 由 AI 工具创建；2026 年以来最大单一新增用量来源是 Claude Code | Supabase 官方公告（2026-10-02）[1]；Y Combinator 帖子同口径[3] | 厂商口径 |
+| Neon 被 Databricks 收购的官方理由：平台上多数新库由 AI Agent 创建 | Databricks 官方公告（2025-05-14）[4] | 厂商口径 |
+| TiDB Cloud 自称 90% 的新建集群由 AI Agent 创建 | PingCAP 对比页（2026-03 更新）[5] | 厂商口径 |
+| Turso 客户 CTO.new 为每个项目开一个库做多 Agent 协调层，边际库成本从每用户约 20 美元/月降到约 1 美元/月 | Turso 官方案例[6] | 厂商口径 |
+| Shopify 自 2014 年起按"每商店一个分片库"（pods 架构）承载数百万商家 | Shopify 官方架构指南（2026-07）与工程公开资料[7] | 工程实践 |
 
 创建量的爆炸是观测事实（多源一致），成本案例至少证明了一个实例：当库便宜到一定程度，"按自然边界切分数据"会从奢侈变成默认。
 
@@ -38,17 +38,17 @@ LLM 在 API 层面是无状态的：响应完成即遗忘。Agent 要跨会话�
 
 ### 2.4 本地优先与边缘场景：库必须跟着 Agent 走
 
-有一类 Agent 跑在端侧、沙箱或边缘节点，断网要能工作、重连后要增量同步。这类负载要求的不是"云端有一个库"，而是"一个能随身携带的文件"。SQLite 文件格式恰好满足：可嵌入、可整体复制、可离线读写。Cloudflare 的隔离 SQLite（Agents Week 2026 的 Facets）与 Turso 的可携带文件路线都指向这个甜点。共享云端数据库在这个形态下结构性不适用。
+有一类 Agent 跑在端侧、沙箱或边缘节点，断网要能工作、重连后要增量同步。这类负载要求的不是"云端有一个库"，而是"一个能随身携带的文件"。SQLite 文件格式恰好满足：可嵌入、可整体复制、可离线读写。Cloudflare 的隔离 SQLite（Agents Week 2026 的 Facets）与 Turso 的可携带文件路线都指向这个甜点[10]。共享云端数据库在这个形态下结构性不适用。
 
 ### 2.5 经济学拐点：库便宜到可以"用完即弃"
 
-Turso 的 diskless 架构（计算无状态、S3 Express One Zone 做唯一真相源、多库 WAL 合并写）给出的厂商口径是单库边际成本约 0.57 美元/月、单节点可托管百万库、闲置不耗算力。**如果这个数字成立**，"每个任务建一个库、用完删掉"就比"所有任务挤一个库 + 应用层隔离"更简单也更便宜。正方赌的就是这个拐点已经到来。
+Turso 的 diskless 架构（计算无状态、S3 Express One Zone 做唯一真相源、多库 WAL 合并写）给出的厂商口径是单库边际成本约 0.57 美元/月、单节点可托管百万库、闲置不耗算力[8]。**如果这个数字成立**，"每个任务建一个库、用完删掉"就比"所有任务挤一个库 + 应用层隔离"更简单也更便宜。正方赌的就是这个拐点已经到来。
 
 ## 三、反方：为什么"每 Agent 一库"作为普遍命题不成立
 
 ### 3.1 多租户架构的经典结论：独立库是"最贵的选项"，业界共识是按需升级
 
-多租户数据库架构的三模型——共享库+RLS、schema-per-tenant、库-per-tenant——是被写进各云厂商与架构指南的标准内容。其结论高度一致：
+多租户数据库架构的三模型——共享库+RLS、schema-per-tenant、库-per-tenant——是被写进各云厂商与架构指南的标准内容[11][12]。其结论高度一致：
 
 | 模型 | 隔离 | 成本 | 迁移代价 |
 |---|---|---|---|
@@ -56,33 +56,33 @@ Turso 的 diskless 架构（计算无状态、S3 Express One Zone 做唯一真�
 | Schema-per-tenant | 较强（物理分目录） | 中 | 迁移 × N schema，可并行 |
 | 库-per-tenant | 最强（物理隔离） | 最高 | 迁移 × N 库，连接池爆炸 |
 
-工程社区的通行建议是"从共享起步，合规压力出现时再升级"，并且用混合分层：小租户共享，大租户/合规租户独立。Shopify 自己的对外架构建议就是这个 hybrid：标准商家走共享基础设施，隔离只卖给企业级客户。也就是说，**即便在"每租户"这个比"每 Agent"更古老、付费意愿更强的领域，行业实践也没有落到"一律一租户一库"**——隔离是分层商品，不是默认配置。
+工程社区的通行建议是"从共享起步，合规压力出现时再升级"[12]，并且用混合分层：小租户共享，大租户/合规租户独立。Shopify 自己的对外架构建议就是这个 hybrid[7]。也就是说，**即便在"每租户"这个比"每 Agent"更古老、付费意愿更强的领域，行业实践也没有落到"一律一租户一库"**——隔离是分层商品，不是默认配置。
 
-另一个具体数字：库-per-tenant 模型下，100 个租户 × 每池 20 连接 = 2000 个数据库连接，足以压垮一台 Postgres（dev.to 2026-03 生产实践清单）。Agent 数量比 SaaS 租户高三个数量级，连接与迁移的乘法效应是致命的。
+另一个具体数字：库-per-tenant 模型下，100 个租户 × 每池 20 连接 = 2000 个数据库连接，足以压垮一台 Postgres（dev.to 2026-03 生产实践清单[11]）。Agent 数量比 SaaS 租户高三个数量级，连接与迁移的乘法效应是致命的。
 
 ### 3.2 主流 Agent 框架的默认形态反驳了这个口号
 
-LangGraph——目前使用最广的 Agent 编排框架——的持久化默认是 SqliteSaver/Postgres checkpointer：**一个数据库文件（或一个库），靠 thread_id 做逻辑隔离**。无数个 Agent/会话共享同一个 checkpointer，从未因此成为新闻。Mem0、Zep 等记忆层服务的部署形态同样是"一个存储后端服务多 Agent"。这说明在真实代码里，"持久 + 隔离"的标准实现是逻辑隔离而非物理分库。口号描述的实践与主流框架默认实践之间存在明显断层。
+LangGraph——目前使用最广的 Agent 编排框架——的持久化默认是 SqliteSaver/Postgres checkpointer：**一个数据库文件（或一个库），靠 thread_id 做逻辑隔离**[13]。无数个 Agent/会话共享同一个 checkpointer，从未因此成为新闻。Mem0、Zep 等记忆层服务的部署形态同样是"一个存储后端服务多 Agent"。这说明在真实代码里，"持久 + 隔离"的标准实现是逻辑隔离而非物理分库。口号描述的实践与主流框架默认实践之间存在明显断层。
 
 ### 3.3 "创建量爆炸"证明的是创建，不是留存
 
-Supabase 口径的 400 万库/月是**创建量**：Agent 为原型、探索、临时看板各建一个库，任务结束即弃。创建量证明的是"建库动作变便宜了"，不能推出"每个 Agent 需要长期持有一个库"。把它当成留存需求来规划基础设施，等于把出生率当人口数。反方指出的这一点在官方数据里无法证伪——没有任何一方披露过这些库的 30 天存活率。
+Supabase 口径的 400 万库/月是**创建量**[1]：Agent 为原型、探索、临时看板各建一个库，任务结束即弃。创建量证明的是"建库动作变便宜了"，不能推出"每个 Agent 需要长期持有一个库"。把它当成留存需求来规划基础设施，等于把出生率当人口数。反方指出的这一点在官方数据里无法证伪——没有任何一方披露过这些库的 30 天存活率。
 
 ### 3.4 成本数字经不起 fleet 规模的乘法
 
-按 Turso 自己的厂商口径 0.57 美元/库/月：100 万个内部 Agent 的月存储成本就是 57 万美元。对比之下，一个配置良好的共享 Postgres 实例（含向量扩展）承载同等数量的逻辑 Agent 隔离，月成本是百美元量级。0.57 美元只有在"每个库背后是一个付费租户"（CTO.new 案例正是如此：5 万用户付月费）时才是好生意；对内部 Agent 群（sub-agent fleet），它是成本灾难。**正方案例的沉默前提是：库的用户是客户，不是同事。**
+按 Turso 自己的厂商口径 0.57 美元/库/月[8]：100 万个内部 Agent 的月存储成本就是 57 万美元。对比之下，一个配置良好的共享 Postgres 实例（含向量扩展）承载同等数量的逻辑 Agent 隔离，月成本是百美元量级。0.57 美元只有在"每个库背后是一个付费租户"（CTO.new 案例正是如此：5 万用户付月费[6]）时才是好生意；对内部 Agent 群（sub-agent fleet），它是成本灾难。**正方案例的沉默前提是：库的用户是客户，不是同事。**
 
 ### 3.5 治理真空：SQLite 文件里没有权限体系
 
-第三方分析（datapace.ai，2026-10）指出一个被口号掩盖的结构性问题：SQLite 文件不携带角色、授权、行策略——凡此一切，都要在负载已经存在之后补建。物理隔离给了"边界"，却没给"治理"。对多租户 SaaS 这是可接受的工程债；对把 Agent 当员工用的企业，这是审计与合规的直接缺口。Postgres 三十年的权限模型不是冗余设计。
+第三方分析（datapace.ai，2026-10）[15]指出一个被口号掩盖的结构性问题：SQLite 文件不携带角色、授权、行策略——凡此一切，都要在负载已经存在之后补建。物理隔离给了"边界"，却没给"治理"。对多租户 SaaS 这是可接受的工程债；对把 Agent 当员工用的企业，这是审计与合规的直接缺口。Postgres 三十年的权限模型不是冗余设计。
 
 ### 3.6 引擎现实：专用武器有明确的能力边界
 
-社区复测（Hacker News 讨论串，2026-10）给出对 Turso 的实测质疑：ClickBench 上慢于原生 SQLite；其 MVCC 并发写截至公告时仍是 tech preview（不支持 CREATE INDEX，行版本内存开销大）；官方自己的定位就是"数据集超过数 GB、高并发多进程写、复杂分析查询请回 Postgres"。**引擎层的证据支持"海量小库"这个甜点，同时反对把它推广为所有 Agent 的默认。**
+社区复测（Hacker News 讨论串，2026-10[16]）给出对 Turso 的实测质疑：ClickBench 上慢于原生 SQLite；其 MVCC 并发写截至公告时仍是 tech preview——此为官方博客自认：不支持 CREATE INDEX、行版本全量拷贝带来显著内存开销[14]；官方自己的定位就是"数据集超过数 GB、高并发多进程写、复杂分析查询请回 Postgres"。**引擎层的证据支持"海量小库"这个甜点，同时反对把它推广为所有 Agent 的默认。**
 
 ### 3.7 供给侧的未兑现清单
 
-"毕业路径"（SQLite → Postgres）迄今是方向不是工具；两套计费模型（Turso 5.99 美元不限库 vs Supabase Pro 25 美元/项目）如何并轨没有答案；libSQL 用户站在官方明说将离开的分支上；2025 年 1 月 Turso 曾为新产品下线 edge replicas 并移除多库 schema——"现有客户照常"的承诺从来只保护现有客户。口号成立所依赖的迁移、定价、治理三件基础设施，目前都不存在。
+"毕业路径"（SQLite → Postgres）迄今是方向不是工具[2][17]；两套计费模型（Turso 5.99 美元不限库 vs Supabase Pro 25 美元/项目）如何并轨没有答案；libSQL 用户站在官方明说将离开的分支上；2025 年 1 月 Turso 曾为新产品下线 edge replicas 并移除多库 schema——"现有客户照常"的承诺从来只保护现有客户[15]。口号成立所依赖的迁移、定价、治理三件基础设施，目前都不存在。
 
 ## 四、关键澄清：隔离边界的四种实现与第三种架构
 
@@ -96,7 +96,7 @@ Supabase 口径的 400 万库/月是**创建量**：Agent 为原型、探索、�
  └─ 库/文件级：独立实例或 SQLite 文件        ← 物理隔离，成本/治理最贵
 ```
 
-还有常被忽略的**第三种架构**：逻辑多租户跑在单一物理集群上。TiDB 支撑 Kimi 建站平台的公开口径是"单一集群承载数千万逻辑站点、刻意不为每站点分配真实实例、极端状态整个平台只需一个常开的 TiDB 集群"（PingCAP 案例稿与团队口径，2026-08 / 2026-10，厂商口径）。这证明"千万级 Agent"与"每 Agent 一个物理库"之间没有必然联系——**逻辑租户密度可以做得极高，物理实例数可以做得极少**。口号刻意模糊了"逻辑库"与"物理实例"的区别，而这恰恰是全部成本差异所在。
+还有常被忽略的**第三种架构**：逻辑多租户跑在单一物理集群上。TiDB 支撑 Kimi 建站平台的公开口径是"单一集群承载数千万逻辑站点、刻意不为每站点分配真实实例、极端状态整个平台只需一个常开的 TiDB 集群"（量子位报道 2026-05；PingCAP 客户案例稿 2026-10-13[9]，厂商口径）。这证明"千万级 Agent"与"每 Agent 一个物理库"之间没有必然联系——**逻辑租户密度可以做得极高，物理实例数可以做得极少**。口号刻意模糊了"逻辑库"与"物理实例"的区别，而这恰恰是全部成本差异所在。
 
 ## 五、判定：分场景结论
 
@@ -104,9 +104,9 @@ Supabase 口径的 400 万库/月是**创建量**：Agent 为原型、探索、�
 
 | Agent 类型 | 是否需要专属库 | 推荐边界形态 | 依据 |
 |---|---|---|---|
-| **付费租户型**：每个 Agent/站点服务一个客户，客户付钱 | 需要 | 独立库或 copy-on-write 分支；合规客户物理隔离 | Shopify 混合分层实践；CTO.new 成本案例成立的前提 |
-| **内部短生命周期型**：sub-agent 群、任务执行器 | 不需要 | 共享实例 + RLS 或 schema；一个 checkpointer 服务全群 | LangGraph/Mem0 默认实践；0.57 美元×百万 Agent 的成本账 |
-| **边缘/本地优先型**：断网运行、文件随 Agent 迁移 | 需要（但形态是文件，不是云服务） | 嵌入式 SQLite 文件 per Agent | 本地优先/local-first 场景；Turso/Cloudflare 路线的真实甜点 |
+| **付费租户型**：每个 Agent/站点服务一个客户，客户付钱 | 需要 | 独立库或 copy-on-write 分支；合规客户物理隔离 | Shopify 混合分层实践[7]；CTO.new 成本案例成立的前提[6] |
+| **内部短生命周期型**：sub-agent 群、任务执行器 | 不需要 | 共享实例 + RLS 或 schema；一个 checkpointer 服务全群 | LangGraph/Mem0 默认实践[13]；0.57 美元×百万 Agent 的成本账[8] |
+| **边缘/本地优先型**：断网运行、文件随 Agent 迁移 | 需要（但形态是文件，不是云服务） | 嵌入式 SQLite 文件 per Agent | 本地优先/local-first 场景；Turso/Cloudflare 路线的真实甜点[10] |
 | **不可信代码型**：第三方 Agent 市场、跨组织执行 | 需要 | 物理隔离 + 一次性分支/沙箱 | 爆炸半径最小化原则 |
 
 **总结论**：作为字面命题，"每个 Agent 都必须有一个数据库"是**假的**。真实成立的是一条更弱的命题——
@@ -119,9 +119,26 @@ Supabase 口径的 400 万库/月是**创建量**：Agent 为原型、探索、�
 
 ## 参考来源
 
-- Supabase / Turso 官方公告（2026-10-02）；PR Newswire 融资稿（2026-10-02）
-- Databricks + Neon 公告（2025-05）；PingCAP《Best Database for AI Agents》对比页（2026-03 更新）；PingCAP 客户案例稿（2026-10-13，厂商口径）
-- dev.to《Multi-Tenant Architecture: Database Per Tenant vs Shared Schema》（2026-03）；codercops 多租户架构指南（2026-05）；Shopify 官方《Multi-Tenant Architecture Guide》（2026-07）与 Shopify pods 公开工程资料（2014 起）
-- LangGraph 官方文档与 SqliteSaver/Postgres checkpointer 示例（langchain-ai.github.io）
-- datapace.ai《Supabase acquires Turso: one database per agent》（2026-10-11）；Hacker News 收购讨论串（2026-10）；stackone.com《Why a database per agent is now cheap》（2026-10-05）
-- Turso 技术博客（diskless、BEGIN CONCURRENT、CTO.new 案例）；Turso 定价页（2026-10-11 快照）
+**正方证据**
+
+1. Supabase 官方公告《Supabase is acquiring Turso》，https://supabase.com/blog/acquiring-turso ，2026-10-02（4M 库/月、70% AI 创建、毕业路径、Claude Code 为最大新增用量来源）
+2. Turso 官方公告《Turso is joining Supabase to give every agent its own database》，turso.tech/blog，2026-10-02（单节点百万库、毕业路径承诺）
+3. Y Combinator 官方账号帖子，2026-10-02（"70% of new Supabase databases are created by agents"），经 buildmvpfast.com 报道转述
+4. Databricks 官方公告《Databricks Agrees to Acquire Neon》，databricks.com，2025-05-14
+5. PingCAP《Best Database for AI Agents》对比页，https://www.pingcap.com/compare/best-database-for-ai-agents/ ，2026-03 更新（TiDB Cloud 90% 新建集群由 Agent 创建，厂商口径）
+6. Turso 客户案例 CTO.new，turso.tech（每项目一库、边际成本 20 美元→1 美元/用户/月，厂商口径）
+7. Shopify《Multi-Tenant Architecture Guide》，https://www.shopify.com/blog/multi-tenant-architecture ，2026-07；及 Shopify pods 分片架构工程公开资料（2014 起）
+8. Turso《Turso Cloud Goes Diskless: How We Built a Fully S3-Based Database Architecture》，https://turso.tech/blog/turso-cloud-goes-diskless ，2025-04-07（单库边际成本 0.57 美元/月的成本推导原文）
+9. 量子位 Kimi 建站×TiDB 报道，https://www.qbitai.com/2026/05/417731.html （2026-05）；PingCAP 客户案例稿（2026-10-13，厂商口径）
+10. Cloudflare 官方博客 Agents Week 2026 系列，blog.cloudflare.com（Facets 隔离 SQLite、Agent 基础设施发布，2026-10）
+
+**反方证据**
+
+11. dev.to《Multi-Tenant Architecture: Database Per Tenant vs Shared Schema》，https://dev.to/young_gao/multi-tenant-architecture-database-per-tenant-vs-shared-schema-1n2e ，2026-03（100 租户×20 连接=2000 连接的生产算例）
+12. CoderCops《Multi-Tenancy SaaS Architecture Patterns》，blog.codercops.com，2026-05（"从共享起步、按需升级"的行业共识）
+13. LangGraph 官方文档《Persistence》，https://langchain-ai.github.io/langgraph/concepts/persistence/ （SqliteSaver/Postgres checkpointer 默认单存储 + thread_id 逻辑隔离）
+14. Turso《Beyond the Single-Writer Limitation with Turso's Concurrent Writes》，https://turso.tech/blog/beyond-the-single-writer-limitation-with-tursos-concurrent-writes ，2025-10-06（MVCC 官方自认：tech preview、不支持 CREATE INDEX、行版本全量拷贝内存开销）
+15. datapace.ai《Supabase acquires Turso: one database per agent》，https://datapace.ai/blog/supabase-acquires-turso ，2026-10-11（SQLite 文件无角色/授权/行策略的治理真空；Turso 2025-01 下线 edge replicas 先例）
+16. Hacker News 收购讨论串，2026-10（205 分/112 评论；Turso 在 ClickBench 上慢于原生 SQLite 的社区质疑），经 saascity.io 归档转述
+17. saascity《Supabase Is Acquiring Turso: The Database-per-Agent Bet, Explained for SaaS Founders》，https://saascity.io/blog/supabase-acquires-turso-database-per-agent-2026 ，2026-10-03（毕业路径无迁移工具/无兼容矩阵/无时间表；HN 质疑的可访问归档）
+18. stackone《Why a database per agent is now cheap》，stackone.com，2026-10-05（每 Agent 一库成本结构的第三方拆解）
