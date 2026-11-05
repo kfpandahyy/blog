@@ -27,6 +27,17 @@
 
 最后一个数据点尤其说明问题：Supabase 增长最快的客户 segment，不是某类开发者，而是一个 AI 编程 Agent。Bolt、Lovable、Cursor、Figma 这类 AI 编程工具把 Supabase 作为默认后端预置，意味着大量应用在"创始人还没做任何基础设施决策"之前就已经长在了 Supabase 上——建库这个动作，正在从人的主动行为变成 Agent 的自动行为。
 
+这四个工具都属 AI 编程 Agent，但形态、与 Supabase 的连接深度并不相同：
+
+| 工具 | 是什么 | 与 Supabase 的关系 |
+| --- | --- | --- |
+| **Bolt**（bolt.new） | StackBlitz 出品的浏览器内 AI 全栈建站：自然语言描述需求即生成可运行应用，前端跑在 WebContainer 里 | 产品级默认后端：浏览器内没有真实后端，Supabase 为原生集成，一键接入 auth、Postgres、存储 |
+| **Lovable** | 定位"AI 全栈工程师"：需求进、完整应用出 | 产品级默认后端：默认技术栈即 React + Supabase，多数用户全程无感知 |
+| **Figma**（Figma Make） | 设计稿或提示词直接生成可运行应用的 AI 代码生成 | 生成物普遍接 Supabase 做持久化与 auth；属高频选择，非产品层面预置 |
+| **Cursor** | AI 原生 IDE：人在回路提需求，AI 在代码库里干活 | AI 最常被引导的后端；Supabase 提供 MCP server，Agent 可直接建项目、管表 |
+
+两点补充：其一，"默认预置"对 Bolt、Lovable 是产品事实，对 Figma、Cursor 更准确的说法是"AI 事实上的首选"。其二，消费链条上三个主体是分离的——做基础设施决策的是 Agent，跑数据库负载的是 Agent 生成的应用，付钱的是应用背后的用户。"增长最快的 segment 是 AI 编程 Agent"是渠道归因口径，不是 Agent 自己在用数据库。
+
 Supabase 对终局的判断是：现在的曲线指向**每月数十亿个数据库**，而其中的绝大多数很小——是一个 Agent 会话、一个分支预览、一个 vibe coding 出来的原型，用一阵子就丢掉。Copplestone 在大会访谈里把危险时刻说得非常具体：一个应用冲上 Hacker News 首页时，流量会瞬间超出原架构的承载能力——平台必须在此之前就给出升级通道。
 
 ## 三、动因二：Postgres 的经济模型，撑不起"一 Agent 一库"
