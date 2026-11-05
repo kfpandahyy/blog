@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 452" font-family="'Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif">
+<rect width="940" height="452" fill="#ffffff"/>
+<path d="M16,46 L300,46 L316,77.0 L300,108 L16,108 Z" fill="#e2e8f0" stroke="#475569" stroke-width="1.4"/>
+<text x="32" y="72" font-size="12.5" fill="#59636e">阶段一 · 2019–2024</text>
+<text x="32" y="96" font-size="17.5" font-weight="700" fill="#1f2328">Firebase 替代品</text>
+<rect x="16" y="116" width="280" height="48" rx="6" fill="#f6f8fa" stroke="#d1d9e0" stroke-width="1"/>
+<text x="28" y="135" font-size="12.5" fill="#1f2328">GitHub README：</text>
+<text x="28" y="153" font-size="12.5" fill="#1f2328">“The open source Firebase alternative”</text>
+<circle cx="24" cy="198" r="2.6" fill="#475569"/>
+<text x="36" y="202" font-size="13" fill="#1f2328">卖点三件套：开源 / SQL / 不锁定</text>
+<circle cx="24" cy="224" r="2.6" fill="#475569"/>
+<text x="36" y="228" font-size="13" fill="#1f2328">2020-04 公开测试，HN 1,400+ 注册</text>
+<circle cx="24" cy="250" r="2.6" fill="#475569"/>
+<text x="36" y="254" font-size="13" fill="#1f2328">2023-01 首批上线 pgvector 的云厂商</text>
+<path d="M324,46 L608,46 L624,77.0 L608,108 L324,108 Z" fill="#dbeafe" stroke="#2563eb" stroke-width="1.4"/>
+<text x="340" y="72" font-size="12.5" fill="#59636e">阶段二 · 2024–2025</text>
+<text x="340" y="96" font-size="17.5" font-weight="700" fill="#1f2328">Postgres 开发平台</text>
+<rect x="324" y="116" width="280" height="48" rx="6" fill="#f6f8fa" stroke="#d1d9e0" stroke-width="1"/>
+<text x="336" y="135" font-size="12.5" fill="#1f2328">README 改写：</text>
+<text x="336" y="153" font-size="12.5" fill="#1f2328">“Postgres development platform”</text>
+<circle cx="332" cy="198" r="2.6" fill="#2563eb"/>
+<text x="344" y="202" font-size="13" fill="#1f2328">品牌主张：Build with Postgres</text>
+<circle cx="332" cy="224" r="2.6" fill="#2563eb"/>
+<text x="344" y="228" font-size="13" fill="#1f2328">2024-04 平台官宣 GA（刻意推迟）</text>
+<circle cx="332" cy="250" r="2.6" fill="#2563eb"/>
+<text x="344" y="254" font-size="13" fill="#1f2328">2024-09 C 轮；同期 YC 约 40% 初创在用</text>
+<path d="M632,46 L916,46 L932,77.0 L916,108 L632,108 Z" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4"/>
+<text x="648" y="72" font-size="12.5" fill="#59636e">阶段三 · 2025–2026</text>
+<text x="648" y="96" font-size="17.5" font-weight="700" fill="#1f2328">Agent 时代数据库基础设施</text>
+<rect x="632" y="116" width="280" height="48" rx="6" fill="#f6f8fa" stroke="#d1d9e0" stroke-width="1"/>
+<text x="644" y="135" font-size="12.5" fill="#1f2328">官方博客：“Supabase is the Postgres company”</text>
+<circle cx="640" cy="198" r="2.6" fill="#7c3aed"/>
+<text x="652" y="202" font-size="13" fill="#1f2328">2025-04 官方 MCP Server；</text>
+<text x="652" y="220" font-size="13" fill="#1f2328">2026-06 Claude Code 成最大来源</text>
+<circle cx="640" cy="242" r="2.6" fill="#7c3aed"/>
+<text x="652" y="246" font-size="13" fill="#1f2328">2026-10：70% 新库由 Agent 创建，</text>
+<text x="652" y="264" font-size="13" fill="#1f2328">注册开发者 1,300 万</text>
+<line x1="16" y1="420" x2="924" y2="420" stroke="#59636e" stroke-width="1.4"/>
+<line x1="20" y1="415" x2="20" y2="425" stroke="#59636e" stroke-width="1.4"/>
+<text x="20" y="442" font-size="12" fill="#59636e" text-anchor="middle">2019</text>
+<line x1="330" y1="415" x2="330" y2="425" stroke="#59636e" stroke-width="1.4"/>
+<text x="330" y="442" font-size="12" fill="#59636e" text-anchor="middle">2024</text>
+<line x1="640" y1="415" x2="640" y2="425" stroke="#59636e" stroke-width="1.4"/>
+<text x="640" y="442" font-size="12" fill="#59636e" text-anchor="middle">2025</text>
+<line x1="900" y1="415" x2="900" y2="425" stroke="#59636e" stroke-width="1.4"/>
+<text x="900" y="442" font-size="12" fill="#59636e" text-anchor="middle">2026</text>
+</svg>

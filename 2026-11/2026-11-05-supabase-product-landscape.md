@@ -22,6 +22,8 @@
 
 ## 产品体系：一张五层全景
 
+![Supabase 五层产品体系与分发渠道](../assets/diagrams/supabase-five-layers.svg)
+
 Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同心圆。以下各层组件均为可枚举的实物，非营销概念。
 
 ### 第 1 层：数据底座
@@ -64,6 +66,8 @@ Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同�
 
 ## 定位演进：三次迁移，同一款产品
 
+![Supabase 定位三次迁移](../assets/diagrams/supabase-positioning-shifts.svg)
+
 Supabase 的产品骨架七年没变，变的是自我命名。三阶段有公开文本为证。
 
 **阶段一（2019–2024）：Firebase 替代品。** 这一时期其 GitHub README 标题长期固定为 "The open source Firebase alternative"。卖点三件套：开源、SQL、不锁定。Firebase 是它的叙事坐标系，Postgres 反而不是——CEO Paul Copplestone 2024 年 9 月接受 TechCrunch 采访时回忆：早年评论者把它看作 Firebase 的开源替代，"当时用的是 Postgres 这件事是次要的"。
@@ -102,6 +106,8 @@ Supabase 的产品骨架七年没变，变的是自我命名。三阶段有公�
 | 2026-10-02 | Select 2026：Supabase Compute GA、Multigres beta、OrioleDB 公开测试、dbarena 上线、Spark 发布、收购 Turso；同场发布 Agent Skills 4.2、Agent Assistant、Supabase UI |
 
 ### 时间线二：用户与融资（2020–2026）
+
+![Supabase 开发者数量与投后估值](../assets/diagrams/supabase-growth-funding.svg)
 
 | 时间 | 事件 |
 |---|---|

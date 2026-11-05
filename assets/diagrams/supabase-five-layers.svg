@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 604" font-family="'Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif">
+<rect width="940" height="604" fill="#ffffff"/>
+<rect x="16" y="52" width="660" height="88" rx="9" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4"/>
+<rect x="16" y="52" width="6" height="88" rx="3" fill="#7c3aed"/>
+<text x="38" y="82" font-size="13" fill="#59636e">第 5 层 · 2025 起向自建转身</text>
+<text x="38" y="110" font-size="19" font-weight="700" fill="#1f2328">基础设施层</text>
+<rect x="184" y="81" width="94" height="30" rx="7" fill="#ffffff" stroke="#7c3aed" stroke-width="1.2"/><text x="231" y="101" text-anchor="middle" font-size="13" fill="#1f2328">Multigres</text><rect x="286" y="81" width="86" height="30" rx="7" fill="#ffffff" stroke="#7c3aed" stroke-width="1.2"/><text x="329" y="101" text-anchor="middle" font-size="13" fill="#1f2328">OrioleDB</text><rect x="380" y="81" width="144" height="30" rx="7" fill="#ffffff" stroke="#7c3aed" stroke-width="1.2"/><text x="452" y="101" text-anchor="middle" font-size="13" fill="#1f2328">Supabase Compute</text><rect x="532" y="81" width="79" height="30" rx="7" fill="#ffffff" stroke="#7c3aed" stroke-width="1.2"/><text x="572" y="101" text-anchor="middle" font-size="13" fill="#1f2328">dbarena</text>
+<rect x="16" y="148" width="660" height="88" rx="9" fill="#dbeafe" stroke="#2563eb" stroke-width="1.4"/>
+<rect x="16" y="148" width="6" height="88" rx="3" fill="#2563eb"/>
+<text x="38" y="178" font-size="13" fill="#59636e">第 4 层 · Agent 直接入口</text>
+<text x="38" y="206" font-size="19" font-weight="700" fill="#1f2328">工程化与 AI 层</text>
+<rect x="184" y="159" width="115" height="30" rx="7" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/><text x="242" y="179" text-anchor="middle" font-size="13" fill="#1f2328">CLI · Studio</text><rect x="307" y="159" width="94" height="30" rx="7" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/><text x="354" y="179" text-anchor="middle" font-size="13" fill="#1f2328">Branching</text><rect x="409" y="159" width="115" height="30" rx="7" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/><text x="467" y="179" text-anchor="middle" font-size="13" fill="#1f2328">AI Assistant</text><rect x="532" y="159" width="115" height="30" rx="7" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/><text x="590" y="179" text-anchor="middle" font-size="13" fill="#1f2328">postgres.new</text><rect x="184" y="195" width="101" height="30" rx="7" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/><text x="234" y="215" text-anchor="middle" font-size="13" fill="#1f2328">MCP Server</text><rect x="293" y="195" width="115" height="30" rx="7" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/><text x="350" y="215" text-anchor="middle" font-size="13" fill="#1f2328">Agent Skills</text>
+<rect x="16" y="244" width="660" height="88" rx="9" fill="#d1fae5" stroke="#059669" stroke-width="1.4"/>
+<rect x="16" y="244" width="6" height="88" rx="3" fill="#059669"/>
+<text x="38" y="274" font-size="13" fill="#59636e">第 3 层 · 对标 Firebase 正面战场</text>
+<text x="38" y="302" font-size="19" font-weight="700" fill="#1f2328">后端服务件</text>
+<rect x="184" y="273" width="123" height="30" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.2"/><text x="245" y="293" text-anchor="middle" font-size="13" fill="#1f2328">Auth (GoTrue)</text><rect x="315" y="273" width="79" height="30" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.2"/><text x="354" y="293" text-anchor="middle" font-size="13" fill="#1f2328">Storage</text><rect x="402" y="273" width="130" height="30" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.2"/><text x="467" y="293" text-anchor="middle" font-size="13" fill="#1f2328">Edge Functions</text><rect x="540" y="273" width="123" height="30" rx="7" fill="#ffffff" stroke="#059669" stroke-width="1.2"/><text x="601" y="293" text-anchor="middle" font-size="13" fill="#1f2328">Queues · Cron</text>
+<rect x="16" y="340" width="660" height="88" rx="9" fill="#fef3c7" stroke="#d97706" stroke-width="1.4"/>
+<rect x="16" y="340" width="6" height="88" rx="3" fill="#d97706"/>
+<text x="38" y="370" font-size="13" fill="#59636e">第 2 层 · 核心卖点：永不手写 API</text>
+<text x="38" y="398" font-size="19" font-weight="700" fill="#1f2328">自动 API 层</text>
+<rect x="184" y="369" width="94" height="30" rx="7" fill="#ffffff" stroke="#d97706" stroke-width="1.2"/><text x="231" y="389" text-anchor="middle" font-size="13" fill="#1f2328">PostgREST</text><rect x="286" y="369" width="174" height="30" rx="7" fill="#ffffff" stroke="#d97706" stroke-width="1.2"/><text x="372" y="389" text-anchor="middle" font-size="13" fill="#1f2328">GraphQL (pg_graphql)</text><rect x="467" y="369" width="86" height="30" rx="7" fill="#ffffff" stroke="#d97706" stroke-width="1.2"/><text x="510" y="389" text-anchor="middle" font-size="13" fill="#1f2328">Realtime</text>
+<rect x="16" y="436" width="660" height="88" rx="9" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4"/>
+<rect x="16" y="436" width="6" height="88" rx="3" fill="#dc2626"/>
+<text x="38" y="466" font-size="13" fill="#59636e">第 1 层 · 可迁出的物理基础</text>
+<text x="38" y="494" font-size="19" font-weight="700" fill="#1f2328">数据底座</text>
+<rect x="184" y="465" width="198" height="30" rx="7" fill="#ffffff" stroke="#dc2626" stroke-width="1.2"/><text x="283" y="485" text-anchor="middle" font-size="13" fill="#1f2328">托管 Postgres（独立集群）</text><rect x="390" y="465" width="140" height="30" rx="7" fill="#ffffff" stroke="#dc2626" stroke-width="1.2"/><text x="459" y="485" text-anchor="middle" font-size="13" fill="#1f2328">Supavisor 连接池</text><rect x="537" y="465" width="105" height="30" rx="7" fill="#ffffff" stroke="#dc2626" stroke-width="1.2"/><text x="590" y="485" text-anchor="middle" font-size="13" fill="#1f2328">备份 · PITR</text>
+<rect x="16" y="534" width="660" height="44" rx="9" fill="#111827"/>
+<text x="346.0" y="562" text-anchor="middle" font-size="15" fill="#f9fafb">PostgreSQL 内核：60+ 扩展 · 与标准 Postgres 完全同构 · 可迁出、不锁定</text>
+<text x="692" y="58" font-size="15" font-weight="700" fill="#1f2328">分发渠道（暗线）</text>
+<line x1="692" y1="68" x2="924" y2="68" stroke="#59636e" stroke-width="1"/>
+<rect x="692" y="92" width="232" height="102" rx="8" fill="#f6f8fa" stroke="#d1d9e0" stroke-width="1"/>
+<rect x="692" y="92" width="4" height="102" rx="2" fill="#57606a"/>
+<text x="706" y="118" font-size="14.5" font-weight="700" fill="#1f2328">AI builders 白标</text>
+<text x="706" y="144" font-size="13" fill="#1f2328">Lovable · Bolt · 百度秒哒</text>
+<text x="706" y="168" font-size="12" fill="#59636e">Supabase for Platforms 2025-12</text>
+<rect x="692" y="208" width="232" height="102" rx="8" fill="#f6f8fa" stroke="#d1d9e0" stroke-width="1"/>
+<rect x="692" y="208" width="4" height="102" rx="2" fill="#57606a"/>
+<text x="706" y="234" font-size="14.5" font-weight="700" fill="#1f2328">MCP 生态</text>
+<text x="706" y="260" font-size="13" fill="#1f2328">Cursor · Claude Code · VS Code</text>
+<text x="706" y="284" font-size="12" fill="#59636e">官方 MCP Server，2025-04</text>
+<rect x="692" y="324" width="232" height="102" rx="8" fill="#f6f8fa" stroke="#d1d9e0" stroke-width="1"/>
+<rect x="692" y="324" width="4" height="102" rx="2" fill="#57606a"/>
+<text x="706" y="350" font-size="14.5" font-weight="700" fill="#1f2328">分析外置</text>
+<text x="706" y="376" font-size="13" fill="#1f2328">ClickHouse partnership</text>
+<text x="706" y="400" font-size="12" fill="#59636e">2024-10，数仓不自研</text>
+<rect x="692" y="440" width="232" height="102" rx="8" fill="#f6f8fa" stroke="#d1d9e0" stroke-width="1"/>
+<rect x="692" y="440" width="4" height="102" rx="2" fill="#57606a"/>
+<text x="706" y="466" font-size="14.5" font-weight="700" fill="#1f2328">中国市场</text>
+<text x="706" y="492" font-size="13" fill="#1f2328">火山引擎托管版</text>
+<text x="706" y="516" font-size="12" fill="#59636e">企业级合作分发</text>
+</svg>
