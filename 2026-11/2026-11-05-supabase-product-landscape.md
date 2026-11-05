@@ -84,23 +84,40 @@ Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同�
 - **第三方检测口径**：技术检测公司 [technologychecker](https://technologychecker.io/technology/supabase) 在 2026 年的爬网中于 19,361 个活跃商业域名上检出 Supabase。其中可解析规模信息的域名里，**69.4% 属于 1–10 人的公司、21.7% 属于 11–50 人公司**；可解析创立年代的域名里 **39.9% 成立于 2020 年代**——在 PaaS 品类六个平台中客户群最年轻、最小。注意该口径是"域名检出"，不等于付费客户数，大公司常以单个子域名出现。
 - **口径提醒**：注册开发者 ≠ 活跃开发者 ≠ 付费客户。活跃口径的公开数据稀缺（一家代理商博客称 2026 Q1 活跃开发者约 120 万，未经审计，仅作量级参照）。
 
-### 四类客户
+### 谁在用（简版）
 
-**1. 早期初创与独立开发者（基本盘）。** 免费层（2 个项目、500MB 库、1 万 MAU 认证）足以跑起一个真实产品，几小时搭出完整后端。官方披露 YC 当期约 40% 初创使用 Supabase（2024-09，C 轮期间）；第三方检测中 39.9% 客户公司成立于 2020 年代，与此互证。典型动作是 Next.js/SvelteKit/Flutter 全栈应用 + Supabase 后端，一人公司居多（官方案例库中 BeeAPro 三人团队日更功能、两人游戏工作室双端实时同步均属此类）。
+一句话：以个人和小团队为绝对主体，大企业以单点项目形态出现。第三方检测中 69.4% 的域名属 1–10 人公司；大公司域名几乎总是单个子域名或单项目（f5、Mixpanel、Vanta、Clay 的社区站）——"某个团队用了它"，而不是"公司整体迁移到它"。公开采用者名单（第三方汇编口径）含 Mozilla、1Password、Replicate、Meta 内部项目等；官方案例库中可点名 Mobbin（20 万用户从 Firebase 迁入）、Udio、Resend、Deriv、Brevo、Quivr、Firecrawl、eXp Realty、Phoenix Energy 等。按获客路径分四类：早期初创与独立开发者（免费层起量，YC 最新批次使用率从 2024-09 的约 40% 升至 Select 2026 现场披露的 60%）；AI builder 平台的间接用户（自己不知道后端是 Supabase）；从 Firebase/Heroku/Fauna 迁出的迁移者；企业与受监管行业（合规采购，客单价来源）。
 
-**2. AI 应用团队与 Agent builder 的用户（增长极）。** 两层含义：一是直接开发者——用 pgvector 存 embedding 做 RAG/语义检索，向量数据与业务数据同库；官方案例含 Quivr 一次开出 5,000 个向量库、Firecrawl 从 Pinecone 迁入、Berri AI 从 AWS RDS 迁入。二是间接用户——AI builder 平台的最终用户：Lovable 用它支撑平台上数百万应用（官方案例）、Bolt.new、base44、百度秒哒经由 Supabase for Platforms 白标接入（2025-12 官方披露数月内代建数百万项目）。这层客户自己甚至不知道后端是 Supabase。
+### 场景与实例占比（重点）
 
-**3. 迁移者（信任红利承接方）。** 三次迁移潮各有承接记录：Heroku 免费层关停（2022-11）后开发者外流；Firebase 不满意者——官方案例含 Mobbin 迁出 20 万用户、VideoGen 两人团队迁出 330 万用户；NoSQL 回头客——从 Fauna 等迁回关系模型（官方案例 Bree、Voypost）。共同动机：要 Firebase 式的省心，但不要 NoSQL 与封闭生态。
+**有硬数据的维度：谁建的库。** 官方按月新增数据库的创建主体给了口径：
 
-**4. 企业与受监管行业（客单价来源）。** Team/Enterprise 档（599 美元/月起，定制含 HIPAA、专属基础设施、PrivateLink、SLA）承接合规采购。官方案例含房地产经纪 eXp Realty（企业创新+削减 SaaS 成本）、能源公司 Phoenix Energy（六个月完成关键基础设施迁移）、政府承包商 GovSignals；第三方检测在大公司域名上的检出多为社区站/单项目形态（f5、Mixpanel、Vanta、Clay、Sigma Computing 的子域名）。G2 评论区的口碑画像与之吻合：有经验的开发者赞"易用、文档好"，无 SQL 背景新手嫌"陡"，付费溢价是另一类抱怨。
+| 创建主体 | 占月新增库比例 | 依据 |
+|---|---|---|
+| AI Agent / AI 工具 | 70% | 官方，2026-10 |
+| 人类开发者手动创建 | 30% | 同上 |
 
-### 谁在决策：三种买家形态
+Agent 渠道内部：Claude Code 是最大单一新增来源（2026-06 官方披露）；其次是 AI builder 平台白标代建（Lovable、Bolt.new、百度秒哒经 Supabase for Platforms，2025-12 官方称数月内代建数百万项目）。
 
-同一产品，三种决策主体：人类开发者主动选型（1、3、4 类）；AI 编程 Agent 代为开通（Claude Code 经 MCP Server 建库，2026-06 起为最大新增来源）；builder 平台批量代开（Lovable Cloud、Supabase for Platforms 白标）。建库的是 Agent，付钱的仍是背后的人——官方未披露 Agent 渠道的付费转化与留存。
+**存量占比（推算）**：官方披露库创建量同比 +600%（2026-06），即当前月创建量约为一年前的 7 倍——由此推算约 86% 的现存库龄不足 12 个月。过去一年 Agent 占比从年初的约三成爬升至 70%，按时间加权估算，**现存库中 Agent/AI 工具创建的约占 45–60%**（推算值，假设：创建速率年内大致线性爬升；一年前留下的 14% 存量几乎全部为人类创建）。
 
-### 典型场景清单
+**没有官方数据的维度：库用来干什么。** 官方未披露负载场景分布，以下为基于案例密度、第三方检测与产品结构的推断，证据强度逐行标注：
 
-全栈 Web/移动应用后端（最主流）、实时协作与多人同步（Realtime 广播/Presence）、RAG 与 AI 应用（pgvector + 同库关系数据）、内部工具与管理面板（PostgREST + RLS 免写后端）、快速认证集成（Auth + RLS）。非目标场景见第六节。
+| 负载场景 | 占实例数估计 | 证据强度 | 依据 |
+|---|---|---|---|
+| 全栈应用后端（Auth + DB + Storage） | 约 75–85% | 中（间接） | Agent 经 MCP 建的库几乎全数落在此场景（AI 编程工具生成的 Next.js/全栈应用标配后端）；builder 平台代建亦然 |
+| AI/RAG 应用（pgvector 向量检索） | 约 10–20% | 弱-中 | 官方案例密度最高的一类（Quivr 一次开出 5,000 个向量库、Firecrawl 从 Pinecone 迁入、Berri AI 从 RDS 迁入）；但多数与上一行叠加——RAG 通常是应用的一个模块而非独立负载 |
+| 实时协作 / 多人同步 | <5% | 弱 | Realtime 是差异化能力但属小众需求（官方案例：两人游戏工作室双端同步） |
+| 内部工具 / 管理面板 | 个位数百分比 | 弱 | PostgREST + RLS 免写后端，适配此场景，但无公开量化数据 |
+| 企业合规项目 | 数量少、客单价高 | 中 | eXp Realty、Phoenix Energy 类案例；单项目形态，买的是 Team/Enterprise 档 |
+
+**占比的正确读法——用量结构 ≠ 收入结构。** 三层错位必须拆开看：
+
+1. **实例数**：Agent 建库占 70%（增量）/ 45–60%（存量推算），但这是"用量结构"。月增 400 万库中大量落在免费层（Free 档 2 个项目、500MB，Agent 反复建库免费层即够用），官方从未披露 Agent 建库的付费转化与留存。
+2. **注册到付费的漏斗**：1,300 万注册开发者对 25 万+ 付费客户（SVIC 第三方口径），转化率约 1.9%——漏斗主体仍是人类开发者。
+3. **收入**：ARR 约 1.7 亿美元（Sacra 估算）的主体几乎确定来自人类付费客户——25 美元 Pro 自助升级 + 599 美元 Team + Enterprise 定制（推断，官方未拆分）。Agent 渠道当前的战略价值是"占用量入口、锁事实默认地位"，不是当期收入。
+
+一句话：Agent 建了七成的库，但付钱的仍是库背后的人。把 70% 读成"七成收入来自 Agent"是目前最常见的误读。
 
 ## 四、时间线：两条线
 
@@ -182,6 +199,7 @@ Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同�
 - [Supabase MCP Server 功能页](https://supabase.com/features/mcp-server)
 - [Supabase 客户案例库（官方）](https://supabase.com/customers)
 - [Supabase 域名检出与客户结构分析（technologychecker，2026）](https://technologychecker.io/technology/supabase)
+- [Supabase Select 2026 官网（含 13M 开发者/70% Agent 口径）](https://select.supabase.com/)
 - [Series C 报道（aVenture/TechCrunch 汇编，2024-09-25）](https://prod.aventure.vc/news/2024-09-25-supabase-a-postgres-centric-developer-platform-raises-80m-series-c)
 - [F 轮与 Multigres 报道（byteiota，2026-06-05）](https://byteiota.com/supabase-multigres-postgres-gets-horizontal-scaling/)
 - [Supabase 融资与估值时间线（multiples.vc）](https://multiples.vc/private-comps/supabase)
