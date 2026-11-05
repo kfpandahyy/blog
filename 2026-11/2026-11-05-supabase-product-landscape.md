@@ -123,6 +123,16 @@ Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同�
 | Cursor / Windsurf / Cline | AI IDE / 开源编码 Agent | 经 MCP 接入，自动开项目、写 schema、配 RLS | [官方 MCP Server 公告（2025-04）](https://supabase.com/blog/mcp-server)（20+ 工具） |
 | Lovable Cloud / Bolt.new / base44 / 百度秒哒 | AI builder 平台 | 白标代建，最终用户无感知；官方称数月代建数百万项目 | [官方博客：Supabase for Platforms](https://supabase.com/blog/supabase-for-platforms)；[官方案例：Lovable](https://supabase.com/customers) |
 
+**各工具占比：官方未披露按工具的拆分数据。** 官方只给过两条确定性事实和一条时间序列，其余是第三方解读：
+
+- **确定性事实**：Claude Code 是 2026 年初以来的最大单一新增来源，OpenAI Codex 为另一主要来源（2026-06，CEO 对 CNBC 的表述，见 [Dealroom F 轮笔记](https://app.dealroom.co/news/note/supabase-raises-500m-series-f-at-10-5b-valuation)）——注意是"最大单一来源"的定性表述，官方从未给出任何工具的百分比。
+- **唯一时间序列**：AI 工具建库占比整体 60%+（2026-06）→ 70%（2026-10），见上表举证。工具之间的相对份额无公开数据。
+- **第三方解读（Sacra / host0.ai 年度盘点）**：新增库中编码 Agent 渠道（开发者本机运行 Claude Code / Codex）的相对份额在上升，builder 平台渠道的相对份额在下降——"越来越多的 AI 构建应用不来自 app builder，而来自开发者本机运行的编码 Agent"（[来源](https://host0.ai/blog/state-of-vibe-coding-2026)，2026-10-04）。这是解读，不是官方拆分。
+- **反向参照（口径不同，勿混用）**：[armature.tech 2026-09 实验](https://armature.tech/blog/which-tools-coding-agents-install)：1.7 万次受控会话中，让 Agent 自主选择数据库时 Neon 赢下 66% 场次，Supabase 被提及次数最多（242 次）但被 Neon 压制。这是"Agent 自由选型"实验，测的是选择偏好，不是 Supabase 平台上的实际建库来源。
+- **builder 渠道量级参照**：Lovable 官方口径托管 6000 万项目、月访问 9 亿；Bolt 生成站点五个月内 100 万+ 部署在 Netlify（2024-11 至 2025-03，Netlify 口径，未定义"站点"）——可作为 builder 代建规模的量级参照，无法换算为 Supabase 建库占比。
+
+一句话：**工具间占比是没有公开数据的黑箱，能确认的只是 Claude Code 第一、Codex 第二梯队、builder 平台量级最大但在新增中的相对份额被编码 Agent 挤压。**
+
 **建的是什么类型应用。** 编码 Agent 侧无官方品类统计；builder 侧有公开的品类盘点（Lovable 生态），两者场景高度重叠，以下按常见度排序，以 builder 盘点为参照（推断）：
 
 1. **SaaS 微型产品**：订阅制小工具，解决单一人群的一个明确问题（开票、垂直 CRM、预约预订）——数量最多的一类。
