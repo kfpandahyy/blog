@@ -129,6 +129,7 @@ Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同�
 2. **内部工具与管理面板**：运营仪表盘替代电子表格，小团队自用——盘点中"被低估的第二大类"。
 3. **AI 包装应用（AI wrapper）**：GPT / Claude API + 订阅付费墙 + 用户面板——"增长最快品类"。
 4. **经典 CRUD 应用**：市场 / 商城、CMS、社区内容站。
+5. **网站 / 建站类**：落地页、营销站、博客、作品集——builder 生态的高频品类，第三方 FAQ 均将其列入 Lovable / Bolt 的典型产出（[sidetool 盘点](https://www.sidetool.co/post/can-you-build-production-ready-apps-with-bolt-cursor-or-lovable-ai/)："Lovable 可快速生成落地页与营销站"；规模佐证：Netlify 披露 2024-11 至 2025-03 五个月内有 100 万+ 个 Bolt 生成站点部署其上，见 [host0.ai 对 vibe coding 的年度盘点](https://host0.ai/blog/state-of-vibe-coding-2026)）。**口径提醒：纯展示型站点不建数据库，不在 70% 建库统计的分母内**；这类站点中带 CMS / 表单 / 订阅功能、真正落库的部分，更接近第 4 类的形态。
 
 品类来源：[第三方对 Lovable 真实构建的盘点](https://www.lowcode.agency/blog/real-apps-built-with-lovable)（lowcode.agency，2026-10-16）；其中"几乎所有成功构建共享同一底座——Supabase 做认证和数据"。
 
