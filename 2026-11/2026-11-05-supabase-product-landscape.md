@@ -78,67 +78,70 @@ Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同�
 
 ## 三、客户是谁：谁在用，什么场景
 
-### 总量与结构
+### 1）总结与结构
 
-- **官方口径**：注册开发者 1,300 万（2026-10），付费客户 25 万+（第三方汇编 SVIC 口径，官方未确认）。
-- **第三方检测口径**：技术检测公司 [technologychecker](https://technologychecker.io/technology/supabase) 在 2026 年的爬网中于 19,361 个活跃商业域名上检出 Supabase。其中可解析规模信息的域名里，**69.4% 属于 1–10 人的公司、21.7% 属于 11–50 人公司**；可解析创立年代的域名里 **39.9% 成立于 2020 年代**——在 PaaS 品类六个平台中客户群最年轻、最小。注意该口径是"域名检出"，不等于付费客户数，大公司常以单个子域名出现。
-- **口径提醒**：注册开发者 ≠ 活跃开发者 ≠ 付费客户。活跃口径的公开数据稀缺（一家代理商博客称 2026 Q1 活跃开发者约 120 万，未经审计，仅作量级参照）。
-
-### 谁在用（简版）
-
-一句话：以个人和小团队为绝对主体，大企业以单点项目形态出现。第三方检测中 69.4% 的域名属 1–10 人公司；大公司域名几乎总是单个子域名或单项目（f5、Mixpanel、Vanta、Clay 的社区站）——"某个团队用了它"，而不是"公司整体迁移到它"。公开采用者名单（第三方汇编口径）含 Mozilla、1Password、Replicate、Meta 内部项目等；官方案例库中可点名 Mobbin（20 万用户从 Firebase 迁入）、Udio、Resend、Deriv、Brevo、Quivr、Firecrawl、eXp Realty、Phoenix Energy 等。按获客路径分四类：早期初创与独立开发者（免费层起量，YC 最新批次使用率从 2024-09 的约 40% 升至 Select 2026 现场披露的 60%）；AI builder 平台的间接用户（自己不知道后端是 Supabase）；从 Firebase/Heroku/Fauna 迁出的迁移者；企业与受监管行业（合规采购，客单价来源）。
-
-### 场景与实例占比
-
-**有硬数据的维度：谁建的库。** 官方按月新增数据库的创建主体给了口径：
-
-| 创建主体 | 占月新增库比例 | 依据 |
+| 指标 | 数值 | 来源 |
 |---|---|---|
-| AI Agent / AI 工具 | 70% | 官方，2026-10 |
-| 人类开发者手动创建 | 30% | 同上 |
+| 注册开发者 | 1,300 万 | [官方，Select 2026](https://select.supabase.com/)（2026-10 口径） |
+| 月新增用户 / 月新增数据库 | 100 万 / 400 万+ | 同上；二手转述见 [Dealroom 2026-10-02](https://dealroom.co/news/158564-supabase-raises-150m-buys-turso-to-chase-the-agent-database-boom/) |
+| 数据库创建量同比 | +600% | 官方 2026-06，见 [Dealroom F 轮笔记](https://app.dealroom.co/news/note/supabase-raises-500m-series-f-at-10-5b-valuation) |
+| 付费客户 | 25 万+ | 第三方汇编 [SVIC](https://svic.medium.com/openai-and-anthropic-are-fueling-a-15-billion-wave-of-ai-acquisitions-heres-where-the-money-is-going-a0b0f8278d18)，官方未确认 |
+| 域名检出 / 规模结构 | 19,361 个活跃域名；69.4% 属 1–10 人公司、21.7% 属 11–50 人公司；39.9% 成立于 2020 年代 | [technologychecker 爬网](https://technologychecker.io/technology/supabase)（2026）——PaaS 品类六平台中客户群最年轻、最小；注意"域名检出"≠付费客户，大公司常以单个子域名出现 |
+| ARR | 约 1.7 亿美元 | [Sacra 估算](https://sacra.com/c/supabase/)（非官方） |
 
-70% 口径举证（按可信度排序）：
+结构：注册 → 付费漏斗约 1.9%（1,300 万对 25 万）；用量主体是小团队与个人，收入主体是人类企业客户（推断，官方未拆分）。口径提醒：注册 ≠ 活跃 ≠ 付费；活跃口径公开数据稀缺（某代理商博客称 2026 Q1 活跃开发者约 120 万，未经审计，仅作量级参照）。
 
-- 官方一手：[Supabase Select 2026 官网](https://select.supabase.com/)（"70% of new databases are now created by AI agents and tools"，2026-10）
-- 融资公告二手转述：[Dealroom：Supabase raises $150M, buys Turso](https://dealroom.co/news/158564-supabase-raises-150m-buys-turso-to-chase-the-agent-database-boom/)（2026-10-02，含 CEO 引述）；[Trending Topics 同日报道](https://www.trendingtopics.eu/supabase-150-million-turso/)（2026-10-03）
-- 早前口径（可对比看比例上移轨迹）：2026-06 F 轮时为 60%+，Claude Code 为最大单一来源，见 [Dealroom F 轮笔记](https://app.dealroom.co/news/note/supabase-raises-500m-series-f-at-10-5b-valuation)（转述 CEO 对 CNBC 的表述）
+### 2）谁在用
 
-**Agent/AI 工具建的库：谁在建、建的是什么应用。** 先把 70% 这个渠道拆成两类工具：
-
-| 工具类型 | 代表工具 | 建库方式 |
-|---|---|---|
-| 终端/IDE 编码 Agent（开发者驱动） | Claude Code（2026 年初以来最大单一来源）、OpenAI Codex、Cursor、Windsurf、Cline 等 | 经 Supabase MCP Server（2025-04 上线）或直连连接串：Agent 自动开项目、写 schema、配 RLS、接 Auth |
-| AI builder 平台（非开发者驱动） | Lovable（Cloud）、Bolt.new、base44、百度秒哒 | 平台侧白标代建，最终用户无感知（Supabase for Platforms，2025-12 官方称数月代建数百万项目） |
-
-建的什么应用——builder 侧有公开的品类盘点（Lovable/Bolt 生态），编码 Agent 侧无官方品类统计、两者场景高度重叠，综合第三方盘点与官方案例密度，按常见度排序：
-
-1. **SaaS 微型产品**：订阅制小工具，单点解决单一人群的一个明确问题（开票、垂直 CRM、预约预订）。第三方对 Lovable 成功构建的盘点中这是数量最多的一类。
-2. **内部工具与管理面板**：运营仪表盘替代电子表格，小团队自用——被第三方称为"被低估的第二大类"。
-3. **AI 包装应用（AI wrapper）**：GPT/Claude API + 订阅付费墙 + 用户面板，第三方盘点的"增长最快品类"。
-4. **经典 CRUD 应用**：市场/商城、CMS、社区内容站。
-5. **AI 应用后端**（RAG/chatbot 记忆与向量）：与上面几类叠加存在，不是独立品类。
-
-技术栈高度同质化：React/Next.js 前端 + Supabase（Auth + DB）+ Vercel/平台托管。第三方对 builder 生态的盘点原话是"几乎所有成功构建共享同一底座——Supabase 做认证和数据"。这也是为什么 70% 的 Agent 建库几乎可以被直接翻译为"70% 的新建库是全栈 Web 应用的后端"。
-
-**存量占比（推算）**：官方披露库创建量同比 +600%（2026-06），即当前月创建量约为一年前的 7 倍——由此推算约 86% 的现存库龄不足 12 个月。过去一年 Agent 占比从年初的约三成爬升至 70%，按时间加权估算，**现存库中 Agent/AI 工具创建的约占 45–60%**（推算值，假设：创建速率年内大致线性爬升；一年前留下的 14% 存量几乎全部为人类创建）。
-
-**没有官方数据的维度：库用来干什么。** 官方未披露负载场景分布，以下为基于案例密度、第三方检测与产品结构的推断，证据强度逐行标注：
-
-| 负载场景 | 占实例数估计 | 证据强度 | 依据 |
+| 类型 | 画像 | 代表与数据 | 来源 |
 |---|---|---|---|
-| 全栈应用后端（Auth + DB + Storage） | 约 75–85% | 中（间接） | Agent 经 MCP 建的库几乎全数落在此场景（AI 编程工具生成的 Next.js/全栈应用标配后端）；builder 平台代建亦然 |
-| AI/RAG 应用（pgvector 向量检索） | 约 10–20% | 弱-中 | 官方案例密度最高的一类（Quivr 一次开出 5,000 个向量库、Firecrawl 从 Pinecone 迁入、Berri AI 从 RDS 迁入）；但多数与上一行叠加——RAG 通常是应用的一个模块而非独立负载 |
-| 实时协作 / 多人同步 | <5% | 弱 | Realtime 是差异化能力但属小众需求（官方案例：两人游戏工作室双端同步） |
-| 内部工具 / 管理面板 | 个位数百分比 | 弱 | PostgREST + RLS 免写后端，适配此场景，但无公开量化数据 |
-| 企业合规项目 | 数量少、客单价高 | 中 | eXp Realty、Phoenix Energy 类案例；单项目形态，买的是 Team/Enterprise 档 |
+| 早期初创与独立开发者 | 免费层起量，一人公司居多；绝对主体（检出域名的 69.4% 属 1–10 人公司） | YC 批次使用率 60%（2024-09 为约 40%） | [Supabase 官方 X，Select 2026 披露](https://x.com/supabase/status/1990950858419380252)；[TechStartups 2026-11-02 报道佐证](https://techstartups.com/2026/11/02/supabase-turso/) |
+| AI builder 平台的间接用户 | 平台白标代建，用户自己不知道后端是 Supabase | Lovable 上数百万应用；Supabase for Platforms 数月代建数百万项目 | [官方案例：Lovable](https://supabase.com/customers)；[官方博客：Supabase for Platforms](https://supabase.com/blog/supabase-for-platforms) |
+| 迁移者 | 从 Firebase / Heroku / Fauna 迁出，要省心但不要 NoSQL | Mobbin 迁出 20 万用户、VideoGen 迁出 330 万用户 | [官方案例库](https://supabase.com/customers) |
+| 企业与受监管行业 | 合规采购（HIPAA / SLA / PrivateLink），客单价来源 | eXp Realty、Phoenix Energy、GovSignals | [官方案例库](https://supabase.com/customers) |
+| 大公司单点项目 | 单个子域名或单项目形态，而非公司整体迁移 | Mozilla、1Password、Replicate、Meta 内部项目（公开采用者汇编口径） | [第三方汇编](https://publicwork.dev/people/raffi/dashboards/supabase-public-adoption) |
 
-**占比的正确读法——用量结构 ≠ 收入结构。** 三层错位必须拆开看：
+### 3）场景与实例占比
 
-1. **实例数**：Agent 建库占 70%（增量）/ 45–60%（存量推算），但这是"用量结构"。月增 400 万库中大量落在免费层（Free 档 2 个项目、500MB，Agent 反复建库免费层即够用），官方从未披露 Agent 建库的付费转化与留存。
-2. **注册到付费的漏斗**：1,300 万注册开发者对 25 万+ 付费客户（SVIC 第三方口径），转化率约 1.9%——漏斗主体仍是人类开发者。
-3. **收入**：ARR 约 1.7 亿美元（Sacra 估算）的主体几乎确定来自人类付费客户——25 美元 Pro 自助升级 + 599 美元 Team + Enterprise 定制（推断，官方未拆分）。Agent 渠道当前的战略价值是"占用量入口、锁事实默认地位"，不是当期收入。
+#### 3.1 按创建主体：谁建的库（官方口径）
 
-一句话：Agent 建了七成的库，但付钱的仍是库背后的人。把 70% 读成"七成收入来自 Agent"是目前最常见的误读。
+| 创建主体 | 占月新增库比例 | 举证 |
+|---|---|---|
+| AI Agent / AI 工具 | 70% | 官方一手：[Select 2026 官网](https://select.supabase.com/)（2026-10）；二手转述：[Dealroom](https://dealroom.co/news/158564-supabase-raises-150m-buys-turso-to-chase-the-agent-database-boom/)（2026-10-02）、[Trending Topics](https://www.trendingtopics.eu/supabase-150-million-turso/)（2026-10-03）；早期口径 60%+（2026-06）：[Dealroom F 轮笔记](https://app.dealroom.co/news/note/supabase-raises-500m-series-f-at-10-5b-valuation)（转述 CEO 对 CNBC 的表述，并首次点名 Claude Code 为最大来源） |
+| 人类开发者手动创建 | 30% | 同上，官方同口径的剩余部分 |
+
+**存量占比（推算）**：+600% 同比意味着现存库约为一年前的 7 倍，即约 86% 库龄不足 12 个月；过去一年 Agent 占比从约三成爬升至 70%，按时间加权估算，**存量库中 Agent/AI 工具创建的约占 45–60%**（推算值；假设：创建速率年内大致线性爬升，一年前留下的 14% 几乎全部为人类创建）。
+
+#### 3.2 "AI Agent / AI 工具"渠道：什么工具、建什么应用
+
+**用什么工具（有官方与融资公告口径）：**
+
+| 工具 | 类型 | 角色 | 举证 |
+|---|---|---|---|
+| Claude Code | 终端编码 Agent | 2026 年初以来最大单一新增来源 | [Dealroom F 轮笔记](https://app.dealroom.co/news/note/supabase-raises-500m-series-f-at-10-5b-valuation)（2026-06，转述 CEO） |
+| OpenAI Codex | 终端编码 Agent | 主要来源之一 | 同上 |
+| Cursor / Windsurf / Cline | AI IDE / 开源编码 Agent | 经 MCP 接入，自动开项目、写 schema、配 RLS | [官方 MCP Server 公告（2025-04）](https://supabase.com/blog/mcp-server)（20+ 工具） |
+| Lovable Cloud / Bolt.new / base44 / 百度秒哒 | AI builder 平台 | 白标代建，最终用户无感知；官方称数月代建数百万项目 | [官方博客：Supabase for Platforms](https://supabase.com/blog/supabase-for-platforms)；[官方案例：Lovable](https://supabase.com/customers) |
+
+**建的是什么类型应用。** 编码 Agent 侧无官方品类统计；builder 侧有公开的品类盘点（Lovable 生态），两者场景高度重叠，以下按常见度排序，以 builder 盘点为参照（推断）：
+
+1. **SaaS 微型产品**：订阅制小工具，解决单一人群的一个明确问题（开票、垂直 CRM、预约预订）——数量最多的一类。
+2. **内部工具与管理面板**：运营仪表盘替代电子表格，小团队自用——盘点中"被低估的第二大类"。
+3. **AI 包装应用（AI wrapper）**：GPT / Claude API + 订阅付费墙 + 用户面板——"增长最快品类"。
+4. **经典 CRUD 应用**：市场 / 商城、CMS、社区内容站。
+
+品类来源：[第三方对 Lovable 真实构建的盘点](https://www.lowcode.agency/blog/real-apps-built-with-lovable)（lowcode.agency，2026-10-16）；其中"几乎所有成功构建共享同一底座——Supabase 做认证和数据"。
+
+**关键澄清：建的是 Agent 应用，还是非 Agent 应用？——主要是非 Agent 应用（普通网站 / SaaS / 工具）。**
+
+"70% 由 AI Agent 创建"描述的是**开发主体**（谁建的库），不是**应用类型**（建了什么）。Agent 在这里是建筑工人，不是建筑本身：
+
+- 上述品类盘点中无一将"自主 Agent 应用"列为主要品类；主流是网站与工具类普通 Web 应用。
+- "AI 包装应用"只是功能与 AI 相关（调用大模型 API），产品形态仍是普通 Web 应用，不是自主 Agent。
+- 真正的 Agent 应用（自主规划、工具调用、长期记忆，用 pgvector 存 Agent 记忆）存在且是官方押注方向，但无公开占比数据，未进入主流品类。
+- 旁证：构建栈同质化为 React / Next.js + Supabase + Vercel——典型网站技术栈，而非 Agent 基础设施栈。
+
+**占比提醒**：70% 是建库（用量）占比，不是收入占比——月增 400 万库中大量落在免费层（Free 档限 2 个项目），Agent 建库的付费转化与留存官方未披露。
 
 ## 四、时间线：两条线
 
