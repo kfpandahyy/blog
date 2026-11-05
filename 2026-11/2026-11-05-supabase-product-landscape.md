@@ -20,11 +20,23 @@
 
 一句话读数：这是一家月增 400 万个数据库、其中七成由 AI Agent 自动创建的公司——它的买家正在从开发者变成 Agent。
 
-## 产品体系：一张五层全景
+## 一、产品定位是什么
+
+**直接回答：Supabase 是"Postgres 的开发平台"——把数据库、API、认证、存储、实时、边缘计算打包成一个即开即用的后端，卖给想快速把应用做出来、又不想被云厂商锁死的人。** 它不是数据库内核厂商（内核是开源 Postgres），不是云厂商（跑在 AWS 等之上，正在建自有算力），本质是在标准 Postgres 之上收"集成与体验税"的平台。
+
+这个定位不是一次选定的，而是七年里三次迁移的结果。产品骨架始终没变，变的是自我命名——三阶段均有公开文本为证。
+
+**阶段一（2019–2024）：Firebase 替代品。** 这一时期其 GitHub README 标题长期固定为 "The open source Firebase alternative"。卖点三件套：开源、SQL、不锁定。Firebase 是它的叙事坐标系，Postgres 反而不是——CEO Paul Copplestone 2024 年 9 月接受 TechCrunch 采访时回忆：早年评论者把它看作 Firebase 的开源替代，"当时用的是 Postgres 这件事是次要的"。
+
+**阶段二（2024–2025）：Postgres 开发平台。** 随着 Postgres 热度持续上行、Firebase 声量消退，Supabase 主动拆掉对标。README 在 2025 年底改写为 "Postgres development platform"；官网同期提炼出 "Build with Postgres" 的品牌主张。Copplestone 同一采访中明确说公司"这些年来把自己定位得更清楚：一个 Postgres 平台"。技术侧的支撑是 2023 年 1 月它就上线了 pgvector 向量扩展——据其自述是第一批提供 pgvector 的云厂商，早于 AWS。
+
+**阶段三（2025–2026）：Agent 时代的数据库基础设施。** 2026 年官方博客直接使用 "Supabase is the Postgres company" 的表述（见 [Supabase 官方博客](https://supabase.com/blog/tags/postgres)）；年度发布会 Select 2026 的主题是 agentic infrastructure；组织上设立了 Head of Agentic Services（由收购的 Turso 创始人 Glauber Costa 出任）。需求侧的表征则是买家变了：2026 年 6 月官方披露 Claude Code 是平台新增使用的最大单一来源，10 月披露 70% 新库由 Agent/AI 工具创建。第三方评论（YesPress）的概括相当准确：BaaS 这个老市场声名不佳（锁定与账单惊吓），真正变化的是买家——过去是 deliberate 选工具的人类开发者，increasingly 是几秒内脚手架起应用、需要一个不需要销售电话就能开通后端的 AI Agent；而 Supabase 开放、即时、免费起步、Postgres 原生的栈"恰好是为这个客户形状打造的"。
+
+## 二、产品全景：一张五层图看懂所有产品
 
 ![Supabase 五层产品体系与分发渠道](../assets/diagrams/supabase-five-layers.svg)
 
-Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同心圆。以下各层组件均为可枚举的实物，非营销概念。
+Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同心圆。以下按层列出全部主要产品，各组件均为可枚举的实物，非营销概念。
 
 ### 第 1 层：数据底座
 
@@ -64,19 +76,33 @@ Supabase 的产品不是一张功能列表，而是围绕 Postgres 的五层同�
 
 **分发渠道**另有暗线：与 ClickHouse 的 partnership（2024-10）、Fly.io 托管合作（已终止）、以及面向中国市场的[火山引擎托管版](https://docs.volcengine.com/docs/aidap/supabase-supabase-console-overview?lang=zh)。
 
-## 定位演进：三次迁移，同一款产品
+## 三、客户是谁：谁在用，什么场景
 
-![Supabase 定位三次迁移](../assets/diagrams/supabase-positioning-shifts.svg)
+### 总量与结构
 
-Supabase 的产品骨架七年没变，变的是自我命名。三阶段有公开文本为证。
+- **官方口径**：注册开发者 1,300 万（2026-10），付费客户 25 万+（第三方汇编 SVIC 口径，官方未确认）。
+- **第三方检测口径**：技术检测公司 [technologychecker](https://technologychecker.io/technology/supabase) 在 2026 年的爬网中于 19,361 个活跃商业域名上检出 Supabase。其中可解析规模信息的域名里，**69.4% 属于 1–10 人的公司、21.7% 属于 11–50 人公司**；可解析创立年代的域名里 **39.9% 成立于 2020 年代**——在 PaaS 品类六个平台中客户群最年轻、最小。注意该口径是"域名检出"，不等于付费客户数，大公司常以单个子域名出现。
+- **口径提醒**：注册开发者 ≠ 活跃开发者 ≠ 付费客户。活跃口径的公开数据稀缺（一家代理商博客称 2026 Q1 活跃开发者约 120 万，未经审计，仅作量级参照）。
 
-**阶段一（2019–2024）：Firebase 替代品。** 这一时期其 GitHub README 标题长期固定为 "The open source Firebase alternative"。卖点三件套：开源、SQL、不锁定。Firebase 是它的叙事坐标系，Postgres 反而不是——CEO Paul Copplestone 2024 年 9 月接受 TechCrunch 采访时回忆：早年评论者把它看作 Firebase 的开源替代，"当时用的是 Postgres 这件事是次要的"。
+### 四类客户
 
-**阶段二（2024–2025）：Postgres 开发平台。** 随着 Postgres 热度持续上行、Firebase 声量消退，Supabase 主动拆掉对标。README 在 2025 年底改写为 "Postgres development platform"；官网同期提炼出 "Build with Postgres" 的品牌主张。Copplestone 同一采访中明确说公司"这些年来把自己定位得更清楚：一个 Postgres 平台"。技术侧的支撑是 2023 年 1 月它就上线了 pgvector 向量扩展——据其自述是第一批提供 pgvector 的云厂商，早于 AWS。
+**1. 早期初创与独立开发者（基本盘）。** 免费层（2 个项目、500MB 库、1 万 MAU 认证）足以跑起一个真实产品，几小时搭出完整后端。官方披露 YC 当期约 40% 初创使用 Supabase（2024-09，C 轮期间）；第三方检测中 39.9% 客户公司成立于 2020 年代，与此互证。典型动作是 Next.js/SvelteKit/Flutter 全栈应用 + Supabase 后端，一人公司居多（官方案例库中 BeeAPro 三人团队日更功能、两人游戏工作室双端实时同步均属此类）。
 
-**阶段三（2025–2026）：Agent 时代的数据库基础设施。** 2026 年官方博客直接使用 "Supabase is the Postgres company" 的表述（见 [Supabase 官方博客](https://supabase.com/blog/tags/postgres)）；年度发布会 Select 2026 的主题是 agentic infrastructure；组织上设立了 Head of Agentic Services（由收购的 Turso 创始人 Glauber Costa 出任）。需求侧的表征则是买家变了：2026 年 6 月官方披露 Claude Code 是平台新增使用的最大单一来源，10 月披露 70% 新库由 Agent/AI 工具创建。第三方评论（YesPress）的概括相当准确：BaaS 这个老市场声名不佳（锁定与账单惊吓），真正变化的是买家——过去是 deliberate 选工具的人类开发者， increasingly 是几秒内脚手架起应用、需要一个不需要销售电话就能开通后端的 AI Agent；而 Supabase 开放、即时、免费起步、Postgres 原生的栈"恰好是为这个客户形状打造的"。
+**2. AI 应用团队与 Agent builder 的用户（增长极）。** 两层含义：一是直接开发者——用 pgvector 存 embedding 做 RAG/语义检索，向量数据与业务数据同库；官方案例含 Quivr 一次开出 5,000 个向量库、Firecrawl 从 Pinecone 迁入、Berri AI 从 AWS RDS 迁入。二是间接用户——AI builder 平台的最终用户：Lovable 用它支撑平台上数百万应用（官方案例）、Bolt.new、base44、百度秒哒经由 Supabase for Platforms 白标接入（2025-12 官方披露数月内代建数百万项目）。这层客户自己甚至不知道后端是 Supabase。
 
-## 时间线：两条线
+**3. 迁移者（信任红利承接方）。** 三次迁移潮各有承接记录：Heroku 免费层关停（2022-11）后开发者外流；Firebase 不满意者——官方案例含 Mobbin 迁出 20 万用户、VideoGen 两人团队迁出 330 万用户；NoSQL 回头客——从 Fauna 等迁回关系模型（官方案例 Bree、Voypost）。共同动机：要 Firebase 式的省心，但不要 NoSQL 与封闭生态。
+
+**4. 企业与受监管行业（客单价来源）。** Team/Enterprise 档（599 美元/月起，定制含 HIPAA、专属基础设施、PrivateLink、SLA）承接合规采购。官方案例含房地产经纪 eXp Realty（企业创新+削减 SaaS 成本）、能源公司 Phoenix Energy（六个月完成关键基础设施迁移）、政府承包商 GovSignals；第三方检测在大公司域名上的检出多为社区站/单项目形态（f5、Mixpanel、Vanta、Clay、Sigma Computing 的子域名）。G2 评论区的口碑画像与之吻合：有经验的开发者赞"易用、文档好"，无 SQL 背景新手嫌"陡"，付费溢价是另一类抱怨。
+
+### 谁在决策：三种买家形态
+
+同一产品，三种决策主体：人类开发者主动选型（1、3、4 类）；AI 编程 Agent 代为开通（Claude Code 经 MCP Server 建库，2026-06 起为最大新增来源）；builder 平台批量代开（Lovable Cloud、Supabase for Platforms 白标）。建库的是 Agent，付钱的仍是背后的人——官方未披露 Agent 渠道的付费转化与留存。
+
+### 典型场景清单
+
+全栈 Web/移动应用后端（最主流）、实时协作与多人同步（Realtime 广播/Presence）、RAG 与 AI 应用（pgvector + 同库关系数据）、内部工具与管理面板（PostgREST + RLS 免写后端）、快速认证集成（Auth + RLS）。非目标场景见第六节。
+
+## 四、时间线：两条线
 
 拆成两条看：产品与关键能力一条（含平台对接），用户与融资一条。
 
@@ -126,14 +152,14 @@ Supabase 的产品骨架七年没变，变的是自我命名。三阶段有公�
 | 2026-06-04 | F 轮 5 亿美元（GIC 领投，投后约 105 亿美元）；官方披露开发者近 1000 万、60%+ 新库经 AI 工具创建 |
 | 2026-10-02 | 延展轮 +1.5 亿美元（GIC 领投，CapitalG、IronArc、Square Peg 参投）；官方口径更新为 1300 万开发者、月增 100 万用户、月增 400 万+ 数据库、70% 新库由 Agent 创建 |
 
-## 商业模式：开源漏斗 + 用量计费
+## 五、商业模式：开源漏斗 + 用量计费
 
 - **开源策略**：全部组件开源（Apache 2.0/MIT 为主，Studio、CLI、Supavisor、edge-runtime、PGlite 均独立可拆用），自托管完全免费。开源是获客引擎而非慈善：标准化 Postgres 之上的体验，让"自托管↔托管"切换成本尽可能低。
 - **定价阶梯**：Free（2 个项目、500MB 数据库、1GB 存储、1 万 MAU 认证用户）→ Pro 25 美元/月（含 10 美元 compute 抵扣，按量计费）→ Team 599 美元/月（SSO、SOC 2）→ Enterprise 定制（HIPAA、专属基础设施、SLA）。
 - **计费维度**：计算实例规格、存储、带宽之外，IPv4 地址、专用连接池、PITR、额外分支等均为附加计费项。2024 年初 IPv4 转付费附加（配合迁移 IPv6）是一次典型的"基础设施成本转嫁给用量方"操作。
 - **收入结构推断**（部分为推断，标注）：自助转化（Free→Pro）+ Agent 渠道带量（Bolt、Lovable 等 AI 编程工具把 Supabase 作为默认或事实默认后端，模板即开通）+ 企业合规采购（SOC 2/HIPAA/PrivateLink）。第三方估算 ARR 约 1.7 亿美元（Sacra，2026-05，未经官方确认）——若以此对照约 105 亿美元估值，市销率 60 倍上下，估值锚定的是增长斜率与 Agent 叙事，不是当期收入。
 
-## 竞争坐标与非目标场景
+## 六、竞争坐标与非目标场景
 
 - **Firebase（叙事源头，今日错位）**：Firebase 是 NoSQL（Firestore）+ Google 封闭生态；Supabase 是 SQL + 开放 + 可迁出。两者已不在同一坐标系竞争，Firebase 今日是 Supabase 的"反面教材"而非对手。
 - **轻量 Postgres 云（Neon 等）**：同一股 Postgres 浪潮的两个极端——极简"分支即数据库"一极 vs Supabase 的全栈六件套一极。交集在向量检索与预览分支。
@@ -141,7 +167,7 @@ Supabase 的产品骨架七年没变，变的是自我命名。三阶段有公�
 - **云大厂 BaaS（AWS Amplify 等）**：功能重叠但生态锁定逻辑相反——Amplify 把用户锁进 AWS，Supabase 把用户锁向 Postgres。
 - **非目标场景**：重型分析/数仓（列存不是它的战场，官方亦与 ClickHouse 合作而非自研）、需要分片的超大规模业务（Multigres 分片能力尚未 GA）、强物理隔离合规（仅 Enterprise 层级覆盖）。
 
-## 判断
+## 七、判断
 
 1. **本质是"Postgres 分销 + 平台税"**。Supabase 不拥有数据库内核，靠开发体验、生态集成与渠道（尤其 AI 编程工具渠道）在 Postgres 之上收平台税。护城河与风险同源：Postgres 本身越标准，它的"可迁出"承诺越可信、获客越容易；但也意味着任何一层体验被竞对复制，迁移成本同样低。
 2. **三次定位迁移都是顺势改名，不是改产品**。产品骨架七年未变，变的是买家。Agent 化是真实的用量结构变化（七成新库由 Agent 创建），但需注意：官方从未披露 Agent 建库对应的付费转化与留存——建库的是 Agent，付钱的仍是背后的用户，"Agent 建库 ≠ Agent 付费"。
@@ -154,6 +180,8 @@ Supabase 的产品骨架七年没变，变的是自我命名。三阶段有公�
 - [postgres.new 发布公告（2024-08-12）](https://supabase.com/blog/postgres-new)
 - [Supabase Branching（2023-12-13）](https://supabase.com/blog/supabase-branching)
 - [Supabase MCP Server 功能页](https://supabase.com/features/mcp-server)
+- [Supabase 客户案例库（官方）](https://supabase.com/customers)
+- [Supabase 域名检出与客户结构分析（technologychecker，2026）](https://technologychecker.io/technology/supabase)
 - [Series C 报道（aVenture/TechCrunch 汇编，2024-09-25）](https://prod.aventure.vc/news/2024-09-25-supabase-a-postgres-centric-developer-platform-raises-80m-series-c)
 - [F 轮与 Multigres 报道（byteiota，2026-06-05）](https://byteiota.com/supabase-multigres-postgres-gets-horizontal-scaling/)
 - [Supabase 融资与估值时间线（multiples.vc）](https://multiples.vc/private-comps/supabase)
