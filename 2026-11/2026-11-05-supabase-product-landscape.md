@@ -72,30 +72,53 @@ Supabase 的产品骨架七年没变，变的是自我命名。三阶段有公�
 
 **阶段三（2025–2026）：Agent 时代的数据库基础设施。** 2026 年官方博客直接使用 "Supabase is the Postgres company" 的表述（见 [Supabase 官方博客](https://supabase.com/blog/tags/postgres)）；年度发布会 Select 2026 的主题是 agentic infrastructure；组织上设立了 Head of Agentic Services（由收购的 Turso 创始人 Glauber Costa 出任）。需求侧的表征则是买家变了：2026 年 6 月官方披露 Claude Code 是平台新增使用的最大单一来源，10 月披露 70% 新库由 Agent/AI 工具创建。第三方评论（YesPress）的概括相当准确：BaaS 这个老市场声名不佳（锁定与账单惊吓），真正变化的是买家——过去是 deliberate 选工具的人类开发者， increasingly 是几秒内脚手架起应用、需要一个不需要销售电话就能开通后端的 AI Agent；而 Supabase 开放、即时、免费起步、Postgres 原生的栈"恰好是为这个客户形状打造的"。
 
-## 时间线：2019–2026
+## 时间线：两条线
+
+拆成两条看：产品与关键能力一条（含平台对接），用户与融资一条。
+
+### 时间线一：产品与关键能力（2019–2026）
 
 | 时间 | 事件 |
 |---|---|
 | 2019-10 | 开源仓库创建，首个组件上线 |
-| 2020-04 | 公开测试（YC W20 批次期间） |
-| 2020-12 | 种子轮 600 万美元 |
-| 2021-09 | A 轮（Coatue 领投，约 3000 万美元，TechCrunch 报道口径） |
+| 2020-04 | 公开测试（YC S20 批次期间） |
 | 2022-04 | Edge Functions 上线（Deno） |
-| 2022-11 | Heroku 关停免费层，开发者迁移潮开始流向 Supabase |
 | 2023-01 | pgvector 上线（官方称第一批提供该扩展的云厂商） |
 | 2023-08 | Launch Week 8：pgvector 0.5（HNSW）、Supavisor 百万连接池、SOC 2 / HIPAA 合规 |
 | 2023-12 | Branching 发布（Git 分支 ↔ 预览库）；Realtime 广播/在线状态授权 |
 | 2024-04 | 平台官宣 GA（Copplestone：刻意推迟到能支撑企业级需求才宣布） |
 | 2024-08 | postgres.new：浏览器内 Postgres + AI 界面 |
-| 2024-09 | C 轮 8000 万美元（Peak XV、Craft 领投）；同期披露 YC 当期约 40% 初创使用 Supabase |
+| 2024-10 | 与 ClickHouse 合作：分析型负载可外置 ClickHouse |
+| 2024-11 | Lovable 原生集成 Supabase（Lovable 官方 2025-03 复盘称"四个月前"上线） |
 | 2024-12 | Queues、Cron、AI Assistant v2、高性能磁盘（60TB） |
-| 2025-04 | 官方 MCP Server 发布（20+ 工具） |
+| 2025-04 | 官方 MCP Server 发布（20+ 工具，接入 Cursor、Claude Code、VS Code、Cline） |
 | 2025-05 | Multigres 官宣（Vitess 联创 Sugu 加入） |
-| 2025-10 | E 轮，估值约 51 亿美元 |
+| 2025-06 | base44（AI builder）采用 Supabase 作默认后端 |
+| 2025-09 | Lovable Cloud 上线：Lovable 每个新项目由 Supabase 支撑 |
+| 2025-12 | Supabase for Platforms 白标发布：Lovable、Bolt.new、百度秒哒接入，数月内代建数百万项目 |
 | 2026-01 | PrivateLink；Postgres Best Practices Agent Skills |
 | 2026-04 | Supabase Agent Skills（教 AI Agent 正确使用 Supabase） |
-| 2026-06 | F 轮 5 亿美元（GIC 领投，投后约 105 亿美元）；Multigres v0.1 alpha；官方披露开发者近 1000 万、60%+ 新库经 AI 工具创建 |
-| 2026-10-02 | Select 2026：+1.5 亿美元延展轮（GIC 领投，CapitalG、IronArc、Square Peg 参投）；官宣收购 Turso（金额未披露）；Supabase Compute GA；Multigres beta；OrioleDB 公开测试；dbarena 上线；Spark 发布；官方口径更新为 1300 万开发者、月增 100 万用户、月增 400 万+ 数据库、70% 新库由 Agent 创建 |
+| 2026-06 | Multigres v0.1 alpha；官方披露 Claude Code 成为平台最大新增用量来源 |
+| 2026-10-02 | Select 2026：Supabase Compute GA、Multigres beta、OrioleDB 公开测试、dbarena 上线、Spark 发布、收购 Turso；同场发布 Agent Skills 4.2、Agent Assistant、Supabase UI |
+
+### 时间线二：用户与融资（2020–2026）
+
+| 时间 | 事件 |
+|---|---|
+| 2020-04 | 公开测试即爆发：Hacker News 带来 3 万访客、1,400+ 注册（okara 复盘口径） |
+| 2020-12 | 种子轮 600 万美元（Coatue、YC、Mozilla） |
+| 2021-09 | A 轮约 3000 万美元（Coatue 领投，TechCrunch 报道口径） |
+| 2021 | 4 万+ 开发者、5 万+ 托管库 |
+| 2022-05 | B 轮 8000 万美元（Felicis） |
+| 2022-08 | 11 万+ 开发者、15 万+ 托管库 |
+| 2022-11 | Heroku 关停免费层，开发者迁移潮开始流向 Supabase |
+| 2024-04 | 托管库突破 100 万 |
+| 2024-09 | C 轮 8000 万美元（Peak XV、Craft 领投）；同期披露 YC 当期约 40% 初创使用 Supabase |
+| 2025-04 | D 轮（Accel 领投，金额未披露） |
+| 2025-10 | E 轮，估值约 51 亿美元 |
+| 2026-04 | 开发者 800 万；GitHub stars 破 10 万 |
+| 2026-06-04 | F 轮 5 亿美元（GIC 领投，投后约 105 亿美元）；官方披露开发者近 1000 万、60%+ 新库经 AI 工具创建 |
+| 2026-10-02 | 延展轮 +1.5 亿美元（GIC 领投，CapitalG、IronArc、Square Peg 参投）；官方口径更新为 1300 万开发者、月增 100 万用户、月增 400 万+ 数据库、70% 新库由 Agent 创建 |
 
 ## 商业模式：开源漏斗 + 用量计费
 
