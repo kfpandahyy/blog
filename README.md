@@ -77,19 +77,20 @@ AI Agent 领域技术博客，按九大类组织。文章按月份归档（如 `
 
 #### 其他
 
-1. [《Databricks 产品全景：从 Spark 公司到 AI Agent 基础设施》](./2026-11/2026-11-05-databricks-landscape.md)
-2. [《Supabase 产品全景：从 Firebase 替代品到 AI Agent 的默认数据库》](./2026-11/2026-11-05-supabase-product-landscape.md)
-3. [《Supabase 收购 Turso 全解析：Postgres 巨头为什么买下一个 SQLite 公司》](./2026-11/2026-11-05-supabase-acquires-turso.md)
-4. [《每个 Agent 都该有一个数据库吗：正反对证与判定结论》](./2026-10/2026-10-31-one-database-per-agent-debate.md)
-5. [《OceanBase AI 功能全景：存量能力盘点、2026 年新增清单与未来趋势判断》](./2026-10/2026-10-26-oceanbase-ai-features.md)
-6. [《TiDB AI 功能全景：存量能力盘点、2026 年新增清单与未来趋势判断》](./2026-10/2026-10-26-tidb-ai-features.md)
-7. [《CPU、GPU、TPU、NPU：四类处理器的架构、定位与选型》](./2026-10/2026-10-23-cpu-gpu-tpu-npu.md)
-8. [《FDE（前线部署工程师）调研：从 Palantir 的战场起源到 AI 时代的战略岗位》](./2026-10/2026-10-21-fde.md)
-9. [《波士顿矩阵（BCG Matrix）调研：结构、原理、场景与五十年的批评》](./2026-10/2026-10-21-bcg-matrix.md)
-10. [《羲和 HaloDB 调研：功能全景、优势拆解与主打场景》](./2026-10/2026-10-20-halodb-database.md)
-11. [《Databricks 调研：Lakehouse 巨头正把自己重做为企业 AI Agent 的基础设施》](./2026-10/2026-10-18-databricks.md)
-12. [《uv 调研：一个 Rust 二进制收编了 Python 工具链，OpenAI 随后买下了它》](./2026-10/2026-10-17-astral-uv.md)
-13. [《Supabase 技术调研：Postgres 优先的 Agentic Backend 平台》](./2026-10/2026-10-13-supabase-tech-research.md)
+1. [《Kimi 产品体系与商业模式全解剖：500 亿美元估值背后的收入结构与战略转向》](./2026-11/2026-11-10-kimi-product-system-business-model.md)
+2. [《Databricks 产品全景：从 Spark 公司到 AI Agent 基础设施》](./2026-11/2026-11-05-databricks-landscape.md)
+3. [《Supabase 产品全景：从 Firebase 替代品到 AI Agent 的默认数据库》](./2026-11/2026-11-05-supabase-product-landscape.md)
+4. [《Supabase 收购 Turso 全解析：Postgres 巨头为什么买下一个 SQLite 公司》](./2026-11/2026-11-05-supabase-acquires-turso.md)
+5. [《每个 Agent 都该有一个数据库吗：正反对证与判定结论》](./2026-10/2026-10-31-one-database-per-agent-debate.md)
+6. [《OceanBase AI 功能全景：存量能力盘点、2026 年新增清单与未来趋势判断》](./2026-10/2026-10-26-oceanbase-ai-features.md)
+7. [《TiDB AI 功能全景：存量能力盘点、2026 年新增清单与未来趋势判断》](./2026-10/2026-10-26-tidb-ai-features.md)
+8. [《CPU、GPU、TPU、NPU：四类处理器的架构、定位与选型》](./2026-10/2026-10-23-cpu-gpu-tpu-npu.md)
+9. [《FDE（前线部署工程师）调研：从 Palantir 的战场起源到 AI 时代的战略岗位》](./2026-10/2026-10-21-fde.md)
+10. [《波士顿矩阵（BCG Matrix）调研：结构、原理、场景与五十年的批评》](./2026-10/2026-10-21-bcg-matrix.md)
+11. [《羲和 HaloDB 调研：功能全景、优势拆解与主打场景》](./2026-10/2026-10-20-halodb-database.md)
+12. [《Databricks 调研：Lakehouse 巨头正把自己重做为企业 AI Agent 的基础设施》](./2026-10/2026-10-18-databricks.md)
+13. [《uv 调研：一个 Rust 二进制收编了 Python 工具链，OpenAI 随后买下了它》](./2026-10/2026-10-17-astral-uv.md)
+14. [《Supabase 技术调研：Postgres 优先的 Agentic Backend 平台》](./2026-10/2026-10-13-supabase-tech-research.md)
 
 ---
 
