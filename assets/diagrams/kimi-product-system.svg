@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="660" viewBox="0 0 980 660" font-family="Noto Sans CJK SC, Microsoft YaHei, PingFang SC, sans-serif">
+<rect width="980" height="660" fill="#ffffff"/>
+<text x="490.0" y="36" font-size="22" font-weight="bold" fill="#111827" text-anchor="middle">Kimi 产品体系全景</text>
+<text x="490.0" y="58" font-size="13" font-weight="normal" fill="#6b7280" text-anchor="middle">一条模型基座 · 五条产品线 · 分层客群（数据截至 2026-11）</text>
+<rect x="40" y="84" width="900" height="74" rx="10" fill="#1f3a5f" stroke="#1f3a5f" stroke-width="1.4"/>
+<text x="490.0" y="112" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">基座模型层：Kimi K 系列开源旗舰</text>
+<text x="490.0" y="136" font-size="13" font-weight="normal" fill="#cfe0f5" text-anchor="middle">K2（1T）→ K2.5（全模态）→ K2.6（长程编码）→ K3（2.8T · 1M 上下文）→ K3.1 Pro（3T 级）</text>
+<rect x="22.0" y="208" width="176" height="216" rx="10" fill="#ffffff" stroke="#d1d5db" stroke-width="1.4"/>
+<rect x="22.0" y="208" width="176" height="6" rx="3" fill="#2563eb"/>
+<text x="110.0" y="240" font-size="15" font-weight="bold" fill="#111827" text-anchor="middle">Kimi 智能助手</text>
+<text x="110.0" y="261" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="middle">网页 / App / 桌面端</text>
+<line x1="36.0" y1="274" x2="184.0" y2="274" stroke="#e5e7eb" stroke-width="1"/>
+<text x="110.0" y="296" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">通用问答与深度研究</text>
+<text x="110.0" y="316" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">Agent 模式：建站、</text>
+<text x="110.0" y="336" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">数据分析、PPT 生成</text>
+<text x="110.0" y="376" font-size="12" font-weight="bold" fill="#374151" text-anchor="middle">个人用户 · 知识工作者</text>
+<text x="110.0" y="398" font-size="11.5" font-weight="normal" fill="#2563eb" text-anchor="middle">免费 + 会员付费墙</text>
+<rect x="212.0" y="208" width="176" height="216" rx="10" fill="#ffffff" stroke="#d1d5db" stroke-width="1.4"/>
+<rect x="212.0" y="208" width="176" height="6" rx="3" fill="#0d9488"/>
+<text x="300.0" y="240" font-size="15" font-weight="bold" fill="#111827" text-anchor="middle">Kimi Work</text>
+<text x="300.0" y="261" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="middle">桌面端本地 Agent</text>
+<line x1="226.0" y1="274" x2="374.0" y2="274" stroke="#e5e7eb" stroke-width="1"/>
+<text x="300.0" y="296" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">任务拆解 · 浏览器操作</text>
+<text x="300.0" y="316" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">交付文档 / 表格 / PPT</text>
+<text x="300.0" y="336" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">Skill 沉淀 · 定时任务</text>
+<text x="300.0" y="376" font-size="12" font-weight="bold" fill="#374151" text-anchor="middle">白领 · 专业人群</text>
+<text x="300.0" y="398" font-size="11.5" font-weight="normal" fill="#0d9488" text-anchor="middle">会员订阅</text>
+<rect x="402.0" y="208" width="176" height="216" rx="10" fill="#ffffff" stroke="#d1d5db" stroke-width="1.4"/>
+<rect x="402.0" y="208" width="176" height="6" rx="3" fill="#7c3aed"/>
+<text x="490.0" y="240" font-size="15" font-weight="bold" fill="#111827" text-anchor="middle">Kimi Code</text>
+<text x="490.0" y="261" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="middle">CLI / IDE / 桌面端</text>
+<line x1="416.0" y1="274" x2="564.0" y2="274" stroke="#e5e7eb" stroke-width="1"/>
+<text x="490.0" y="296" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">AI 编程 Agent</text>
+<text x="490.0" y="316" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">仓库级读写改 · 跑命令</text>
+<text x="490.0" y="336" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">Standard / HighSpeed</text>
+<text x="490.0" y="376" font-size="12" font-weight="bold" fill="#374151" text-anchor="middle">开发者</text>
+<text x="490.0" y="398" font-size="11.5" font-weight="normal" fill="#7c3aed" text-anchor="middle">会员订阅（周配额制）</text>
+<rect x="592.0" y="208" width="176" height="216" rx="10" fill="#ffffff" stroke="#d1d5db" stroke-width="1.4"/>
+<rect x="592.0" y="208" width="176" height="6" rx="3" fill="#ea580c"/>
+<text x="680.0" y="240" font-size="15" font-weight="bold" fill="#111827" text-anchor="middle">Kimi Claw</text>
+<text x="680.0" y="261" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="middle">云端托管 Agent</text>
+<line x1="606.0" y1="274" x2="754.0" y2="274" stroke="#e5e7eb" stroke-width="1"/>
+<text x="680.0" y="296" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">云端 OpenClaw 7×24 在线</text>
+<text x="680.0" y="316" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">浏览器一键创建</text>
+<text x="680.0" y="336" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">自动装 Skill · 定时任务</text>
+<text x="680.0" y="376" font-size="12" font-weight="bold" fill="#374151" text-anchor="middle">重度用户 · 小团队</text>
+<text x="680.0" y="398" font-size="11.5" font-weight="normal" fill="#ea580c" text-anchor="middle">199 元/月起会员</text>
+<rect x="782.0" y="208" width="176" height="216" rx="10" fill="#ffffff" stroke="#d1d5db" stroke-width="1.4"/>
+<rect x="782.0" y="208" width="176" height="6" rx="3" fill="#475569"/>
+<text x="870.0" y="240" font-size="15" font-weight="bold" fill="#111827" text-anchor="middle">开放平台 &amp; 企业版</text>
+<text x="870.0" y="261" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="middle">API 平台 / 企业定制</text>
+<line x1="796.0" y1="274" x2="944.0" y2="274" stroke="#e5e7eb" stroke-width="1"/>
+<text x="870.0" y="296" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">模型 API 按量调用</text>
+<text x="870.0" y="316" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">企业版嵌入业务流</text>
+<text x="870.0" y="336" font-size="12.5" font-weight="normal" fill="#374151" text-anchor="middle">Bedrock 海外托管</text>
+<text x="870.0" y="376" font-size="12" font-weight="bold" fill="#374151" text-anchor="middle">开发者 · 企业客户</text>
+<text x="870.0" y="398" font-size="11.5" font-weight="normal" fill="#475569" text-anchor="middle">按量计费 + 定制</text>
+<line x1="110.0" y1="160" x2="110.0" y2="206" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="110.0,206 105.0,198 115.0,198" fill="#9ca3af"/>
+<line x1="300.0" y1="160" x2="300.0" y2="206" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="300.0,206 295.0,198 305.0,198" fill="#9ca3af"/>
+<line x1="490.0" y1="160" x2="490.0" y2="206" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="490.0,206 485.0,198 495.0,198" fill="#9ca3af"/>
+<line x1="680.0" y1="160" x2="680.0" y2="206" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="680.0,206 675.0,198 685.0,198" fill="#9ca3af"/>
+<line x1="870.0" y1="160" x2="870.0" y2="206" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="870.0,206 865.0,198 875.0,198" fill="#9ca3af"/>
+<rect x="40" y="478" width="900" height="64" rx="10" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.4"/>
+<text x="490.0" y="504" font-size="14" font-weight="bold" fill="#1e40af" text-anchor="middle">开源生态分发层</text>
+<text x="490.0" y="526" font-size="12.5" font-weight="normal" fill="#1e40af" text-anchor="middle">Hugging Face（权重） · OpenRouter · Amazon Bedrock（海外企业托管） · Cognition SWE-2（后训练基座） · Fireworks / Vercel / Cursor</text>
+<line x1="110.0" y1="426" x2="110.0" y2="476" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="110.0,476 105.0,468 115.0,468" fill="#9ca3af"/>
+<line x1="300.0" y1="426" x2="300.0" y2="476" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="300.0,476 295.0,468 305.0,468" fill="#9ca3af"/>
+<line x1="490.0" y1="426" x2="490.0" y2="476" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="490.0,476 485.0,468 495.0,468" fill="#9ca3af"/>
+<line x1="680.0" y1="426" x2="680.0" y2="476" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="680.0,476 675.0,468 685.0,468" fill="#9ca3af"/>
+<line x1="870.0" y1="426" x2="870.0" y2="476" stroke="#9ca3af" stroke-width="1.6"/>
+<polygon points="870.0,476 865.0,468 875.0,468" fill="#9ca3af"/>
+<text x="490.0" y="632" font-size="12" font-weight="normal" fill="#6b7280" text-anchor="middle">注：C 端常规对话免费，重算力功能构成付费墙；收入重心在 B 端 API（占七成以上）。</text>
+</svg>
